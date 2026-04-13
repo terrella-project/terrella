@@ -3,14 +3,11 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     restart: always
-    ports:
-      - "3000:8080"
+    network_mode: host
     volumes:
       - open-webui:/app/backend/data
     environment:
-      - 'OLLAMA_BASE_URL=http://host.docker.internal:11434'
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
 
 volumes:
   open-webui:
