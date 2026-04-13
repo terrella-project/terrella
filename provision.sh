@@ -42,6 +42,7 @@ python3 -m venv ~/tools/aider/venv
 ~/tools/aider/venv/bin/pip install aider-chat
 
 # 6. Pull Baseline Models
+ollama pull nomic-embed-text    # Embedding
 ollama pull qwen2.5-coder:1.5b  # Coding Autocomplete
 ollama pull qwen2.5-coder:14b   # Coding Workhorse
 ollama pull qwen2.5-coder:32b   # Coding Workhorse (slower)
