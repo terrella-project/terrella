@@ -1,0 +1,3 @@
+qwen2.5-coder:32b
+deepseek-r1:14b
+gemma2:9b
