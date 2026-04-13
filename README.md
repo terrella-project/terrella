@@ -1,6 +1,6 @@
-# 🌍 Project Earth: AI Workstation Setup Guide
+# 🌍 Project Earth: Universal AI Workstation
 
-This guide details the reconstruction of the "Earth" AI workstation (RTX 5080, i9-12900K, 64GB RAM) to leverage local LLMs for agentic development, augmenting cloud plans (Gemini/Claude) and preventing quota limits.
+This guide details the reconstruction of the "Earth" AI workstation (RTX 5080, i9-12900K, 64GB RAM) to leverage local LLMs for agentic development, augmenting cloud plans (Gemini/Claude) and preventing quota limits. It is designed to be fully automated, reproducible, and optimized for speed.
 
 ---
 
@@ -136,3 +136,112 @@ Direct code manipulation tool for autonomous development.
 | **Final Review/Refactor**| Gemini 1.5 Pro | Cloud (Paid) | 1 Request |
 
 **Tip:** Always draft locally in Aider or Open WebUI first. Only send high-confidence, condensed prompts to Claude/Gemini for final polish.
+
+---
+
+## Configuration & Automation Guide
+
+### 1. The Host Bridge (`.wslconfig`)
+**Location:** `C:\Users\<YourUser>\.wslconfig`
+This file configures the hardware handshake. The `mirrored` networking ensures Windows and Linux share the same IP for zero-latency communication.
+
+```ini
+[wsl2]
+memory=48GB
+processors=16
+networkingMode=mirrored
+localhostForwarding=true
+```
+
+---
+
+### 2. The Universal Provisioner (`provision.sh`)
+**Location:** `~/provision.sh`
+This script automates the installation and applies the **CORS and Networking fixes** required for the 5080 to talk to Docker.
+
+```bash
+#!/bin/bash
+# Project Earth: Universal AI Provisioner
+
+# 1. Core Dependencies
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y zstd python3-pip python3-venv curl git
+
+# 2. Systemd Activation
+sudo bash -c 'cat <<EOF > /etc/wsl.conf
+[boot]
+systemd=true
+EOF'
+
+# 3. Setup Ollama + Network Handshake Fix
+if ! command -v ollama &> /dev/null; then
+    curl -fsSL https://ollama.com/install.sh | sh
+fi
+
+# Apply CORS and Network Listen overrides for 5080 detection
+sudo mkdir -p /etc/systemd/system/ollama.service.d/
+sudo bash -c 'cat <<EOF > /etc/systemd/system/ollama.service.d/override.conf
+[Service]
+Environment="OLLAMA_HOST=0.0.0.0"
+Environment="OLLAMA_ORIGINS=*"
+Environment="LD_LIBRARY_PATH=/usr/lib/wsl/lib"
+EOF'
+
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+sudo systemctl restart ollama
+
+# 4. Install Docker & Set Permissions
+if ! command -v docker &> /dev/null; then
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo usermod -aG docker $USER
+fi
+
+# 5. Aider Setup
+mkdir -p ~/tools/aider
+python3 -m venv ~/tools/aider/venv
+~/tools/aider/venv/bin/pip install aider-chat
+
+echo "✅ Provisioning Complete. Run 'wsl --shutdown' in PowerShell and restart."
+```
+
+---
+
+### 3. Mission Control (`docker-compose.yaml`)
+**Location:** `~/earth-ai/docker-compose.yaml`
+Note the `0.0.0.0` binding, which ensures the WebUI is always reachable in mirrored networking mode.
+
+```yaml
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    ports:
+      - "0.0.0.0:3000:8080"
+    environment:
+      - 'OLLAMA_BASE_URL=http://host.docker.internal:11434'
+      - 'WEBUI_SECRET_KEY=earth_secret_123'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  open-webui:
+```
+
+---
+
+### 4. 🚀 Performance Strategy: The "14B Sweet Spot"
+To maximize the **RTX 5080 (16GB)**, follow these rules:
+
+* **The Gold Standard:** Use **Qwen 2.5 Coder 14B** or **DeepSeek-R1 14B**. These fit 100% inside VRAM, giving you instant (50+ tokens/sec) responses.
+* **The Heavyweight:** Use **Qwen 32B** only when you need deep logic. Note that it will overflow into System RAM, slowing generation to 3-5 words per second.
+* **The Quota Defense:** Run Aider (`~/tools/aider/venv/bin/aider`) with the 14B model for 90% of coding tasks. Only use Claude/Gemini in the WebUI for final architectural reviews.
+
+---
+
+### 5. 🔧 Troubleshooting
+* **Permission Denied (Docker):** Run `newgrp docker` or restart WSL.
+* **WebUI Unreachable:** Access via `http://127.0.0.1:3000` or the Windows IP address. Ensure no Windows apps are using Port 3000.
+* **GPU Not Utilized:** Run `sudo systemctl restart ollama`. If `nvidia-smi` shows 0% utilization but high VRAM usage (12GB+), the model is loaded but idle. Generation speed is the true test.
