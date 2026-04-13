@@ -245,3 +245,57 @@ To maximize the **RTX 5080 (16GB)**, follow these rules:
 * **Permission Denied (Docker):** Run `newgrp docker` or restart WSL.
 * **WebUI Unreachable:** Access via `http://127.0.0.1:3000` or the Windows IP address. Ensure no Windows apps are using Port 3000.
 * **GPU Not Utilized:** Run `sudo systemctl restart ollama`. If `nvidia-smi` shows 0% utilization but high VRAM usage (12GB+), the model is loaded but idle. Generation speed is the true test.
+
+## Maintenance
+
+### Gaming Toggle (Start/Stop WSL)
+
+WSL2 is "on-demand." Open the terminal, it starts. But it does not stop just because the window is closed. Because Ollama reserves VRAM (to keep models fast), it will "steal" frames from games if left running.
+
+#### To Kill Everything (Gaming Mode):
+Open Windows PowerShell (as Admin or regular) and run:
+
+```powershell
+wsl --shutdown
+```
+
+This is the "Nuclear Option." It terminates the entire WSL virtual machine, stops Docker, stops Ollama, and flushes every gigabyte of VRAM back to the GPU.
+
+#### To Start Everything (AI Mode):
+Open the `Earth-AI (WSL)` terminal. Because systemd is configured to `restart: always` in the Docker Compose, everything (Ollama + WebUI) will automatically start breathing the moment the terminal opens.
+
+#### 💡 Pro Tip: Create a Desktop Shortcut
+
+    Right-click Desktop > New > Shortcut.
+
+    For the location, enter: wsl.exe --shutdown
+
+    Name it "Terminate Earth AI" or similar.
+
+    Double-click this before launching a heavy game to ensure the 5080 is 100% focused on graphics.
+
+### Backup/Restore of Open WebUI Database
+
+The data (chats, settings, and users) lives in a Docker volume called `open-webui`. Since it's a "named volume," it's tucked away in a protected part of the Linux filesystem.
+
+#### Backup
+
+Run this in the `Earth-AI (WSL)` terminal. It creates a compressed .tar.gz of the entire database.
+
+```bash
+docker run --rm -v open-webui:/data -v $(pwd):/backup alpine tar czf /backup/openwebui_backup_$(date +%Y%m%d).tar.gz /data
+```
+
+What this does:
+
+1. Grabs the open-webui volume.
+2. Compresses it into a single file named with the current date (e.g., `openwebui_backup_20260413.tar.gz`).
+3. Drops that file into the current directory.
+
+#### Restore
+
+Just run the reverse.
+
+```bash
+docker run --rm -v open-webui:/data -v $(pwd):/backup alpine sh -c "rm -rf /data/* && tar xzf /backup/YOUR_BACKUP_FILE.tar.gz -C /"
+```
