@@ -42,7 +42,9 @@ python3 -m venv ~/tools/aider/venv
 ~/tools/aider/venv/bin/pip install aider-chat
 
 # 6. Pull Baseline Models
-ollama pull qwen2.5-coder:32b
-ollama pull deepseek-r1:14b
+ollama pull qwen2.5-coder:14b   # Coding Workhorse
+ollama pull qwen2.5-coder:32b   # Coding Workhorse (slower)
+ollama pull deepseek-r1:14b     # Reasoning/Logic
+ollama pull gemma2:9b           # Fast Sub-tasks
 
 echo "✅ Provisioning Complete. Please restart your terminal!"
