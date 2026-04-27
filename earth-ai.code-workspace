@@ -10,17 +10,18 @@
 		}
 	],
 	"settings": {
-		"explorer.autoReveal": false,
-		"files.exclude": {
-			"**/.git": true
-		},
-		"explorer.fileNesting.enabled": true,
-		"explorer.fileNesting.patterns": {
-		"README": "AGENTS.md"
-		},
 		"chat.tools.terminal.autoApprove": {
 			"gh": true,
 			"git": true
-		}
+		},
+		"explorer.autoReveal": false,
+		"explorer.fileNesting.enabled": true,
+		"explorer.fileNesting.patterns": {
+			"README": "AGENTS.md"
+		},
+		"files.exclude": {
+			"**/.git": true
+		},
+		"workbench.colorTheme": "Dark+"
 	}
 }
