@@ -2,6 +2,19 @@
 
 This guide details the reconstruction of the "Earth" AI workstation (RTX 5080, i9-12900K, 64GB RAM) to leverage local LLMs for agentic development, augmenting cloud plans (Gemini/Claude) and preventing quota limits. It is designed to be fully automated, reproducible, and optimized for speed.
 
+## Repo contents
+
+| Path | Purpose |
+|---|---|
+| `provision.sh` | One-shot WSL/Ollama/Docker/Aider provisioner (see [Phase 2](#phase-2-linux-engine-room-wsl2) onward) |
+| `docker-compose.yaml` | Open WebUI — Mission Control for chatting with local + cloud models |
+| [`ai-stack/`](ai-stack/README.md) | **Personal reference notes** — machines, subscriptions, local models, tools, and the manual model-routing decision table. Read this first when deciding which model/tool to use. |
+| [`ai-observability/`](ai-observability/README.md) | **Single pane of glass** — Docker Compose stack: LiteLLM proxy + Postgres + Prometheus + Grafana. OpenAI-compatible endpoint that fans out to Anthropic / Gemini / OpenAI / ollama and logs every call. Includes a manual-billing entry path for Copilot and Claude Code subscriptions. |
+| `.wslconfig`, `wsl.conf` | Reference copies of the host/WSL configs documented below |
+| `models.txt` | Snapshot of the current `ollama list` |
+
+> **Two complementary stacks:** Open WebUI (this README) is the **interactive UI** for chatting with models. The LiteLLM stack in `ai-observability/` is the **API proxy + dashboard** for tools that hit models programmatically (`agent_runner.py`, OpenCode, Continue.dev, scripts). They run side-by-side; both talk to the same ollama on `localhost:11434`.
+
 ---
 
 ## Phase 1: The Windows Foundation
