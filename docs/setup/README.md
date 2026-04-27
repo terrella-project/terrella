@@ -13,7 +13,7 @@ Build the Earth AI workstation from a fresh Windows 11 install. The phases are n
 
 ## The fast path: `provision.sh`
 
-Phases 2–5 are automated by [`provision.sh`](../../provision.sh). It is **idempotent** — safe to re-run. Use the manual instructions in this folder when:
+Phases 2–5 are automated by [`provision/provision.sh`](../../provision/provision.sh). It is **idempotent** — safe to re-run. Use the manual instructions in this folder when:
 
 - You want to understand what the script is doing, or
 - Something failed and you need to redo just one step, or
@@ -22,8 +22,10 @@ Phases 2–5 are automated by [`provision.sh`](../../provision.sh). It is **idem
 ```bash
 # Inside the Earth-AI WSL terminal, after Phase 1 is done:
 cd ~/src/jomkz/earth-ai
-bash provision.sh
+bash provision/provision.sh
 ```
+
+The list of ollama models the script pulls lives in [`provision/models.list`](../../provision/models.list) — edit that file to change the baseline. See [reference/local-models.md](../reference/local-models.md#baseline-set-pulled-by-provisionsh) for what each model is for.
 
 After it finishes:
 

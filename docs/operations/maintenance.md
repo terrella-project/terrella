@@ -81,18 +81,31 @@ gunzip -c litellm_pg_20260427.sql.gz \
 
 ---
 
-## Refreshing `models.txt`
+## Adding / removing baseline models
 
-[`models.txt`](../../models.txt) at the repo root is a checked-in snapshot of `ollama list`. Refresh it after every `ollama pull` / `ollama rm`:
+The set of models the provisioner pulls is in [`provision/models.list`](../../provision/models.list). To change the baseline:
 
 ```bash
 cd ~/src/jomkz/earth-ai
-ollama list > models.txt
-git add models.txt
-git commit -m "Refresh models snapshot"
+$EDITOR provision/models.list
+bash provision/provision.sh        # pulls anything new (idempotent)
+
+# To actually drop a model from disk, also remove it by hand:
+ollama rm <model-name>
+
+git add provision/models.list
+git commit -m "Models: add foo, drop bar"
 ```
 
-If you also want a richer dump (sizes in GB, parameter count, quant level), the script in [reference/local-models.md](../reference/local-models.md) prints a wider table.
+The provisioner never deletes — that's deliberate, so a typo or merge can't wipe gigabytes of weights. See [reference/local-models.md](../reference/local-models.md) for what each model is for and the heuristics for picking one.
+
+To inspect what's currently installed:
+
+```bash
+ollama list                                    # quick listing
+curl -s http://localhost:11434/api/tags \
+  | python3 -m json.tool                       # full JSON with sizes/quants
+```
 
 ---
 

@@ -12,7 +12,7 @@ WSL doesn't run systemd out of the box, but ollama is shipped as a systemd servi
 sudo nano /etc/wsl.conf
 ```
 
-Set the contents to (a reference copy is in [`wsl.conf`](../../wsl.conf)):
+Set the contents to:
 
 ```ini
 [boot]
@@ -22,7 +22,7 @@ systemd=true
 default=john
 ```
 
-> Replace `john` with your Linux username. The `[user]` section is optional but means new terminals open as your user instead of root.
+> Replace `john` with your Linux username. The `[user]` section is optional but means new terminals open as your user instead of root. (`provision/provision.sh` writes this file for you and uses `$USER` automatically.)
 
 Apply the change:
 
@@ -82,7 +82,7 @@ cd earth-ai
 ```bash
 ps -p 1 -o comm=          # → systemd
 nvidia-smi -L | head -1   # → "GPU 0: NVIDIA GeForce RTX 5080 ..."
-ls ~/src/jomkz/earth-ai   # → docker-compose.yaml, provision.sh, docs, ...
+ls ~/src/jomkz/earth-ai   # → docker-compose.yaml, provision/, docs/, stack/, ...
 ```
 
 All three good? → on to [Phase 3](03-ollama.md).

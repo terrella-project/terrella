@@ -36,18 +36,18 @@ sudo systemctl restart ollama
 
 ## 3.3 Pull the baseline models
 
-These four cover ~95% of daily work. Pulling all of them is roughly **57 GB**, mostly from the larger qwen variants — make sure you have disk space first (`df -h ~`).
+The list of models to pull is checked into the repo at [`provision/models.list`](../../provision/models.list). The provisioner reads this file; you can also pull them by hand:
 
 ```bash
-ollama pull nomic-embed-text       # embeddings for RAG / semantic search
-ollama pull qwen2.5-coder:1.5b     # tab-completion sidecar
-ollama pull qwen2.5-coder:14b      # daily-driver coder (fits 100% in VRAM)
-ollama pull qwen2.5-coder:32b      # best local quality (overflows VRAM)
-ollama pull deepseek-r1:14b        # reasoning specialist
-ollama pull gemma2:9b              # generalist / summaries / log triage
+cd ~/src/jomkz/earth-ai
+# Either run the provisioner (idempotent) ...
+bash provision/provision.sh
+# ... or pull only the model section:
+awk '!/^[[:space:]]*(#|$)/ {print $1}' provision/models.list \
+  | xargs -n1 ollama pull
 ```
 
-What each one is for, and when to use it: → [reference/local-models.md](../reference/local-models.md).
+The default set is roughly **57 GB** on disk — check space first (`df -h ~`). What each model is for, when to add or remove one, and how to update the list: → [reference/local-models.md](../reference/local-models.md).
 
 ## 3.4 Verify ollama is healthy
 
@@ -64,15 +64,6 @@ ss -tlnp | grep 11434
 
 # 3. The HTTP API answers and returns the models we just pulled
 curl -s http://127.0.0.1:11434/api/tags | python3 -m json.tool | head -20
-```
-
-## 3.5 Refresh the model snapshot in the repo
-
-[`models.txt`](../../models.txt) is a checked-in snapshot of `ollama list`. Refresh it after every pull/rm:
-
-```bash
-cd ~/src/jomkz/earth-ai
-ollama list > models.txt
 ```
 
 ## ✅ Verification

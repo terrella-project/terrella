@@ -1,8 +1,0 @@
-NAME                               ID              SIZE      MODIFIED    
-nomic-embed-text:latest            0a109f422b47    274 MB    2 weeks ago    
-qwen2.5-coder:1.5b                 d7372fd82851    986 MB    2 weeks ago    
-qwen2.5-coder:32b-instruct-q2_K    aeea77078359    12 GB     2 weeks ago    
-qwen2.5-coder:14b                  9ec8897f747e    9.0 GB    2 weeks ago    
-gemma2:9b                          ff02c3702f32    5.4 GB    2 weeks ago    
-deepseek-r1:14b                    c333b7232bdb    9.0 GB    2 weeks ago    
-qwen2.5-coder:32b                  b92d6a0bd47e    19 GB     2 weeks ago    
