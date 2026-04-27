@@ -52,7 +52,7 @@ The whole guide lives under `docs/` and is structured for someone building this 
 | Task | Doc |
 |---|---|
 | Pick a model for the task at hand | [docs/reference/routing.md](docs/reference/routing.md) |
-| Use the workstation from a laptop / Mac mini | [docs/operations/cross-machine-access.md](docs/operations/cross-machine-access.md) |
+| Use the workstation from jupiter / Mac mini | [docs/operations/cross-machine-access.md](docs/operations/cross-machine-access.md) |
 | Stop everything before launching a game | [docs/operations/maintenance.md#gaming-toggle](docs/operations/maintenance.md#gaming-toggle) |
 | Back up Open WebUI chats | [docs/operations/maintenance.md#backup--restore-open-webui](docs/operations/maintenance.md#backup--restore-open-webui) |
 | Log this month's Copilot / Claude bill | [docs/operations/manual-billing.md](docs/operations/manual-billing.md) |

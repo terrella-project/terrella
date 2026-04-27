@@ -17,7 +17,7 @@ If you're new, read it in this order:
 | Build the whole thing from scratch | [setup/](setup/) — follow the numbered files in order |
 | Remind yourself which model to use for a task | [reference/routing.md](reference/routing.md) |
 | See which models are installed and why | [reference/local-models.md](reference/local-models.md) |
-| Work from your laptop and reach earth's models | [operations/cross-machine-access.md](operations/cross-machine-access.md) |
+| Work from jupiter (or Mac mini) and reach earth's models | [operations/cross-machine-access.md](operations/cross-machine-access.md) |
 | Stop the AI stack so you can play a game | [operations/maintenance.md#gaming-toggle](operations/maintenance.md#gaming-toggle) |
 | Back up Open WebUI chats | [operations/maintenance.md#backup--restore-open-webui](operations/maintenance.md#backup--restore-open-webui) |
 | Log this month's Copilot / Claude bill | [operations/manual-billing.md](operations/manual-billing.md) |

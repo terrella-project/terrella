@@ -10,6 +10,7 @@ Build the Earth AI workstation from a fresh Windows 11 install. The phases are n
 | [4. Open WebUI (chat UI)](04-open-webui.md) | Install Docker, deploy the chat interface | ~5 min |
 | [5. Aider (agentic coding CLI)](05-aider.md) | Python venv + Aider, point it at ollama | ~3 min |
 | [6. Observability stack](06-observability-stack.md) | LiteLLM + Postgres + Prometheus + Grafana — the proxy + dashboards | ~10 min |
+| [7. Jupiter (laptop client)](07-jupiter.md) | Set up the Windows laptop as a dev client — WSL, Tailscale, VS Code, Claude Code, OpenCode | ~20 min |
 
 ## The fast path: `provision.sh`
 
@@ -50,4 +51,4 @@ The setup phases below all happen **inside the Earth-AI distro**, unless explici
 ## Once setup is complete
 
 → Read [reference/routing.md](../reference/routing.md) to learn which model to pick for which task.
-→ Read [operations/cross-machine-access.md](../operations/cross-machine-access.md) if you also want to use earth's models from your laptop or Mac mini.
+→ Read [operations/cross-machine-access.md](../operations/cross-machine-access.md) if you also want to use earth's models from jupiter or Mac mini.

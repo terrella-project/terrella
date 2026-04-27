@@ -4,21 +4,21 @@ What's installed where, and how each tool reaches which model. Update when somet
 
 ## Per-machine matrix
 
-| Tool | Ubuntu-24.04 (earth) | Earth-AI (earth) | laptop | Mac mini |
+| Tool | Ubuntu-24.04 (earth) | Earth-AI (earth) | jupiter (laptop) | Mac mini |
 |---|---|---|---|---|
-| VS Code + GitHub Copilot | ✅ via Remote-WSL | n/a | _TODO_ | _TODO_ |
+| VS Code + GitHub Copilot | ✅ via Remote-WSL | n/a | ✅ via Remote-WSL | _TODO_ |
 | GitHub Copilot CLI (`gh copilot`) | _TODO_ | _TODO_ | _TODO_ | _TODO_ |
-| Claude Code CLI | _TODO_ | _TODO_ | _TODO_ | _TODO_ |
-| OpenCode | _TODO_ | _TODO_ | _TODO_ | _TODO_ |
-| ollama (server) | n/a | ✅ port 11434 | _TODO_ | _TODO_ |
-| TrackPro `runner/agent_runner.py` | ✅ in `~/src/trackpro` | n/a | _TODO_ | _TODO_ |
+| Claude Code CLI | _TODO_ | _TODO_ | ✅ | _TODO_ |
+| OpenCode | _TODO_ | _TODO_ | ✅ | _TODO_ |
+| ollama (server) | n/a | ✅ port 11434 | n/a (uses earth's) | _TODO_ |
+| TrackPro `runner/agent_runner.py` | ✅ in `~/src/trackpro` | n/a | ✅ in `~/src/trackpro` | _TODO_ |
 | MCP servers (GitHub MCP via Docker) | ✅ from `mcp.json` | _TODO_ | _TODO_ | _TODO_ |
-| LiteLLM proxy | (client only) | ✅ port 4000 | (client only) | (client only) |
-| Grafana | (browser only) | ✅ port 3000 | (browser only) | (browser only) |
-| Prometheus | (browser only) | ✅ port 9090 | (browser only) | (browser only) |
-| Tailscale | ❌ | _TODO_ | _TODO_ | _TODO_ |
-| Docker + Compose v2 | ✅ 29.4.1 | _TODO_ | _TODO_ | _TODO_ |
-| `gh` (GitHub CLI) | ✅ | _TODO_ | _TODO_ | _TODO_ |
+| LiteLLM proxy | (client only) | ✅ port 4000 | client via Tailscale | (client only) |
+| Grafana | (browser only) | ✅ port 3000 | browser via Tailscale | (browser only) |
+| Prometheus | (browser only) | ✅ port 9090 | browser via Tailscale | (browser only) |
+| Tailscale | ❌ | _TODO_ | ✅ | _TODO_ |
+| Docker + Compose v2 | ✅ 29.4.1 | _TODO_ | n/a (not needed) | _TODO_ |
+| `gh` (GitHub CLI) | ✅ | _TODO_ | ✅ | _TODO_ |
 
 ## Tool → models routing
 

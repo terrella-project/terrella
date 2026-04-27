@@ -1,6 +1,6 @@
 # Cross-Machine Access
 
-When you're not at the desk, you have two options:
+When you're not at the desk (working from **jupiter** or Mac mini), you have two options:
 
 1. **Use paid cloud services directly** — Copilot, Claude Code, Anthropic API, Gemini API all work over the public internet. No extra setup. Use this when you don't need ollama and the latency back to earth isn't worth it.
 2. **Tailscale back to earth** — reuse local models and the LiteLLM proxy so paid spend doesn't go up just because you stepped away from the desk.
@@ -9,21 +9,24 @@ This doc covers option 2.
 
 ## What is Tailscale?
 
-A zero-config mesh VPN. After installing it on each device and logging in with the same account, every device gets a stable hostname (e.g. `earth-ai`, `laptop`, `mac-mini`) on a private network — your "tailnet". From a coffee shop, your laptop can reach `http://earth-ai:11434` as if it were on the home LAN.
+A zero-config mesh VPN. After installing it on each device and logging in with the same account, every device gets a stable hostname (e.g. `earth-ai`, `jupiter`, `mac-mini`) on a private network — your "tailnet". From a coffee shop, jupiter can reach `http://earth-ai:11434` as if it were on the home LAN.
 
 ## One-time setup
 
 ### Step 1 — install on every device
 
 ```bash
-# Ubuntu / Earth-AI WSL / laptop (Linux):
+# Ubuntu / Earth-AI WSL (Linux):
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# jupiter — install on **Windows** first:
+# https://tailscale.com/download/windows
+# Then also install inside the WSL distro:
 curl -fsSL https://tailscale.com/install.sh | sh
 
 # macOS (Mac mini):
 brew install --cask tailscale
 ```
-
-Windows: install from <https://tailscale.com/download/windows>.
 
 ### Step 2 — bring each device online
 
@@ -52,7 +55,9 @@ tailscale status
 
 Note the magic-DNS name advertised for the Earth-AI node. The default is the Linux hostname; if it's not `earth-ai`, substitute the actual name in the next step.
 
-## Using it from laptop / Mac mini
+## Using it from jupiter (Windows laptop, WSL)
+
+Add these to `~/.bashrc` in the WSL distro so they persist:
 
 ```bash
 # ollama directly:
@@ -63,10 +68,27 @@ export OPENAI_BASE_URL=http://earth-ai:4000
 export OPENAI_API_KEY=<my-virtual-key-from-litellm-config.yaml>
 ```
 
-Then run any tool that respects those env vars — Aider, OpenCode, scripts, etc. — and they'll behave the same as on earth.
+Then run any tool that respects those env vars — OpenCode, scripts, etc. — and they'll behave the same as on earth.
 
 ```bash
-# Quick smoke test from laptop:
+# Quick smoke test from jupiter WSL:
+curl -s http://earth-ai:11434/api/tags | head
+curl -s http://earth-ai:4000/health/liveness
+```
+
+> **Jupiter note:** Claude Code and GitHub Copilot use their own auth (subscription-based) and do **not** route through LiteLLM — those calls won't appear in Grafana. Use LiteLLM for scripts and OpenCode.
+
+## Using it from Mac mini
+
+```bash
+# Add to ~/.zshrc:
+export OLLAMA_HOST=http://earth-ai:11434
+export OPENAI_BASE_URL=http://earth-ai:4000
+export OPENAI_API_KEY=<my-virtual-key-from-litellm-config.yaml>
+```
+
+```bash
+# Quick smoke test from Mac mini:
 curl -s http://earth-ai:11434/api/tags | head
 curl -s http://earth-ai:4000/health/liveness
 ```

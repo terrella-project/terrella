@@ -4,7 +4,7 @@ The "look it up" docs. These are short, factual, and meant to be skimmed — not
 
 | File | What it covers |
 |---|---|
-| [machines.md](machines.md) | The four machines I work on (earth + two WSL distros, laptop, Mac mini) and how they reach each other. |
+| [machines.md](machines.md) | The four machines I work on (earth + two WSL distros, jupiter, Mac mini) and how they reach each other. |
 | [local-models.md](local-models.md) | The ollama models installed on Earth-AI: size, quant, what each one is good for. |
 | [subscriptions.md](subscriptions.md) | Paid services — plan, monthly cost, billing portal, where the API keys live. |
 | [tools.md](tools.md) | Per-tool inventory: which tool is on which machine, which models it can talk to, where its config lives. |
@@ -16,4 +16,4 @@ The "look it up" docs. These are short, factual, and meant to be skimmed — not
 - **"What's installed on this machine?"** → [tools.md](tools.md)
 - **"How much am I paying for AI per month?"** → [subscriptions.md](subscriptions.md)
 - **"What can my GPU actually run?"** → [local-models.md](local-models.md)
-- **"How do I reach earth from my laptop?"** → [machines.md](machines.md#cross-machine-access)
+- **"How do I reach earth from jupiter?"** → [machines.md](machines.md#cross-machine-access)

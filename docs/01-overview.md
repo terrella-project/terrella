@@ -39,9 +39,9 @@ The goals, in priority order:
 └─────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼ Tailscale (when away from desk)
-                           ┌───────────────┐
-                           │ laptop / Mac  │
-                           └───────────────┘
+                           ┌─────────────────────┐
+                           │ jupiter / Mac mini  │
+                           └─────────────────────┘
 ```
 
 ## The two stacks
@@ -80,7 +80,7 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 | **ollama** | A local LLM server. Listens on `:11434`, exposes an OpenAI-compatible API, manages model files in `~/.ollama`. |
 | **Open WebUI** | A self-hosted chat UI that connects to ollama (and optionally cloud providers). |
 | **LiteLLM** | An OpenAI-compatible proxy that routes calls to many providers and logs cost per call. |
-| **Tailscale** | A zero-config VPN built on WireGuard. Lets the laptop / Mac mini reach `earth-ai` from anywhere as if on the same LAN. |
+| **Tailscale** | A zero-config VPN built on WireGuard. Lets jupiter / Mac mini reach `earth-ai` from anywhere as if on the same LAN. |
 | **Aider** | A terminal-based coding assistant that talks to any OpenAI-compatible model (we point it at ollama). |
 | **Quota / subscription** | "Quota" = pay-per-token API (Anthropic / Gemini API). "Subscription" = flat-rate (Copilot Team, Claude Code Pro). |
 
