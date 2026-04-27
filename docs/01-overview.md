@@ -56,7 +56,7 @@ Use it when you want to **chat in a browser** — quick questions, comparing mod
 
 ### 2. The observability stack — the API proxy + dashboard
 
-A docker-compose stack under [`ai-observability/`](../ai-observability/) made of four containers:
+A docker-compose stack under [`stack/`](../stack/) made of four containers:
 
 | Container | Job |
 |---|---|
@@ -93,7 +93,7 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 | [`provision.sh`](../provision.sh) | One-shot installer for ollama, Docker, Aider, and the systemd/CORS overrides. |
 | [`wsl.conf`](../wsl.conf), [`.wslconfig`](../.wslconfig) | Reference copies of the host/WSL config files. |
 | [`models.txt`](../models.txt) | Snapshot of the currently installed ollama models. |
-| [`ai-observability/`](../ai-observability/) | The LiteLLM + Postgres + Prometheus + Grafana stack (compose, configs, scripts). |
+| [`stack/`](../stack/) | The LiteLLM + Postgres + Prometheus + Grafana stack (compose, configs, scripts). |
 | [`docs/`](.) | This documentation tree. |
 
 The legacy `ai-stack/` folder has been folded into [`reference/`](reference/).

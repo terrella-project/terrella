@@ -29,7 +29,7 @@ The whole guide lives under `docs/` and is structured for someone building this 
 | [`docs/`](docs/) | All documentation. |
 | [`provision.sh`](provision.sh) | One-shot installer for ollama + Docker + Aider + the systemd/CORS overrides. |
 | [`docker-compose.yaml`](docker-compose.yaml) | Open WebUI service. |
-| [`ai-observability/`](ai-observability/) | LiteLLM + Postgres + Prometheus + Grafana — the API proxy and dashboard stack. |
+| [`stack/`](stack/) | LiteLLM + Postgres + Prometheus + Grafana — the API proxy and dashboard stack. |
 | [`models.txt`](models.txt) | Snapshot of `ollama list` on this machine. |
 | [`wsl.conf`](wsl.conf), [`.wslconfig`](.wslconfig) | Reference copies of the host/WSL config files. |
 

@@ -49,7 +49,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 Don't put real keys in this file. Real keys live in:
 
 - `~/.config/trackpro/secrets` — sourced by `~/.bashrc`; the existing `bootstrap.sh` provisions this file (DigitalOcean, GitHub, Gemini/OpenAI). Keep that as the source of truth on earth.
-- LiteLLM `config.yaml` — references env vars from the same file. See [`../../ai-observability/litellm/config.yaml`](../../ai-observability/litellm/config.yaml).
+- LiteLLM `config.yaml` — references env vars from the same file. See [`../../stack/litellm/config.yaml`](../../stack/litellm/config.yaml).
 
 Rotate cadence: _TODO — quarterly?_
 
@@ -58,7 +58,7 @@ Rotate cadence: _TODO — quarterly?_
 After each billing cycle:
 
 ```bash
-cd ~/src/jomkz/earth-ai/ai-observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/log-billing.sh
 # prompts: month (YYYY-MM), vendor, amount USD, notes
 ```

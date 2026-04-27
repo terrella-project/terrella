@@ -2,7 +2,7 @@
 # Intended host: Earth-AI WSL on machine `earth`.
 # All ports bind to 127.0.0.1 — cross-machine access is via Tailscale, not LAN.
 
-name: ai-observability
+name: stack
 
 services:
   postgres:
