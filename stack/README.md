@@ -1,4 +1,4 @@
-# `ai-observability/`
+# `stack/`
 
 Docker-compose stack: **LiteLLM proxy + Postgres + Prometheus + Grafana**.
 
@@ -14,7 +14,7 @@ This directory contains only the runtime artifacts (compose file, configs, scrip
 Quick start (assumes you've read the setup doc):
 
 ```bash
-cd ~/src/jomkz/earth-ai/ai-observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/generate-env.sh        # first time only
 docker compose up -d
 ./scripts/init-billing-table.sh  # first time only
