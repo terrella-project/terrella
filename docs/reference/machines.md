@@ -4,10 +4,16 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
 
 ## earth (primary workstation)
 
-- **Host OS:** Windows 11
-- **Hostname (Linux side):** `earth`
+- **Host OS:** Windows 11 Pro (Build 26200, 24H2), installed 1/3/2025
+- **Hostname:** `EARTH`
+- **Hardware:** MSI MS-7D30
+  - CPU: 12th Gen Intel Core i9-12900K — 16 cores / 24 threads, ~3187 MHz base
+  - RAM: 64 GB (65,328 MB)
+  - GPU: NVIDIA GeForce RTX 5080 (16 GB VRAM, Windows driver 32.0.15.9571), Intel UHD Graphics 770 (driver 32.0.101.7082)
+  - BIOS: AMI 1.10, 12/3/2021
+  - Networking: Intel Wi-Fi 6E AX211 160MHz
 - **WSL distros:**
-  - **Earth-AI** — WSL 2, Ubuntu. Hosts **ollama** (port 11434) and will host the **AI observability stack** (LiteLLM + Postgres + Prometheus + Grafana).
+  - **Earth-AI** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard-WSL2. Hosts **ollama** (port 11434) and will host the **AI observability stack** (LiteLLM + Postgres + Prometheus + Grafana). GPU visible via nvidia-smi: RTX 5080 16303 MiB, Linux driver 595.71.
   - **Ubuntu-24.04** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard. **This is the development workspace** (where TrackPro repos are cloned, where VS Code Remote-WSL connects).
 - **WSL networking:** mirrored mode — `localhost` is shared between the Windows host and both WSL distros, so from Ubuntu-24.04 I can reach `http://localhost:11434` and hit ollama running in Earth-AI.
 - **Role:** all heavy local model work runs here. Always-on. Other machines reach back to earth via Tailscale when away.
@@ -142,10 +148,10 @@ echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>
 
 | Item | earth (Ubuntu-24.04) | earth (Earth-AI) | jupiter | Mac mini |
 |---|---|---|---|---|
-| Docker + Compose v2 | ✅ 29.4.1 / v5.1.3 | _TODO_ | n/a (not needed) | _TODO_ |
-| Tailscale | ❌ not installed | _TODO_ | ✅ | _TODO_ |
-| ollama | n/a (uses Earth-AI's) | ✅ 11434 reachable | n/a (uses earth's) | n/a |
+| Docker + Compose v2 | ✅ 29.4.1 / v5.1.3 | ✅ 29.4.1 / v5.1.3 | n/a (not needed) | _TODO_ |
+| Tailscale | ❌ not installed | ❌ not installed | ✅ | _TODO_ |
+| ollama | n/a (uses Earth-AI's) | ✅ 0.20.6 | n/a (uses earth's) | n/a |
 | VS Code + Remote-WSL | ✅ | n/a | ✅ | n/a |
 | Claude Code CLI | _TODO_ | n/a | ❌ not installed | _TODO_ |
 | OpenCode | _TODO_ | n/a | ❌ not installed | _TODO_ |
-| gh (GitHub CLI) | ✅ | _TODO_ | ✅ 2.45.0 | _TODO_ |
+| gh (GitHub CLI) | ✅ | ❌ not installed | ✅ 2.45.0 | _TODO_ |
