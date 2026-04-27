@@ -1,0 +1,157 @@
+# Maintenance
+
+Day-to-day operations on the running stack.
+
+## Gaming toggle
+
+WSL2 is on-demand: opening a terminal starts it, but **closing the window doesn't stop it**. Because ollama keeps models loaded in VRAM for fast first-token latency, leaving WSL up will steal frames from any 3D game on the same GPU.
+
+### Stop everything (Gaming Mode)
+
+```powershell
+# In Windows PowerShell:
+wsl --shutdown
+```
+
+This terminates the entire WSL VM. Docker, ollama, and Open WebUI all go down; **all VRAM is released back to the GPU**. This is the right move before launching a graphically demanding game.
+
+### Start everything (AI Mode)
+
+Open the **Earth-AI (WSL)** terminal. Because the docker-compose services and the ollama systemd unit both have `restart: always` / `enabled`, everything wakes up on its own.
+
+### Pro tip — desktop shortcut
+
+Right-click Desktop → **New → Shortcut**. For the location, paste:
+
+```
+wsl.exe --shutdown
+```
+
+Name it "Terminate Earth AI". Double-click before starting a game.
+
+---
+
+## Backup / restore Open WebUI
+
+The Open WebUI database (chats, settings, users) lives in the named Docker volume `open-webui`. Back it up before upgrades and on a regular cadence.
+
+### Backup
+
+```bash
+cd ~  # or wherever you want the tarball saved
+docker run --rm \
+  -v open-webui:/data \
+  -v "$(pwd)":/backup \
+  alpine \
+  tar czf "/backup/openwebui_backup_$(date +%Y%m%d).tar.gz" /data
+```
+
+Result: a file like `openwebui_backup_20260427.tar.gz` in the current directory.
+
+### Restore
+
+```bash
+docker run --rm \
+  -v open-webui:/data \
+  -v "$(pwd)":/backup \
+  alpine \
+  sh -c "rm -rf /data/* && tar xzf /backup/openwebui_backup_20260427.tar.gz -C /"
+```
+
+> Replace the filename with whichever backup you want to restore. The container wipes the volume contents before extracting, so you get an exact restore (not a merge).
+
+---
+
+## Backup the observability stack
+
+Postgres holds the per-call cost log and the `monthly_costs` table. Back it up the same way:
+
+```bash
+cd ~/src/jomkz/earth-ai/ai-observability
+docker compose exec -T postgres pg_dump -U litellm litellm \
+  | gzip > "litellm_pg_$(date +%Y%m%d).sql.gz"
+```
+
+Restore (with the stack stopped):
+
+```bash
+gunzip -c litellm_pg_20260427.sql.gz \
+  | docker compose exec -T postgres psql -U litellm litellm
+```
+
+---
+
+## Refreshing `models.txt`
+
+[`models.txt`](../../models.txt) at the repo root is a checked-in snapshot of `ollama list`. Refresh it after every `ollama pull` / `ollama rm`:
+
+```bash
+cd ~/src/jomkz/earth-ai
+ollama list > models.txt
+git add models.txt
+git commit -m "Refresh models snapshot"
+```
+
+If you also want a richer dump (sizes in GB, parameter count, quant level), the script in [reference/local-models.md](../reference/local-models.md) prints a wider table.
+
+---
+
+## Updating containers
+
+```bash
+# Open WebUI:
+cd ~/src/jomkz/earth-ai
+docker compose pull
+docker compose up -d
+
+# Observability stack:
+cd ~/src/jomkz/earth-ai/ai-observability
+docker compose pull
+docker compose up -d
+```
+
+> `docker compose pull` only re-downloads images. The named volumes (`open-webui`, the Postgres data dir) are preserved across container recreation.
+
+---
+
+## Updating ollama itself
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+sudo systemctl restart ollama
+```
+
+The systemd drop-in at `/etc/systemd/system/ollama.service.d/override.conf` is preserved across upgrades — that's why we put the `OLLAMA_HOST` / `OLLAMA_ORIGINS` config there in [Phase 3](../setup/03-ollama.md).
+
+---
+
+## Pruning unused Docker stuff
+
+Periodically reclaim disk:
+
+```bash
+docker image prune -f                # dangling images
+docker container prune -f            # stopped containers
+docker volume ls                     # inspect before pruning volumes!
+```
+
+Don't run `docker volume prune` blindly — it would wipe `open-webui` and the Postgres volume.
+
+---
+
+## Checking GPU / VRAM at any time
+
+```bash
+nvidia-smi
+```
+
+- `Processes` section: which processes own VRAM right now.
+- `Memory-Usage`: total VRAM in use vs available.
+- Combined with `ollama ps` (lists models currently loaded), this tells you whether ollama is keeping a large model warm.
+
+To force ollama to free VRAM **without** restarting the service:
+
+```bash
+ollama stop <model-name>
+# or simply unload by sending an empty prompt to a different model
+```
