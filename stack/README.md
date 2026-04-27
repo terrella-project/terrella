@@ -1,32 +1,45 @@
 # `stack/`
 
-Docker-compose stack: **LiteLLM proxy + Postgres + Prometheus + Grafana**.
+The runtime services that make up Earth AI's "stack" — two independent docker-compose projects that run side-by-side on the Earth-AI WSL distro.
 
-This directory contains only the runtime artifacts (compose file, configs, scripts, SQL). All documentation lives under [`../docs/`](../docs/):
+| Project | Purpose | Compose project name |
+|---|---|---|
+| [`webui/`](webui/) | **Open WebUI** — browser chat UI for humans. Talks to ollama (and optionally cloud providers configured in its settings). | `earth-ai` |
+| [`observability/`](observability/) | **LiteLLM + Postgres + Prometheus + Grafana** — OpenAI-compatible API proxy for programs, with per-call cost logging and dashboards. | `observability` |
 
-| You want to… | Read |
-|---|---|
-| Install and bring this stack up | [`../docs/setup/06-observability-stack.md`](../docs/setup/06-observability-stack.md) |
-| Log monthly Copilot / Claude bills | [`../docs/operations/manual-billing.md`](../docs/operations/manual-billing.md) |
-| Reach this stack from another machine | [`../docs/operations/cross-machine-access.md`](../docs/operations/cross-machine-access.md) |
-| Diagnose a broken stack | [`../docs/operations/troubleshooting.md`](../docs/operations/troubleshooting.md) |
+> **ollama itself is not in this folder.** It runs on the Earth-AI host (managed by systemd), reachable on `localhost:11434`. Both compose projects above connect to it through `network_mode: host`.
 
-Quick start (assumes you've read the setup doc):
+## Quick start
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+# Open WebUI (chat for humans):
+cd ~/src/jomkz/earth-ai/stack/webui
+docker compose up -d
+# → http://127.0.0.1:8080
+
+# Observability (proxy + dashboards for programs):
+cd ~/src/jomkz/earth-ai/stack/observability
 ./scripts/generate-env.sh        # first time only
 docker compose up -d
 ./scripts/init-billing-table.sh  # first time only
-./scripts/smoke.sh               # verify
+# → LiteLLM http://127.0.0.1:4000
+# → Grafana  http://127.0.0.1:3000
 ```
 
-URLs (all bound to `127.0.0.1`):
+The two projects are independent: you can run either one without the other. They share nothing except the underlying ollama on `localhost:11434`.
 
-- LiteLLM API: <http://localhost:4000>
-- LiteLLM admin: <http://localhost:4000/ui>
-- Grafana: <http://localhost:3000>
-- Prometheus: <http://localhost:9090>
-- Postgres: `localhost:5433`
+## Why two compose projects, not one?
 
-Authoritative routing config: [`litellm/config.yaml`](litellm/config.yaml).
+- **Different lifecycles.** WebUI is a single image you `pull` on a whim. Observability has four services with secrets, a Postgres volume to back up, and a smoke test. Combining them would tangle one project's restarts with the other.
+- **Different audiences.** WebUI is a UI you open in a browser. Observability is an API surface and a dashboard — programs talk to it, you only visit it to read graphs.
+- **Different volumes.** Each project keeps its own named volume (`earth-ai_open-webui`, `observability_postgres-data`, …). Splitting projects keeps `docker volume ls` legible.
+
+## Documentation
+
+| Doc | Covers |
+|---|---|
+| [`../docs/setup/04-open-webui.md`](../docs/setup/04-open-webui.md) | First-run setup of WebUI |
+| [`../docs/setup/06-observability-stack.md`](../docs/setup/06-observability-stack.md) | First-run setup of the observability project |
+| [`../docs/operations/maintenance.md`](../docs/operations/maintenance.md) | Backup, restore, container updates |
+| [`../docs/operations/manual-billing.md`](../docs/operations/manual-billing.md) | Logging Copilot / Claude monthly bills into Grafana |
+| [`../docs/operations/troubleshooting.md`](../docs/operations/troubleshooting.md) | Common failure modes and fixes |

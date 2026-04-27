@@ -43,10 +43,10 @@ You should have:
 
 ## 6.3 Bring it up
 
-Run from the `stack/` directory:
+Run from the `stack/observability/` directory:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/earth-ai/stack/observability
 
 # 1. First-time only: generate strong random secrets into .env
 ./scripts/generate-env.sh   # writes .env (gitignored, chmod 600)
@@ -70,10 +70,10 @@ docker compose up -d
 | Prometheus | <http://localhost:9090> | none (bound to localhost) |
 | Postgres | localhost:5433 | `litellm` / `POSTGRES_PASSWORD` from `.env`; DB `litellm` |
 
-## 6.5 Files in `stack/`
+## 6.5 Files in `stack/observability/`
 
 ```
-stack/
+stack/observability/
 ├── docker-compose.yml
 ├── .env.example                       # template; copy to .env (or run generate-env.sh)
 ├── .gitignore
@@ -94,12 +94,12 @@ stack/
     └── smoke.sh                       # probe LiteLLM end-to-end
 ```
 
-The authoritative routing table — which model alias maps to which provider, which keys exist, per-key spend caps — lives in [`../../stack/litellm/config.yaml`](../../stack/litellm/config.yaml).
+The authoritative routing table — which model alias maps to which provider, which keys exist, per-key spend caps — lives in [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml).
 
 ## 6.6 Verify end-to-end
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/earth-ai/stack/observability
 ./scripts/smoke.sh
 ```
 

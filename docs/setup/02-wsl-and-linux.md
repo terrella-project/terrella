@@ -82,7 +82,7 @@ cd earth-ai
 ```bash
 ps -p 1 -o comm=          # → systemd
 nvidia-smi -L | head -1   # → "GPU 0: NVIDIA GeForce RTX 5080 ..."
-ls ~/src/jomkz/earth-ai   # → docker-compose.yaml, provision/, docs/, stack/, ...
+ls ~/src/jomkz/earth-ai   # → README.md, provision/, docs/, stack/, ...
 ```
 
 All three good? → on to [Phase 3](03-ollama.md).
