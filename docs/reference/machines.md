@@ -23,14 +23,22 @@ Expected: list of models from [local-models.md](local-models.md).
 
 ## jupiter (laptop)
 
-- **Host OS:** Windows 11
+- **Host OS:** Windows 11 Pro (Build 26200, 24H2), installed 1/16/2025
 - **Hostname:** `jupiter`
-- **WSL distro:** single `Ubuntu-24.04` distro — dev workspace only (no Earth-AI equivalent; no local AI services).
+- **Hardware:** Lenovo ThinkBook 21MA0037US
+  - CPU: Intel Core Ultra 7 155U — 7 cores / 14 threads, ~1700 MHz base
+  - RAM: 32,233 MB (32 GB)
+  - GPU: Intel Graphics (integrated), 2 GB, driver 32.0.101.8332
+  - BIOS: LENOVO R2JET37W(1.14), 8/26/2024
+- **WSL distro:** single `Ubuntu-24.04` distro (Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard-WSL2) — dev workspace only (no Earth-AI equivalent; no local AI services).
+- **Networking:** Wi-Fi (Intel Wi-Fi 6 AX201 160MHz); Tailscale installed on Windows host (Wintun tunnel, `169.254.83.107`).
 - **Role:** mobile development; light editing, code review, docs, communication. Reaches earth's local models via Tailscale when needed.
 - **Local models:** none. Falls back to:
   1. Paid services (Copilot / Claude Code) directly, OR
   2. Tailscale → ollama and LiteLLM on earth (preferred for local-model tasks).
-- **Confirmed working:** VS Code + GitHub Copilot (Remote-WSL), Claude Code CLI, OpenCode, gh (GitHub CLI), Tailscale.
+- **Confirmed working (Windows):** VS Code + GitHub Copilot (Remote-WSL), Tailscale.
+- **Confirmed working (WSL):** gh (GitHub CLI) 2.45.0.
+- **Not yet installed (WSL):** Claude Code CLI, OpenCode.
 
 ## Mac mini
 
@@ -138,6 +146,6 @@ echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>
 | Tailscale | ❌ not installed | _TODO_ | ✅ | _TODO_ |
 | ollama | n/a (uses Earth-AI's) | ✅ 11434 reachable | n/a (uses earth's) | n/a |
 | VS Code + Remote-WSL | ✅ | n/a | ✅ | n/a |
-| Claude Code CLI | _TODO_ | n/a | ✅ | _TODO_ |
-| OpenCode | _TODO_ | n/a | ✅ | _TODO_ |
-| gh (GitHub CLI) | ✅ | _TODO_ | ✅ | _TODO_ |
+| Claude Code CLI | _TODO_ | n/a | ❌ not installed | _TODO_ |
+| OpenCode | _TODO_ | n/a | ❌ not installed | _TODO_ |
+| gh (GitHub CLI) | ✅ | _TODO_ | ✅ 2.45.0 | _TODO_ |
