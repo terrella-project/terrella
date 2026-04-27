@@ -46,17 +46,17 @@ The goals, in priority order:
 
 ## The two stacks
 
-This repo contains **two complementary stacks** that run side-by-side:
+This repo contains **two complementary docker-compose projects** that run side-by-side. Both live under [`stack/`](../stack/).
 
 ### 1. Open WebUI — the human-facing chat UI
 
-A browser-based chat interface (think "private ChatGPT") that talks to ollama for local models and can also be configured with cloud API keys. Defined by the top-level [`docker-compose.yaml`](../docker-compose.yaml).
+A browser-based chat interface (think "private ChatGPT") that talks to ollama for local models and can also be configured with cloud API keys. Defined by [`stack/webui/docker-compose.yaml`](../stack/webui/docker-compose.yaml).
 
 Use it when you want to **chat in a browser** — quick questions, comparing model outputs, casual exploration.
 
 ### 2. The observability stack — the API proxy + dashboard
 
-A docker-compose stack under [`stack/`](../stack/) made of four containers:
+The compose project at [`stack/observability/`](../stack/observability/) is made of four containers:
 
 | Container | Job |
 |---|---|
@@ -89,9 +89,9 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 | Path | What it is |
 |---|---|
 | [`README.md`](../README.md) | Top-level summary and pointers into `docs/`. |
-| [`docker-compose.yaml`](../docker-compose.yaml) | Open WebUI service definition. |
 | [`provision/`](../provision/) | One-shot installer (`provision.sh`) and the editable list of baseline ollama models (`models.list`). |
-| [`stack/`](../stack/) | The LiteLLM + Postgres + Prometheus + Grafana stack (compose, configs, scripts). |
+| [`stack/webui/`](../stack/webui/) | docker-compose for **Open WebUI** (the chat UI). |
+| [`stack/observability/`](../stack/observability/) | docker-compose for **LiteLLM + Postgres + Prometheus + Grafana** (proxy + dashboards). |
 | [`docs/`](.) | This documentation tree. |
 
 ## Where to go next

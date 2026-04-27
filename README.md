@@ -28,8 +28,8 @@ The whole guide lives under `docs/` and is structured for someone building this 
 |---|---|
 | [`docs/`](docs/) | All documentation. |
 | [`provision/`](provision/) | One-shot installer (`provision.sh`) and the list of ollama models it pulls (`models.list`). |
-| [`docker-compose.yaml`](docker-compose.yaml) | Open WebUI service. |
-| [`stack/`](stack/) | LiteLLM + Postgres + Prometheus + Grafana — the API proxy and dashboard stack. |
+| [`stack/webui/`](stack/webui/) | docker-compose project: **Open WebUI** (chat UI). |
+| [`stack/observability/`](stack/observability/) | docker-compose project: **LiteLLM + Postgres + Prometheus + Grafana** (API proxy + dashboards). |
 
 ## Quickstart for a fresh install
 
@@ -42,7 +42,7 @@ The whole guide lives under `docs/` and is structured for someone building this 
    Details: [docs/setup/README.md](docs/setup/README.md).
 3. Bring up Open WebUI:
    ```bash
-   docker compose up -d
+   cd stack/webui && docker compose up -d
    ```
    → open <http://127.0.0.1:8080>.
 4. Optionally bring up the observability stack: [docs/setup/06-observability-stack.md](docs/setup/06-observability-stack.md).
