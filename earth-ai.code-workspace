@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"name": "🏠 Home",
+			"path": "${userHome}"
+		},
+		{
+			"name": "🏢 Earth AI (Workspace)",
+			"path": "."
+		}
+	],
+	"settings": {
+		"explorer.autoReveal": false,
+		"files.exclude": {
+			"**/.git": true
+		},
+		"explorer.fileNesting.enabled": true,
+		"explorer.fileNesting.patterns": {
+		"README": "AGENTS.md"
+		},
+		"chat.tools.terminal.autoApprove": {
+			"gh": true,
+			"git": true
+		}
+	}
+}
