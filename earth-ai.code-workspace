@@ -22,6 +22,6 @@
 		"files.exclude": {
 			"**/.git": true
 		},
-		"workbench.colorTheme": "Dark+"
+		"workbench.colorTheme": "Visual Studio Dark"
 	}
 }
