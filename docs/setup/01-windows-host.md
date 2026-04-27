@@ -45,8 +45,6 @@ Field by field:
 - **`networkingMode=mirrored`** — the magic line: WSL shares Windows's `localhost`. This is what lets your dev distro reach `localhost:11434` and hit ollama in the AI distro.
 - **`localhostForwarding=true`** — belt-and-braces, ensures Windows browsers can reach Linux ports on `127.0.0.1`.
 
-A reference copy is checked into the repo at [`.wslconfig`](../../.wslconfig).
-
 ## 1.4 Apply the changes
 
 ```powershell

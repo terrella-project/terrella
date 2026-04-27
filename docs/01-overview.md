@@ -90,13 +90,9 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 |---|---|
 | [`README.md`](../README.md) | Top-level summary and pointers into `docs/`. |
 | [`docker-compose.yaml`](../docker-compose.yaml) | Open WebUI service definition. |
-| [`provision.sh`](../provision.sh) | One-shot installer for ollama, Docker, Aider, and the systemd/CORS overrides. |
-| [`wsl.conf`](../wsl.conf), [`.wslconfig`](../.wslconfig) | Reference copies of the host/WSL config files. |
-| [`models.txt`](../models.txt) | Snapshot of the currently installed ollama models. |
+| [`provision/`](../provision/) | One-shot installer (`provision.sh`) and the editable list of baseline ollama models (`models.list`). |
 | [`stack/`](../stack/) | The LiteLLM + Postgres + Prometheus + Grafana stack (compose, configs, scripts). |
 | [`docs/`](.) | This documentation tree. |
-
-The legacy `ai-stack/` folder has been folded into [`reference/`](reference/).
 
 ## Where to go next
 

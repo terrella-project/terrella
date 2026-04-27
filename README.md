@@ -27,19 +27,17 @@ The whole guide lives under `docs/` and is structured for someone building this 
 | Path | Purpose |
 |---|---|
 | [`docs/`](docs/) | All documentation. |
-| [`provision.sh`](provision.sh) | One-shot installer for ollama + Docker + Aider + the systemd/CORS overrides. |
+| [`provision/`](provision/) | One-shot installer (`provision.sh`) and the list of ollama models it pulls (`models.list`). |
 | [`docker-compose.yaml`](docker-compose.yaml) | Open WebUI service. |
 | [`stack/`](stack/) | LiteLLM + Postgres + Prometheus + Grafana — the API proxy and dashboard stack. |
-| [`models.txt`](models.txt) | Snapshot of `ollama list` on this machine. |
-| [`wsl.conf`](wsl.conf), [`.wslconfig`](.wslconfig) | Reference copies of the host/WSL config files. |
 
 ## Quickstart for a fresh install
 
-1. On Windows: install the NVIDIA driver, `wsl --install -d Ubuntu-24.04`, drop [`.wslconfig`](.wslconfig) into `%UserProfile%`, then `wsl --shutdown`. Details: [docs/setup/01-windows-host.md](docs/setup/01-windows-host.md).
-2. In WSL: enable systemd, clone this repo, and run:
+1. On Windows: install the NVIDIA driver, `wsl --install -d Ubuntu-24.04`, create `%UserProfile%\.wslconfig` (template in [docs/setup/01-windows-host.md](docs/setup/01-windows-host.md)), then `wsl --shutdown`.
+2. In WSL: clone this repo and run the provisioner:
    ```bash
    cd ~/src/jomkz/earth-ai
-   bash provision.sh
+   bash provision/provision.sh
    ```
    Details: [docs/setup/README.md](docs/setup/README.md).
 3. Bring up Open WebUI:
