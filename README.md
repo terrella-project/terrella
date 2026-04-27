@@ -105,18 +105,21 @@ The central hub for local models and cloud API integration.
         image: ghcr.io/open-webui/open-webui:main
         container_name: open-webui
         restart: always
-        ports:
-          - "3000:8080"
+        network_mode: host
+        volumes:
+          - open-webui:/app/backend/data
         environment:
           - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
-        extra_hosts:
-          - "host.docker.internal:host-gateway"
+
+    volumes:
+      open-webui:
     ```
+    > Using `network_mode: host` lets the container reach ollama on `127.0.0.1:11434` with zero NAT and exposes Open WebUI on its native port `8080`.
 3.  **Launch:**
     ```bash
     docker compose up -d
     ```
-4.  **Access:** Open `http://127.0.0.1:3000` in your Windows browser.
+4.  **Access:** Open `http://127.0.0.1:8080` in your Windows browser.
 
 ---
 

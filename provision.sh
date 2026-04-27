@@ -33,7 +33,7 @@ sudo systemctl restart ollama
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sudo sh get-docker.sh
-    sudo userm_od -aG docker $USER
+    sudo usermod -aG docker $USER
 fi
 
 # 5. Setup Aider Environment
