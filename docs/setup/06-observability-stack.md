@@ -160,5 +160,5 @@ curl -s http://localhost:4000/health/liveness      # → {"status":"healthy"}
 Setup complete! 🎉 Move on to:
 
 - [reference/routing.md](../reference/routing.md) — which model to pick for which task.
-- [operations/cross-machine-access.md](../operations/cross-machine-access.md) — using earth from a laptop / Mac mini.
+- [operations/cross-machine-access.md](../operations/cross-machine-access.md) — using earth from jupiter / Mac mini.
 - [operations/maintenance.md](../operations/maintenance.md) — backups, gaming toggle, day-2 ops.

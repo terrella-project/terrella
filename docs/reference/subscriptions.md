@@ -20,7 +20,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Limits:** session-based usage limits; see Anthropic console
 - **Billing portal:** https://claude.ai/settings/billing
 - **Per-request telemetry?** ❌ no — subscription, not metered API; enter monthly via `log-billing.sh`
-- **Where used:** Claude Code CLI on earth (Ubuntu-24.04 + Earth-AI), laptop, Mac mini
+- **Where used:** Claude Code CLI on earth (Ubuntu-24.04 + Earth-AI), jupiter, Mac mini
 
 ## Anthropic API (pay-as-you-go)
 

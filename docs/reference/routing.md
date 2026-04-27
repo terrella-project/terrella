@@ -20,7 +20,7 @@ Rule of thumb: **prefer local first when quality is good enough; reserve paid fo
 | **Long reasoning / "think then answer"** | Local first | `deepseek-r1:14b`; escalate to Claude Opus if it stalls | Try free first. |
 | **Embeddings for RAG / semantic search** | ollama | `nomic-embed-text` | Free, fast, never leaves machine. |
 | **Anything sensitive / secrets / private data** | ollama only | any local | Stays on earth, never leaves the network. |
-| **Off-network on laptop or Mac mini** | Paid services direct | varies | If Tailscale isn't worth the hop, pay for it. |
+| **Off-network on jupiter or Mac mini** | Paid services direct | varies | If Tailscale isn't worth the hop, pay for it. |
 | **Off-network but want to use earth's models** | Tailscale → LiteLLM | any | Works the same as on earth, just slower. |
 
 ## Escalation ladder (when the cheap thing isn't good enough)
