@@ -82,7 +82,7 @@ general_settings:
 #   sk-machine-earth-ai             (Earth-AI WSL)
 #   sk-machine-laptop
 #   sk-machine-mac-mini
-#   sk-tool-agent-runner            (TrackPro CI)
+#   sk-tool-agent-runner            (CI / automation scripts)
 #   sk-tool-opencode
 #   sk-tool-continue                (editor inline completions)
 # Each key can have its own monthly spend cap and rate limit.

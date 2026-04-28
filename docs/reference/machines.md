@@ -14,7 +14,7 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
   - Networking: Intel Wi-Fi 6E AX211 160MHz
 - **WSL distros:**
   - **Earth-AI** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard-WSL2. Hosts **ollama** (port 11434) and will host the **AI observability stack** (LiteLLM + Postgres + Prometheus + Grafana). GPU visible via nvidia-smi: RTX 5080 16303 MiB, Linux driver 595.71.
-  - **Ubuntu-24.04** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard. **This is the development workspace** (where TrackPro repos are cloned, where VS Code Remote-WSL connects).
+  - **Ubuntu-24.04** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard. **This is the development workspace** (where project repos are cloned, where VS Code Remote-WSL connects).
 - **WSL networking:** mirrored mode — `localhost` is shared between the Windows host and both WSL distros, so from Ubuntu-24.04 I can reach `http://localhost:11434` and hit ollama running in Earth-AI.
 - **Role:** all heavy local model work runs here. Always-on. Other machines reach back to earth via Tailscale when away.
 - **Installed (Ubuntu-24.04):** see [tools.md](tools.md).
@@ -49,7 +49,7 @@ Expected: list of models from [local-models.md](local-models.md).
 ## Mac mini
 
 - **OS:** macOS _TODO version_
-- **Role:** secondary development; iOS work (`trackpro-ios`) since it needs Xcode.
+- **Role:** secondary development; iOS development (needs Xcode).
 - **Local models:** could run small ones locally if needed (ollama on macOS supports Metal). For now: same fallback as jupiter.
 
 ---

@@ -11,7 +11,6 @@ What's installed where, and how each tool reaches which model. Update when somet
 | Claude Code CLI | _TODO_ | _TODO_ | ✅ | _TODO_ |
 | OpenCode | _TODO_ | _TODO_ | ✅ | _TODO_ |
 | ollama (server) | n/a | ✅ port 11434 | n/a (uses earth's) | _TODO_ |
-| TrackPro `runner/agent_runner.py` | ✅ in `~/src/trackpro` | n/a | ✅ in `~/src/trackpro` | _TODO_ |
 | MCP servers (GitHub MCP via Docker) | ✅ from `mcp.json` | _TODO_ | _TODO_ | _TODO_ |
 | LiteLLM proxy | (client only) | ✅ port 4000 | client via Tailscale | (client only) |
 | Grafana | (browser only) | ✅ port 3000 | browser via Tailscale | (browser only) |
@@ -38,12 +37,6 @@ What's installed where, and how each tool reaches which model. Update when somet
 
 - Multi-model TUI. Configured via `opencode.json` in the workspace.
 - Can route to Anthropic, Gemini, OpenAI, ollama. _TODO: confirm current config_.
-
-### TrackPro `runner/agent_runner.py`
-
-- Default `LLM_PROVIDER=gemini`, model `gemini-2.5-flash`. Override with `--provider openai` / `--model`.
-- Used by GitHub Actions workflow `.github/workflows/ai_self_heal.yml`.
-- Future: add `ollama` provider + `OPENAI_BASE_URL` override so it can target LiteLLM. Tracked in TrackPro meta-repo issue (see [routing.md](routing.md#future-automation)).
 
 ### ollama (direct)
 
@@ -78,4 +71,4 @@ Per the existing in-repo `runner/agent_runner.py`, MCP tools are NOT available i
 | LiteLLM | `~/src/jomkz/earth-ai/stack/observability/litellm/config.yaml` |
 | ollama | `~/.ollama/` (on Earth-AI) |
 | MCP | workspace `mcp.json` |
-| Secrets | `~/.config/trackpro/secrets` (sourced by `~/.bashrc`) |
+| Secrets | `~/src/jomkz/earth-ai/stack/.env` (API keys + generated secrets; see [setup/06-observability-stack.md](../setup/06-observability-stack.md#62-environment-variables)) |

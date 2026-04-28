@@ -63,8 +63,8 @@ gh auth login
 ```bash
 mkdir -p ~/src
 cd ~/src
-gh repo clone mkzsystems/trackpro        # or your meta-repo
-# Clone other repos as needed
+# Clone your repos as needed, e.g.:
+# gh repo clone <org>/<repo>
 ```
 
 ## 7.4 Install Tailscale (Windows + WSL)
