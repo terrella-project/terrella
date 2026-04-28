@@ -23,7 +23,7 @@ Try, in order:
 
 1. **Is the container up?**
    ```bash
-   cd ~/src/jomkz/earth-ai/stack/webui
+   cd ~/src/jomkz/earth-ai/stack
    docker compose ps
    ```
    If `open-webui` is not "running", `docker compose up -d` and check `docker compose logs open-webui --tail=100`.
@@ -32,7 +32,7 @@ Try, in order:
    ```bash
    ss -tlnp | grep 8080
    ```
-   Expected: a `0.0.0.0:8080` or `*:8080` line. If not, the compose changed under your feet — check it matches [`../../stack/webui/docker-compose.yaml`](../../stack/webui/docker-compose.yaml).
+   Expected: a `0.0.0.0:8080` or `*:8080` line. If not, the compose changed under your feet — check it matches [`../../stack/docker-compose.yml`](../../stack/docker-compose.yml).
 
 3. **Different port?** The repo currently uses `network_mode: host` and exposes port **8080**. Older versions of this README used `3000` — make sure you're hitting the right one. Browse to <http://127.0.0.1:8080>.
 
@@ -93,14 +93,14 @@ curl -s http://localhost:4000/v1/models \
 If your model isn't in the output, add it to `litellm/config.yaml` and restart LiteLLM:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 docker compose restart litellm
 ```
 
 ## LiteLLM smoke test fails
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/smoke.sh
 ```
 

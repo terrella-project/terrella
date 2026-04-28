@@ -44,19 +44,19 @@ The goals, in priority order:
                            └─────────────────────┘
 ```
 
-## The two stacks
+## The stack
 
-This repo contains **two complementary docker-compose projects** that run side-by-side. Both live under [`stack/`](../stack/).
+All services run as a single docker-compose project defined in [`stack/docker-compose.yml`](../stack/docker-compose.yml).
 
-### 1. Open WebUI — the human-facing chat UI
+### Open WebUI — the human-facing chat UI
 
-A browser-based chat interface (think "private ChatGPT") that talks to ollama for local models and can also be configured with cloud API keys. Defined by [`stack/webui/docker-compose.yaml`](../stack/webui/docker-compose.yaml).
+A browser-based chat interface (think "private ChatGPT") that talks to ollama for local models and can also be configured with cloud API keys.
 
 Use it when you want to **chat in a browser** — quick questions, comparing model outputs, casual exploration.
 
-### 2. The observability stack — the API proxy + dashboard
+### LiteLLM + observability — the API proxy + dashboard
 
-The compose project at [`stack/observability/`](../stack/observability/) is made of four containers:
+Four containers in the same compose project:
 
 | Container | Job |
 |---|---|
@@ -67,7 +67,7 @@ The compose project at [`stack/observability/`](../stack/observability/) is made
 
 Use it when an **API client** (a script, a CI agent, an editor plugin like Continue.dev, or OpenCode) needs an AI endpoint **and** you want the call to show up in your spend dashboard.
 
-> Both stacks talk to the **same ollama** on `localhost:11434`. Open WebUI is for humans; LiteLLM is for programs.
+> All services talk to the **same ollama** on `localhost:11434`. Open WebUI is for humans; LiteLLM is for programs.
 
 ## Glossary
 

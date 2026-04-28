@@ -21,37 +21,16 @@ docker compose version
 
 ## 4.2 Launch Open WebUI
 
-The compose file lives at [`stack/webui/docker-compose.yaml`](../../stack/webui/docker-compose.yaml):
+Open WebUI is the `open-webui` service in [`stack/docker-compose.yml`](../../stack/docker-compose.yml). Two design choices worth understanding:
 
-```yaml
-name: earth-ai
-
-services:
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
-    restart: always
-    network_mode: host
-    volumes:
-      - open-webui:/app/backend/data
-    environment:
-      - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
-
-volumes:
-  open-webui:
-```
-
-Three design choices worth understanding:
-
-- **`name: earth-ai`** — pins the docker-compose project name so the volume is `earth-ai_open-webui` regardless of the directory the compose file lives in. Don't change this without migrating the volume.
 - **`network_mode: host`** — the container shares the WSL distro's network stack, so `127.0.0.1` inside the container is the same as `127.0.0.1` on the host. This means it can reach ollama with zero NAT.
 - **`OLLAMA_BASE_URL=http://127.0.0.1:11434`** — explicitly points it at the local ollama. Combined with `OLLAMA_HOST=0.0.0.0` from Phase 3, it works on day one.
 
-Bring it up:
+Bring it up (this also starts the rest of the stack; that's fine at this stage):
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/webui
-docker compose up -d
+cd ~/src/jomkz/earth-ai/stack
+docker compose up -d open-webui
 ```
 
 The first launch pulls the image (~1 GB). After that, restarts are instant.
