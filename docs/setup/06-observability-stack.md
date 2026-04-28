@@ -102,7 +102,10 @@ stack/
 │   ├── generate-env.sh                # one-time: write .env with random secrets
 │   ├── init-billing-table.sh          # one-time: create monthly_costs
 │   ├── log-billing.sh                 # interactive: insert a monthly subscription cost row
-│   └── smoke.sh                       # probe LiteLLM end-to-end
+│   ├── smoke.sh                       # probe LiteLLM end-to-end
+│   ├── list-models.sh                 # diff configured models vs live provider APIs
+│   ├── update-ollama-models.sh        # re-pull installed ollama models + anything in models.list
+│   └── sync-continue-config.sh        # regenerate Continue.dev chat-tier from LiteLLM
 ├── sql/
 │   └── monthly_costs.sql              # DDL for manual subscription table
 └── observability/                     # config files mounted into containers

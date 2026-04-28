@@ -107,6 +107,22 @@ curl -s http://localhost:11434/api/tags \
   | python3 -m json.tool                       # full JSON with sizes/quants
 ```
 
+To check whether anything in your LiteLLM config is stale or what new models providers have released, run [`stack/scripts/list-models.sh`](../../stack/scripts/list-models.sh) — it diffs the live API model lists (Anthropic, Gemini, ollama) against `litellm/config.yaml`.
+
+---
+
+## Updating ollama models
+
+ollama does **not** auto-update. Pull the latest version of every installed model with:
+
+```bash
+cd ~/src/jomkz/earth-ai
+./stack/scripts/update-ollama-models.sh             # re-pulls all installed + adds anything in models.list
+./stack/scripts/update-ollama-models.sh --installed-only   # skip models.list; only re-pull existing
+```
+
+`./stack/scripts/list-models.sh ollama` shows current sizes and any locally-installed models not in `litellm/config.yaml`.
+
 ---
 
 ## Updating containers
