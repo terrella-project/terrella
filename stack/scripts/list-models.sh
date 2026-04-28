@@ -2,8 +2,10 @@
 # List available models from each configured provider.
 # Run this to check which model IDs are current before updating config.yaml.
 #
-# Usage: ./scripts/list-models.sh [anthropic|gemini|all]
+# Usage: ./scripts/list-models.sh [anthropic|gemini|ollama|all]
 #   Default: all
+#
+# Note: ollama does NOT auto-update models. Re-run `ollama pull <model>` to update.
 
 set -euo pipefail
 
@@ -57,5 +59,26 @@ for m in data.get('models', []):
     echo
 fi
 
+# ── ollama (local) ─────────────────────────────────────────────────────────
+if [[ "$target" == "ollama" || "$target" == "all" ]]; then
+    echo "=== ollama models (locally installed) ==="
+    if curl -sf --max-time 3 http://localhost:11434/api/tags > /dev/null 2>&1; then
+        curl -s http://localhost:11434/api/tags \
+            | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for m in data.get('models', []):
+    size_gb = m.get('size', 0) / 1e9
+    print(f\"  {m['name']:<45} {size_gb:.1f} GB\")
+"
+    else
+        echo "  ollama not reachable on localhost:11434 — is it running?"
+    fi
+    echo
+fi
+
 echo "Update stack/observability/litellm/config.yaml with any new IDs, then:"
 echo "  docker compose restart litellm"
+echo
+echo "To update an ollama model to the latest version of its tag:"
+echo "  ollama pull <model>:<tag>"
