@@ -17,6 +17,8 @@ services:
       - open-webui:/app/backend/data
     environment:
       - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
+      # Pre-register the GitHub MCP SSE server so it appears in Tools without manual UI setup.
+      - 'TOOL_SERVER_CONNECTIONS=[{"url":"http://127.0.0.1:8765/sse","name":"GitHub","description":"GitHub MCP — repos, issues, PRs, code search"}]'
 
   # ── API proxy + cost logging ──────────────────────────────────────────────
   postgres:
@@ -57,6 +59,16 @@ services:
     volumes:
       - ./observability/litellm/config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000", "--telemetry", "False"]
+
+  # ── GitHub MCP tool server ───────────────────────────────────────────────
+  github-mcp:
+    image: ghcr.io/github/github-mcp-server
+    container_name: github-mcp
+    restart: always
+    network_mode: host
+    environment:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PAT}
+    command: ["--transport", "sse", "--port", "8765"]
 
   # ── Metrics + dashboards ──────────────────────────────────────────────────
   prometheus:

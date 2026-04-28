@@ -6,6 +6,7 @@ All Earth AI runtime services in a single docker-compose project (`name: earth-a
 |---|---|---|
 | `open-webui` | 8080 | Browser chat UI for humans. |
 | `litellm` | 4000 | OpenAI-compatible API proxy. Logs every call. |
+| `github-mcp` | 8765 | GitHub MCP tool server (SSE). Registered in Open WebUI automatically. |
 | `postgres` | 5433 | Backing store for LiteLLM + monthly subscription table. |
 | `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. Bound to localhost. |
 | `grafana` | 3000 | Dashboards — AI Stack Overview. |
@@ -19,12 +20,16 @@ Config files mounted into containers live under [`observability/`](observability
 ```bash
 cd ~/src/jomkz/earth-ai/stack
 ./scripts/generate-env.sh        # first time only — writes .env with random secrets
-# Edit .env: fill in ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY
+# Edit .env: fill in ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, GITHUB_PAT
 docker compose up -d
 ./scripts/init-billing-table.sh  # first time only — creates monthly_costs table
 # → Open WebUI  http://127.0.0.1:8080
 # → LiteLLM     http://127.0.0.1:4000
 # → Grafana     http://127.0.0.1:3000
 ```
+
+### GitHub MCP
+
+`GITHUB_PAT` must be a classic PAT with `repo` and `read:org` scopes. Once the stack is up the tool server registers automatically via `TOOL_SERVER_CONNECTIONS` — no admin UI steps needed. Verify in Open WebUI: **Admin Panel → Settings → Tools** should show "GitHub" with status green.
 
 Full docs: [`../docs/setup/06-observability-stack.md`](../docs/setup/06-observability-stack.md)
