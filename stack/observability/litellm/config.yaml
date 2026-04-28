@@ -66,8 +66,7 @@ litellm_settings:
   drop_params: True
   # Track real spend per call (LiteLLM has built-in pricing for Anthropic / Gemini / OpenAI).
   set_verbose: False
-  # Persist call logs to Postgres so Grafana can query them.
-  success_callback: ["langfuse"]   # placeholder; remove if not used. Default DB logging happens regardless.
+  # Per-call logs are persisted to Postgres automatically via database_url in general_settings.
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
