@@ -54,15 +54,18 @@ fi
 # Fetch live model list.
 api="http://${HOST}:${PORT}/v1/models"
 echo "Fetching models from $api..." >&2
-models_json=$(curl -fsS --max-time 10 "$api" -H "Authorization: Bearer $KEY")
+json_tmp=$(mktemp)
+trap 'rm -f "$json_tmp"' EXIT
+curl -fsS --max-time 10 "$api" -H "Authorization: Bearer $KEY" -o "$json_tmp"
 
 # Generate the YAML block.
 # Skip embed/autocomplete models — those stay hardcoded in the config.
-generated=$(echo "$models_json" | python3 - "$BEGIN_MARKER" "$END_MARKER" <<'PY'
+generated=$(python3 - "$BEGIN_MARKER" "$END_MARKER" "$json_tmp" <<'PY'
 import json, sys
 
-begin, end = sys.argv[1], sys.argv[2]
-data = json.load(sys.stdin)
+begin, end, path = sys.argv[1], sys.argv[2], sys.argv[3]
+with open(path) as f:
+    data = json.load(f)
 
 # Filters: skip embeddings and the small autocomplete model.
 def is_chat_tier(model_id: str) -> bool:
