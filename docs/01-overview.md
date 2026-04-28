@@ -90,8 +90,7 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 |---|---|
 | [`README.md`](../README.md) | Top-level summary and pointers into `docs/`. |
 | [`provision/`](../provision/) | One-shot installer (`provision.sh`) and the editable list of baseline ollama models (`models.list`). |
-| [`stack/webui/`](../stack/webui/) | docker-compose for **Open WebUI** (the chat UI). |
-| [`stack/observability/`](../stack/observability/) | docker-compose for **LiteLLM + Postgres + Prometheus + Grafana** (proxy + dashboards). |
+| [`stack/`](../stack/) | docker-compose project: all runtime services — **Open WebUI + LiteLLM + Postgres + Prometheus + Grafana**. Config files mounted into containers live under [`stack/observability/`](../stack/observability/). |
 | [`docs/`](.) | This documentation tree. |
 
 ## Where to go next
