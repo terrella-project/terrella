@@ -1,8 +1,8 @@
-# Phase 7 — Jupiter (Windows Laptop, Client Setup)
+# Jupiter (Windows Laptop, Client Setup)
 
 Jupiter is the laptop: a Windows 11 machine that serves as a mobile development client. It runs no local AI services — instead it reaches earth's ollama and LiteLLM over Tailscale. This phase documents everything needed to get a productive dev environment on jupiter.
 
-> **Scope:** this phase is for jupiter only. Earth's AI stack must already be running (Phases 1–6) before Tailscale access is useful.
+> **Scope:** this doc is for jupiter only. Earth's AI stack must already be running (steps 01–06) before Tailscale access is useful.
 
 ## 7.1 Windows host prerequisites
 

@@ -1,4 +1,4 @@
-# Phase 6 — Full Stack (Open WebUI + LiteLLM + Postgres + Prometheus + Grafana)
+# Full Stack (Open WebUI + LiteLLM + Postgres + Prometheus + Grafana)
 
 All Earth AI runtime services run as a single docker-compose project. This phase brings up:
 
@@ -20,7 +20,7 @@ This phase is **not** in `provision.sh` because it has secrets to wire up.
 | `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. |
 | `grafana` | 3000 | Dashboards. |
 
-> ollama runs **outside** this stack — it's already up from Phase 3. Services that need it connect via `network_mode: host`.
+> ollama runs **outside** this stack — it's already up from [ollama setup](03-ollama.md). Services that need it connect via `network_mode: host`.
 
 ## 6.2 Environment variables
 
@@ -55,7 +55,7 @@ docker compose restart litellm
 
 ## 6.3 Bring it up
 
-Phases 1–4 must be complete. Run from the `stack/` directory:
+Steps 01–05 must be complete. Run from the `stack/` directory:
 
 ```bash
 cd ~/src/jomkz/earth-ai/stack

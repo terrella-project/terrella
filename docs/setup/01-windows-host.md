@@ -1,4 +1,4 @@
-# Phase 1 — Windows Host
+# Windows Host
 
 You're configuring the Windows host that the rest of the stack will run on top of. Everything here is one-time setup performed in **Windows**, not in WSL.
 
@@ -74,4 +74,4 @@ New-NetFirewallRule `
 wsl --status
 ```
 
-You should see `Default Distribution: Ubuntu-24.04` and `Default Version: 2`. If yes, move on to [Phase 2](02-wsl-and-linux.md).
+You should see `Default Distribution: Ubuntu-24.04` and `Default Version: 2`. If yes, move on to [WSL & Linux base setup](02-wsl-and-linux.md).

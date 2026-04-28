@@ -1,4 +1,4 @@
-# Phase 3 — ollama (Local LLM Engine)
+# ollama (Local LLM Engine)
 
 ollama is the workhorse: a small server that downloads, manages, and runs LLMs on the GPU. It exposes both its native API and an OpenAI-compatible API on `http://localhost:11434`.
 
@@ -72,6 +72,6 @@ curl -s http://127.0.0.1:11434/api/tags | python3 -m json.tool | head -20
 ollama run qwen2.5-coder:14b "say hi in one word"
 ```
 
-If you get a response back in a second or two with GPU activity in `nvidia-smi` (in another terminal), the inference path is working end-to-end. → on to [Phase 4](04-open-webui.md).
+If you get a response back in a second or two with GPU activity in `nvidia-smi` (in another terminal), the inference path is working end-to-end. → on to [Open WebUI setup](04-open-webui.md).
 
 > Troubleshooting GPU not used / model loaded but slow → see [operations/troubleshooting.md](../operations/troubleshooting.md#gpu-not-utilized).

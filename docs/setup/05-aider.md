@@ -1,4 +1,4 @@
-# Phase 5 — Aider (Agentic Coding CLI)
+# Aider (Agentic Coding CLI)
 
 Aider is a terminal-based pair-programmer. You point it at a directory of source code and chat with it; it edits the files and commits as it goes. We run it against ollama so it costs nothing.
 
@@ -37,7 +37,7 @@ That puts you at the Aider prompt. Type a request like:
 
 Aider will diff its proposed edit, ask you to confirm, and then commit on success.
 
-> **Want spend tracking?** Point Aider at LiteLLM instead of straight at ollama once Phase 6 is up — see [reference/tools.md](../reference/tools.md). Calls then show up in Grafana.
+> **Want spend tracking?** Point Aider at LiteLLM instead of straight at ollama once the [full stack](06-observability-stack.md) is up — see [reference/tools.md](../reference/tools.md). Calls then show up in Grafana.
 
 ## 5.4 Picking a model
 
@@ -57,4 +57,4 @@ aider --version           # prints something like "aider 0.x.y"
 which aider               # ~/.local/bin/aider or ~/tools/aider/venv/bin/aider
 ```
 
-→ on to [Phase 6](06-observability-stack.md) to add the proxy + dashboard.
+→ on to [full stack setup](06-observability-stack.md) to add the proxy + dashboard.

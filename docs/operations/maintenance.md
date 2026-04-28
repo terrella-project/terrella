@@ -128,7 +128,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 sudo systemctl restart ollama
 ```
 
-The systemd drop-in at `/etc/systemd/system/ollama.service.d/override.conf` is preserved across upgrades — that's why we put the `OLLAMA_HOST` / `OLLAMA_ORIGINS` config there in [Phase 3](../setup/03-ollama.md).
+The systemd drop-in at `/etc/systemd/system/ollama.service.d/override.conf` is preserved across upgrades — that's why we put the `OLLAMA_HOST` / `OLLAMA_ORIGINS` config there in [ollama setup](../setup/03-ollama.md).
 
 ---
 
