@@ -2,7 +2,7 @@
 # Compare available provider models against what is configured in litellm/config.yaml.
 # Reports: configured models, new models not yet in config, stale models no longer available.
 #
-# Usage: ./scripts/list-models.sh [anthropic|gemini|ollama|all]
+# Usage: ./scripts/list-models.sh [anthropic|gemini|openai|ollama|all]
 #   Default: all
 #
 # Note: ollama does NOT auto-update models. Use scripts/update-ollama-models.sh to pull latest.
@@ -94,6 +94,32 @@ for m in json.load(sys.stdin).get('models', []):
 " | sort)
 
         configured=$(configured_ids "gemini")
+
+        echo "  Available from API:"
+        echo "$available" | sed 's/^/    /'
+        echo
+        diff_report "$configured" "$available"
+    fi
+    echo
+fi
+
+# ── OpenAI ─────────────────────────────────────────────────────────────────
+if [[ "$target" == "openai" || "$target" == "all" ]]; then
+    echo "=== OpenAI ==="
+    if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+        echo "  OPENAI_API_KEY not set — skipping."
+    else
+        available=$(curl -s https://api.openai.com/v1/models \
+            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            | python3 -c "
+import sys, json
+for m in json.load(sys.stdin).get('data', []):
+    mid = m.get('id', '')
+    if mid.startswith(('gpt-', 'o1', 'o3', 'o4')):
+        print(mid)
+" | sort)
+
+        configured=$(configured_ids "openai")
 
         echo "  Available from API:"
         echo "$available" | sed 's/^/    /'

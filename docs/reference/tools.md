@@ -48,7 +48,7 @@ What's installed where, and how each tool reaches which model. Update when somet
 
 - Endpoint: `http://localhost:4000` on Earth-AI (and on this Ubuntu-24.04 WSL via mirrored networking) or `http://earth-ai:4000` over Tailscale.
 - OpenAI-compatible — every tool that takes `OPENAI_BASE_URL` + `OPENAI_API_KEY` can be pointed at it.
-- Authoritative routing config: [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml) on Earth-AI. Lists all backend models (anthropic/*, gemini/*, ollama/*), per-key spend caps, model aliases.
+- Authoritative routing config: [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml) on Earth-AI. Lists all backend models (anthropic/*, gemini/*, openai/*, ollama/*), per-key spend caps, model aliases.
 - Use it when I want a request to **show up in Grafana**. Skip it when I'm using a tool that has its own UI/billing (Copilot, Claude Code).
 
 ## MCP servers
