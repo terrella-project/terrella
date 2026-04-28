@@ -40,11 +40,34 @@ model_list:
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # ── Google Gemini ────────────────────────────────────────────────────────
+  # Aliases: gemini-pro → latest pro tier, gemini-flash → latest flash tier
   - model_name: gemini-pro
+    litellm_params:
+      model: gemini/gemini-pro-latest
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-flash
+    litellm_params:
+      model: gemini/gemini-flash-latest
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+  # Gemini 3 (latest generation, currently preview)
+  - model_name: gemini-3-pro
+    litellm_params:
+      model: gemini/gemini-3-pro-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3-flash
+    litellm_params:
+      model: gemini/gemini-3-flash-preview
+      api_key: os.environ/GEMINI_API_KEY
+  # Pinned 2.5 versions
+  - model_name: gemini-2.5-pro
     litellm_params:
       model: gemini/gemini-2.5-pro
       api_key: os.environ/GEMINI_API_KEY
-  - model_name: gemini-flash
+  - model_name: gemini-2.5-flash
     litellm_params:
       model: gemini/gemini-2.5-flash
       api_key: os.environ/GEMINI_API_KEY
@@ -78,9 +101,13 @@ model_list:
     litellm_params:
       model: ollama/gemma2:9b
       api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-32b-q2
+    litellm_params:
+      model: ollama/qwen2.5-coder:32b-instruct-q2_K
+      api_base: http://127.0.0.1:11434
   - model_name: ollama/nomic-embed
     litellm_params:
-      model: ollama/nomic-embed-text
+      model: ollama/nomic-embed-text:latest
       api_base: http://127.0.0.1:11434
 
 litellm_settings:
