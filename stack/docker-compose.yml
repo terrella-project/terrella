@@ -1,10 +1,24 @@
-# AI observability stack — LiteLLM proxy + Postgres + Prometheus + Grafana.
+# Earth AI services — Open WebUI + LiteLLM proxy + Postgres + Prometheus + Grafana.
 # Intended host: Earth-AI WSL on machine `earth`.
-# All ports bind to 127.0.0.1 — cross-machine access is via Tailscale, not LAN.
+# Ollama runs outside this stack (Phase 3), on the host's WSL distro.
+# All Postgres/Grafana ports bind to 127.0.0.1 — cross-machine access is via Tailscale.
 
-name: observability
+name: earth-ai
 
 services:
+
+  # ── Human-facing chat UI ──────────────────────────────────────────────────
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    network_mode: host
+    volumes:
+      - open-webui:/app/backend/data
+    environment:
+      - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
+
+  # ── API proxy + cost logging ──────────────────────────────────────────────
   postgres:
     image: postgres:16
     restart: unless-stopped
@@ -41,15 +55,16 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
-      - ./litellm/config.yaml:/app/config.yaml:ro
+      - ./observability/litellm/config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000", "--telemetry", "False"]
 
+  # ── Metrics + dashboards ──────────────────────────────────────────────────
   prometheus:
     image: prom/prometheus:latest
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./data/prometheus:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -63,7 +78,7 @@ services:
       - prometheus
       - postgres
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     # On Linux, host.docker.internal isn't auto-mapped — add it explicitly so
     # the provisioned datasources can reach Prometheus and Postgres on the host.
     extra_hosts:
@@ -78,5 +93,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./data/grafana:/var/lib/grafana
+
+volumes:
+  open-webui:

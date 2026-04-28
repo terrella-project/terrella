@@ -1,14 +1,20 @@
 # `stack/observability/`
 
-Docker-compose project: **LiteLLM proxy + Postgres + Prometheus + Grafana**. The "single pane of glass" for AI usage and cost.
+Config files for the LiteLLM, Prometheus, and Grafana services. These are mounted read-only into the containers defined in [`../docker-compose.yml`](../docker-compose.yml).
 
-Project name: `observability` (volumes prefixed `observability_*`).
+| Directory | Mounted into |
+|---|---|
+| `litellm/config.yaml` | `litellm` container |
+| `prometheus/prometheus.yml` | `prometheus` container |
+| `grafana/provisioning/` | `grafana` container |
 
-This directory contains only the runtime artifacts (compose file, configs, scripts, SQL). All documentation lives under [`../../docs/`](../../docs/):
+The compose file, `.env`, scripts, and SQL all live one level up in [`stack/`](../).
+
+Documentation:
 
 | You want to… | Read |
 |---|---|
-| Install and bring this project up | [`../../docs/setup/06-observability-stack.md`](../../docs/setup/06-observability-stack.md) |
+| Install and bring the stack up | [`../../docs/setup/06-observability-stack.md`](../../docs/setup/06-observability-stack.md) |
 | Log monthly Copilot / Claude bills | [`../../docs/operations/manual-billing.md`](../../docs/operations/manual-billing.md) |
 | Reach this stack from another machine | [`../../docs/operations/cross-machine-access.md`](../../docs/operations/cross-machine-access.md) |
 | Diagnose a broken stack | [`../../docs/operations/troubleshooting.md`](../../docs/operations/troubleshooting.md) |
@@ -16,7 +22,7 @@ This directory contains only the runtime artifacts (compose file, configs, scrip
 Quick start (assumes you've read the setup doc):
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/generate-env.sh        # first time only
 docker compose up -d
 ./scripts/init-billing-table.sh  # first time only

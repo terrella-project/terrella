@@ -11,8 +11,8 @@ This is a personal AI workstation documentation and configuration repo. Read `RE
 | `docs/setup/` | Numbered installation guide (01–07) |
 | `docs/operations/` | Day-2 ops: cross-machine access, maintenance, billing, troubleshooting |
 | `provision/` | `provision.sh` one-shot installer + `models.list` |
-| `stack/webui/` | docker-compose: Open WebUI |
-| `stack/observability/` | docker-compose: LiteLLM + Postgres + Prometheus + Grafana |
+| `stack/` | docker-compose: all services — Open WebUI, LiteLLM, Postgres, Prometheus, Grafana |
+| `stack/observability/` | config files for LiteLLM, Prometheus, and Grafana (mounted read-only) |
 
 ## Machines
 

@@ -12,7 +12,7 @@ To get all four spend lines (Copilot / Claude Code / Anthropic API / Gemini API)
 After each billing email arrives:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/log-billing.sh
 ```
 
@@ -34,7 +34,7 @@ It inserts one row into the `monthly_costs` table. Run it once per service per m
 Open a `psql` shell against the running Postgres container:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 docker compose exec postgres psql -U litellm
 ```
 
@@ -61,7 +61,7 @@ WHERE month = '2026-04' AND vendor = 'copilot';
 
 ## Schema (for reference)
 
-Defined in [`../../stack/observability/sql/monthly_costs.sql`](../../stack/observability/sql/monthly_costs.sql):
+Defined in [`../../stack/sql/monthly_costs.sql`](../../stack/sql/monthly_costs.sql):
 
 ```sql
 CREATE TABLE IF NOT EXISTS monthly_costs (

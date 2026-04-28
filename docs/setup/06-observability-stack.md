@@ -43,10 +43,10 @@ You should have:
 
 ## 6.3 Bring it up
 
-Run from the `stack/observability/` directory:
+Run from the `stack/` directory:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 
 # 1. First-time only: generate strong random secrets into .env
 ./scripts/generate-env.sh   # writes .env (gitignored, chmod 600)
@@ -70,28 +70,29 @@ docker compose up -d
 | Prometheus | <http://localhost:9090> | none (bound to localhost) |
 | Postgres | localhost:5433 | `litellm` / `POSTGRES_PASSWORD` from `.env`; DB `litellm` |
 
-## 6.5 Files in `stack/observability/`
+## 6.5 Files in `stack/`
 
 ```
-stack/observability/
-├── docker-compose.yml
+stack/
+├── docker-compose.yml                 # all services (open-webui + litellm + postgres + prometheus + grafana)
 ├── .env.example                       # template; copy to .env (or run generate-env.sh)
 ├── .gitignore
-├── litellm/
-│   └── config.yaml                    # model list, virtual keys, routing rules
-├── prometheus/
-│   └── prometheus.yml
-├── grafana/
-│   └── provisioning/
-│       ├── datasources/datasources.yml
-│       └── dashboards/dashboards.yml  # auto-loads JSON from grafana/provisioning/dashboards/json/
+├── scripts/
+│   ├── generate-env.sh                # one-time: write .env with random secrets
+│   ├── init-billing-table.sh          # one-time: create monthly_costs
+│   ├── log-billing.sh                 # interactive: insert a monthly subscription cost row
+│   └── smoke.sh                       # probe LiteLLM end-to-end
 ├── sql/
 │   └── monthly_costs.sql              # DDL for manual subscription table
-└── scripts/
-    ├── generate-env.sh                # one-time: write .env with random secrets
-    ├── init-billing-table.sh          # one-time: create monthly_costs
-    ├── log-billing.sh                 # interactive: insert a monthly subscription cost row
-    └── smoke.sh                       # probe LiteLLM end-to-end
+└── observability/                     # config files mounted into containers
+    ├── litellm/
+    │   └── config.yaml                # model list, virtual keys, routing rules
+    ├── prometheus/
+    │   └── prometheus.yml
+    └── grafana/
+        └── provisioning/
+            ├── datasources/datasources.yml
+            └── dashboards/dashboards.yml
 ```
 
 The authoritative routing table — which model alias maps to which provider, which keys exist, per-key spend caps — lives in [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml).
@@ -99,7 +100,7 @@ The authoritative routing table — which model alias maps to which provider, wh
 ## 6.6 Verify end-to-end
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 ./scripts/smoke.sh
 ```
 

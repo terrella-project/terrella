@@ -67,7 +67,7 @@ docker run --rm \
 Postgres holds the per-call cost log and the `monthly_costs` table. Back it up the same way:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 docker compose exec -T postgres pg_dump -U litellm litellm \
   | gzip > "litellm_pg_$(date +%Y%m%d).sql.gz"
 ```
@@ -112,13 +112,7 @@ curl -s http://localhost:11434/api/tags \
 ## Updating containers
 
 ```bash
-# Open WebUI:
-cd ~/src/jomkz/earth-ai/stack/webui
-docker compose pull
-docker compose up -d
-
-# Observability stack:
-cd ~/src/jomkz/earth-ai/stack/observability
+cd ~/src/jomkz/earth-ai/stack
 docker compose pull
 docker compose up -d
 ```
