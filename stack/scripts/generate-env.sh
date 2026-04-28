@@ -29,6 +29,9 @@ GRAFANA_ADMIN_PASSWORD=$(rand)
 ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
 GEMINI_API_KEY=${GEMINI_API_KEY:-}
 OPENAI_API_KEY=${OPENAI_API_KEY:-}
+
+# GitHub MCP server — classic PAT with repo + read:org scopes.
+GITHUB_PAT=${GITHUB_PAT:-}
 EOF
 chmod 600 .env
 
