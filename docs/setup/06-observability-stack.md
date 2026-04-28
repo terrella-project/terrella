@@ -1,11 +1,12 @@
-# Phase 6 — Observability Stack (LiteLLM + Postgres + Prometheus + Grafana)
+# Phase 6 — Full Stack (Open WebUI + LiteLLM + Postgres + Prometheus + Grafana)
 
-The observability stack is a single docker-compose project that gives you:
+All Earth AI runtime services run as a single docker-compose project. This phase brings up:
 
+- **Open WebUI** — browser-based chat UI for local and cloud models.
 - A **single OpenAI-compatible endpoint** (LiteLLM) that fans out to Anthropic, Gemini, OpenAI, and ollama based on the model name in each request.
 - **Per-call cost logging** to Postgres.
 - **Prometheus** scraping LiteLLM's `/metrics`.
-- A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all four lines of spend appear in one chart.
+- A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all spend appears in one chart.
 
 This phase is **not** in `provision.sh` because it has secrets to wire up.
 
@@ -13,12 +14,13 @@ This phase is **not** in `provision.sh` because it has secrets to wire up.
 
 | Service | Port (host) | Purpose |
 |---|---|---|
+| `open-webui` | 8080 | Browser chat UI for humans. Talks to ollama and optionally cloud providers. |
 | `litellm` | 4000 | OpenAI-compatible proxy → Anthropic / Gemini / OpenAI / ollama. Logs every call. |
 | `postgres` | 5433 | Backing store for LiteLLM + the `monthly_costs` manual-entry table. |
 | `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. |
 | `grafana` | 3000 | Dashboards. |
 
-> ollama runs **outside** this stack — it's already up from Phase 3. LiteLLM connects to it via `network_mode: host`.
+> ollama runs **outside** this stack — it's already up from Phase 3. Services that need it connect via `network_mode: host`.
 
 ## 6.2 Environment variables
 
@@ -77,7 +79,8 @@ docker compose up -d
 
 | | URL | Auth |
 |---|---|---|
-| LiteLLM API | <http://localhost:4000> | Virtual API keys (see `litellm/config.yaml`) |
+| Open WebUI | <http://localhost:8080> | first registered account becomes admin |
+| LiteLLM API | <http://localhost:4000> | virtual API keys (create via `/ui`) |
 | LiteLLM admin UI | <http://localhost:4000/ui> | `LITELLM_MASTER_KEY` from `.env` |
 | Grafana | <http://localhost:3000> | `admin` / `GRAFANA_ADMIN_PASSWORD` from `.env` |
 | Prometheus | <http://localhost:9090> | none (bound to localhost) |
@@ -90,6 +93,11 @@ stack/
 ├── docker-compose.yml                 # all services (open-webui + litellm + postgres + prometheus + grafana)
 ├── .env.example                       # template; copy to .env (or run generate-env.sh)
 ├── .gitignore
+├── README.md
+├── data/                              # created by generate-env.sh; bind-mounted into containers
+│   ├── postgres/
+│   ├── prometheus/
+│   └── grafana/
 ├── scripts/
 │   ├── generate-env.sh                # one-time: write .env with random secrets
 │   ├── init-billing-table.sh          # one-time: create monthly_costs
@@ -125,19 +133,21 @@ Any OpenAI-style client can be pointed at LiteLLM:
 
 ```bash
 export OPENAI_BASE_URL=http://localhost:4000
-export OPENAI_API_KEY=<my-virtual-key-from-litellm/config.yaml>
+export OPENAI_API_KEY=<virtual-key-from-litellm-ui>
 
 # Now this hits ollama, but the call is logged to Grafana:
 curl $OPENAI_BASE_URL/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "ollama/qwen2.5-coder:14b",
+    "model": "ollama/qwen2.5-coder-14b",
     "messages": [{"role":"user","content":"hello"}]
   }'
 ```
 
-Switch `model` to `claude-3-5-sonnet-latest` or `gemini-2.5-flash` (or whatever aliases you defined in `litellm/config.yaml`) to fan out to a different provider — same client code, same dashboard.
+Switch `model` to `claude-sonnet` or `gemini-flash` (or any alias defined in `observability/litellm/config.yaml`) to fan out to a different provider — same client code, same dashboard.
+
+> Virtual keys are created in the LiteLLM admin UI at <http://localhost:4000/ui> — sign in with `LITELLM_MASTER_KEY` from `.env`.
 
 ## 6.8 Manual subscription billing
 
@@ -166,8 +176,9 @@ This inserts a row into Postgres's `monthly_costs` table. The Grafana "Total spe
 ## ✅ Verification
 
 ```bash
-docker compose ps                                 # all four containers "running"
+docker compose ps                                 # all five containers "running"
 curl -s http://localhost:4000/health/liveness      # → {"status":"healthy"}
+curl -sI http://localhost:8080 | head -1          # → HTTP/1.1 200 OK
 ./scripts/smoke.sh                                 # ends with "OK"
 ```
 
