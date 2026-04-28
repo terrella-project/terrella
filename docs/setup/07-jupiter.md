@@ -145,7 +145,7 @@ Inside WSL:
 curl -fsSL https://opencode.ai/install | sh
 ```
 
-OpenCode is configured via `opencode.json` in each workspace root. It can route to Anthropic, Gemini, and ollama (via `OPENAI_BASE_URL`). When `OPENAI_BASE_URL` points at earth's LiteLLM, calls will appear in Grafana.
+OpenCode is configured via `opencode.json` in each workspace root. It can route to Anthropic, Gemini, OpenAI, and ollama (via `OPENAI_BASE_URL`). When `OPENAI_BASE_URL` points at earth's LiteLLM, calls will appear in Grafana.
 
 ## 7.9 Continue.dev (VS Code AI)
 

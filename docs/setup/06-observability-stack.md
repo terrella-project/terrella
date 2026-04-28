@@ -148,7 +148,7 @@ curl $OPENAI_BASE_URL/v1/chat/completions \
   }'
 ```
 
-Switch `model` to `claude-sonnet` or `gemini-flash` (or any alias defined in `observability/litellm/config.yaml`) to fan out to a different provider — same client code, same dashboard.
+Switch `model` to `claude-sonnet`, `gemini-flash`, or `gpt` (or any alias defined in `observability/litellm/config.yaml`) to fan out to a different provider — same client code, same dashboard.
 
 > Virtual keys are created in the LiteLLM admin UI at <http://localhost:4000/ui> — sign in with `LITELLM_MASTER_KEY` from `.env`.
 

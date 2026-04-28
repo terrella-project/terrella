@@ -2,7 +2,7 @@
 	"folders": [
 		{
 			"name": "🏠 Home",
-			"path": "${userHome}"
+			"path": "/home/john"
 		},
 		{
 			"name": "🤖 Earth AI (Workspace)",
