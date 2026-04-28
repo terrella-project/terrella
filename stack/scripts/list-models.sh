@@ -37,8 +37,8 @@ diff_report() {
     local available="$2"
 
     local new stale
-    new=$(comm -13 <(echo "$configured" | sort) <(echo "$available" | sort))
-    stale=$(comm -23 <(echo "$configured" | sort) <(echo "$available" | sort))
+    new=$(comm -13 <(echo "$configured" | sort -u) <(echo "$available" | sort -u))
+    stale=$(comm -23 <(echo "$configured" | sort -u) <(echo "$available" | sort -u))
 
     if [[ -n "$new" ]]; then
         echo "  [NEW — not in config]:"
