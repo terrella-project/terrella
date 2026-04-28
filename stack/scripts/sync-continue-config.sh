@@ -115,9 +115,9 @@ PY
 # If markers are missing, insert the block at the top of `models:`.
 if grep -qF "$BEGIN_MARKER" "$CONFIG" && grep -qF "$END_MARKER" "$CONFIG"; then
     new_config=$(awk -v begin="$BEGIN_MARKER" -v end="$END_MARKER" -v block="$generated" '
-        $0 ~ begin {print block; in_block=1; next}
-        $0 ~ end   {in_block=0; next}
-        !in_block  {print}
+        index($0, begin) > 0 {print block; in_block=1; next}
+        index($0, end)   > 0 {in_block=0; next}
+        !in_block            {print}
     ' "$CONFIG")
 else
     # No markers yet — try to insert after the first occurrence of "models:".
