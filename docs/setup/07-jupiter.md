@@ -147,7 +147,68 @@ curl -fsSL https://opencode.ai/install | sh
 
 OpenCode is configured via `opencode.json` in each workspace root. It can route to Anthropic, Gemini, and ollama (via `OPENAI_BASE_URL`). When `OPENAI_BASE_URL` points at earth's LiteLLM, calls will appear in Grafana.
 
-## 7.9 Verification checklist
+## 7.9 Continue.dev (VS Code AI)
+
+Install **Continue** from the VS Code marketplace, then configure it to use earth's LiteLLM as the model gateway.
+
+**Get a virtual API key** from earth's LiteLLM admin UI:
+- Open <http://earth:4000/ui> (sign in with `LITELLM_MASTER_KEY` from earth's `stack/.env`)
+- Virtual Keys → Create Key (name: `jupiter-continue`)
+- Copy the `sk-…` key
+
+**Edit `~/.continue/agents/new-config.yaml`** with the apiBase, apiKey, autocomplete + embed models, and **leave the auto-managed markers in place**:
+
+```yaml
+%YAML 1.1
+---
+name: Earth AI
+version: 1.0.0
+schema: v1
+
+defaults: &defaults
+  provider: openai
+  apiBase: http://earth:4000/v1
+  apiKey: sk-…
+
+chat_roles: &chat_roles
+  roles: [chat, edit, apply]
+
+models:
+  # >>> chat-tier models (managed by sync-continue-config.sh) >>>
+  # <<< chat-tier models <<<
+
+  - name: qwen2.5-coder:1.5b (autocomplete)
+    <<: *defaults
+    model: ollama/qwen2.5-coder-1.5b
+    roles: [autocomplete]
+    autocompleteOptions:
+      debounceDelay: 250
+      maxPromptTokens: 1024
+
+  - name: nomic-embed
+    <<: *defaults
+    model: ollama/nomic-embed
+    roles: [embed]
+```
+
+**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter):
+
+```bash
+cd ~/src/jomkz/earth-ai
+LITELLM_KEY=sk-… ./stack/scripts/sync-continue-config.sh
+```
+
+That replaces only the lines between the `>>>` and `<<<` markers — your autocomplete and embed entries are preserved. Re-run whenever you add or remove models in earth's `litellm/config.yaml`.
+
+Optional flags:
+
+| Flag | Purpose |
+|---|---|
+| `--host earth` | LiteLLM hostname (default: `earth`) |
+| `--port 4000` | Override port |
+| `--dry-run` | Print to stdout instead of writing |
+
+## 7.10 Verification checklist
 
 | Check | Command | Expected |
 |---|---|---|
