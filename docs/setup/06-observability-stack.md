@@ -169,7 +169,7 @@ This inserts a row into Postgres's `monthly_costs` table. The Grafana "Total spe
 
 - `.env` is `chmod 600`, gitignored, never committed.
 - Postgres is bound to `127.0.0.1` only.
-- Open WebUI (8080), LiteLLM (4000), and Grafana (3000) bind on all interfaces — reachable over Tailscale from jupiter / Mac mini. Prometheus (9090) binds to `127.0.0.1` only.
+- Open WebUI (8080), LiteLLM (4000), and Grafana (3000) use `network_mode: host` and bind on all interfaces — reachable over Tailscale from jupiter / Mac mini. Prometheus (9090) binds to `127.0.0.1` only.
 - LiteLLM requires a **virtual key** for every request; the `master_key` is only used to manage keys, never to make calls.
 - Backend API keys live in `stack/.env` and are passed in by `docker-compose` env interpolation, **not baked into images**.
 

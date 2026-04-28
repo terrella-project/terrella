@@ -5,10 +5,8 @@ datasources:
     uid: "prometheus"
     type: prometheus
     access: proxy
-    # Grafana runs in default bridge networking, so reach Prometheus on the host.
-    # On Linux/WSL, host.docker.internal needs the extra_hosts entry — easier to
-    # use the host gateway alias which docker provides automatically.
-    url: http://host.docker.internal:9090
+    # Grafana uses network_mode: host, so localhost reaches the host directly.
+    url: http://localhost:9090
     isDefault: true
     jsonData:
       timeInterval: 30s
@@ -17,7 +15,7 @@ datasources:
     uid: "LiteLLM-Postgres"
     type: postgres
     access: proxy
-    url: host.docker.internal:5433
+    url: localhost:5433
     user: ${POSTGRES_USER}
     secureJsonData:
       password: ${POSTGRES_PASSWORD}
