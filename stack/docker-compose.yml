@@ -17,8 +17,12 @@ services:
       - open-webui:/app/backend/data
     environment:
       - 'OLLAMA_BASE_URL=http://127.0.0.1:11434'
+<<<<<<< HEAD
       # Pre-register the GitHub MCP SSE server so it appears in Tools without manual UI setup.
       - 'TOOL_SERVER_CONNECTIONS=[{"url":"http://127.0.0.1:8765/sse","name":"GitHub","description":"GitHub MCP — repos, issues, PRs, code search"}]'
+=======
+      - 'DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1:5433/${OPENWEBUI_DB}'
+>>>>>>> b77ec69 (open webui changes)
 
   # ── API proxy + cost logging ──────────────────────────────────────────────
   postgres:
