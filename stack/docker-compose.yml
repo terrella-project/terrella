@@ -78,7 +78,7 @@ services:
       - prometheus
       - postgres
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     # On Linux, host.docker.internal isn't auto-mapped — add it explicitly so
     # the provisioned datasources can reach Prometheus and Postgres on the host.
     extra_hosts:
