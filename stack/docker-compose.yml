@@ -60,6 +60,20 @@ services:
       - ./observability/litellm/config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000", "--telemetry", "False"]
 
+  litellm-exporter:
+    image: python:3.12-slim
+    container_name: litellm-exporter
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      LITELLM_BASE_URL: http://127.0.0.1:4000
+      LITELLM_EXPORTER_API_KEY: ${LITELLM_EXPORTER_API_KEY:-}
+      LITELLM_EXPORTER_HOST: 127.0.0.1
+      LITELLM_EXPORTER_PORT: 11436
+    volumes:
+      - ./observability/litellm/litellm_exporter.py:/app/litellm_exporter.py:ro
+    command: ["python", "/app/litellm_exporter.py"]
+
   # ── GitHub MCP tool server ───────────────────────────────────────────────
   github-mcp:
     image: ghcr.io/github/github-mcp-server
