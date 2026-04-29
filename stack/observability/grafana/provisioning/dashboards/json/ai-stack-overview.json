@@ -6,7 +6,7 @@
   "tags": ["ai", "spend"],
   "title": "AI Stack Overview",
   "uid": "ai-stack-overview",
-  "version": 1,
+  "version": 2,
   "time": {"from": "now-30d", "to": "now"},
   "panels": [
     {
@@ -124,11 +124,99 @@
       ]
     },
     {
+      "type": "stat",
+      "title": "Tokens in window (LiteLLM)",
+      "id": 9,
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 30},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select coalesce(sum(total_tokens), 0) as value from \"LiteLLM_SpendLogs\" where \"startTime\" between $__timeFrom() and $__timeTo();"
+        }
+      ],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "type": "stat",
+      "title": "Avg spend / call",
+      "id": 10,
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 30},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD"}, "overrides": []},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select case when count(*) = 0 then 0 else coalesce(sum(spend), 0) / count(*) end as value from \"LiteLLM_SpendLogs\" where \"startTime\" between $__timeFrom() and $__timeTo();"
+        }
+      ],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "type": "stat",
+      "title": "Loaded ollama models",
+      "id": 11,
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 30},
+      "targets": [{"refId": "A", "expr": "sum(ollama_model_loaded)", "instant": true}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "type": "stat",
+      "title": "Loaded ollama VRAM",
+      "id": 12,
+      "datasource": {"type": "prometheus", "uid": "prometheus"},
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 30},
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "targets": [{"refId": "A", "expr": "sum(ollama_model_vram_bytes)", "instant": true}],
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    },
+    {
+      "type": "table",
+      "title": "Top models by usage",
+      "id": 13,
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 34},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select model, coalesce(custom_llm_provider, 'unknown') as provider, count(*) as calls, coalesce(sum(total_tokens), 0) as tokens, coalesce(sum(spend), 0) as spend from \"LiteLLM_SpendLogs\" where \"startTime\" between $__timeFrom() and $__timeTo() group by 1, 2 order by spend desc, tokens desc, calls desc limit 15;"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {"custom": {"align": "auto"}},
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "spend"}, "properties": [{"id": "unit", "value": "currencyUSD"}]}
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Calls by provider",
+      "id": 14,
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 34},
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "select date_trunc('day', \"startTime\") as time, coalesce(custom_llm_provider, 'unknown') as metric, count(*) as value from \"LiteLLM_SpendLogs\" where \"startTime\" between $__timeFrom() and $__timeTo() group by 1, 2 order by 1;"
+        }
+      ]
+    },
+    {
       "type": "table",
       "title": "Subscription log",
       "id": 8,
       "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 22},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 42},
       "fieldConfig": {"defaults": {"custom": {"align": "auto"}}, "overrides": [{"matcher": {"id": "byName", "options": "amount_usd"}, "properties": [{"id": "unit", "value": "currencyUSD"}]}]},
       "targets": [
         {

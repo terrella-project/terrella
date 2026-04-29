@@ -6,6 +6,7 @@ All Earth AI runtime services run as a single docker-compose project. This phase
 - A **single OpenAI-compatible endpoint** (LiteLLM) that fans out to Anthropic, Gemini, OpenAI, and ollama based on the model name in each request.
 - **Per-call cost logging** to Postgres.
 - **Prometheus** scraping LiteLLM's `/metrics`.
+- **Prometheus** scraping LiteLLM's `/metrics` and an Ollama host exporter for loaded-model state.
 - A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all spend appears in one chart.
 
 This phase is **not** in `provision.sh` because it has secrets to wire up.
@@ -16,6 +17,7 @@ This phase is **not** in `provision.sh` because it has secrets to wire up.
 |---|---|---|
 | `open-webui` | 8080 | Browser chat UI for humans. Talks to ollama and optionally cloud providers. |
 | `litellm` | 4000 | OpenAI-compatible proxy → Anthropic / Gemini / OpenAI / ollama. Logs every call. |
+| `ollama-exporter` | 11435 | Prometheus exporter for host ollama state (loaded models, VRAM, installed inventory). |
 | `postgres` | 5433 | Backing store for LiteLLM + the `monthly_costs` manual-entry table. |
 | `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. |
 | `grafana` | 3000 | Dashboards. |

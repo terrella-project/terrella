@@ -70,6 +70,19 @@ services:
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PAT}
     command: ["http", "--port", "8765"]
 
+  ollama-exporter:
+    image: python:3.12-slim
+    container_name: ollama-exporter
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      OLLAMA_BASE_URL: http://127.0.0.1:11434
+      OLLAMA_EXPORTER_HOST: 127.0.0.1
+      OLLAMA_EXPORTER_PORT: 11435
+    volumes:
+      - ./observability/ollama/ollama_exporter.py:/app/ollama_exporter.py:ro
+    command: ["python", "/app/ollama_exporter.py"]
+
   # ── Metrics + dashboards ──────────────────────────────────────────────────
   prometheus:
     image: prom/prometheus:latest
