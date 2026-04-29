@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Regenerate the chat-tier section of ~/.continue/agents/new-config.yaml from
-# LiteLLM's live model list. Preserves the autocomplete and embed model
-# entries (anything NOT in the chat-tier block).
+# Regenerate the chat-tier section of a Continue config file from LiteLLM's
+# live model list. By default it targets ./new-config.yaml in the current
+# working directory. Preserves the autocomplete and embed model entries
+# (anything NOT in the chat-tier block).
 #
 # How it works:
 #   - Queries http://<host>:4000/v1/models with the LiteLLM virtual key
@@ -11,13 +12,18 @@
 # Usage:
 #   LITELLM_HOST=earth LITELLM_KEY=sk-... ./sync-continue-config.sh
 #   ./sync-continue-config.sh --host earth --key sk-...
+#   ./sync-continue-config.sh               # writes ./new-config.yaml
 #   ./sync-continue-config.sh --dry-run     # print to stdout instead of writing
+#   # When run from stack/, falls back to stack/.env -> LITELLM_EXPORTER_API_KEY
 #
 # Run on jupiter (or any client). Safe to re-run.
 
 set -euo pipefail
 
-CONFIG="${CONTINUE_CONFIG:-$HOME/.continue/agents/new-config.yaml}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+STACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ENV_FILE="$STACK_DIR/.env"
+CONFIG="${CONTINUE_CONFIG:-$PWD/new-config.yaml}"
 HOST="${LITELLM_HOST:-earth}"
 KEY="${LITELLM_KEY:-}"
 PORT="${LITELLM_PORT:-4000}"
@@ -41,13 +47,17 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$KEY" ]]; then
-    echo "ERROR: LiteLLM virtual key required (--key or LITELLM_KEY env var)." >&2
-    exit 1
+if [[ -z "$KEY" && -f "$ENV_FILE" ]]; then
+    # Use the read-only /models service key when available so the script can
+    # run directly from stack/ without extra env setup.
+    set -a
+    source "$ENV_FILE"
+    set +a
+    KEY="${LITELLM_EXPORTER_API_KEY:-${LITELLM_KEY:-}}"
 fi
 
-if [[ ! -f "$CONFIG" ]]; then
-    echo "ERROR: $CONFIG not found." >&2
+if [[ -z "$KEY" ]]; then
+    echo "ERROR: LiteLLM virtual key required (--key, LITELLM_KEY, or stack/.env LITELLM_EXPORTER_API_KEY)." >&2
     exit 1
 fi
 
@@ -113,7 +123,41 @@ PY
 
 # Splice into the existing config: replace the lines between the markers.
 # If markers are missing, insert the block at the top of `models:`.
-if grep -qF "$BEGIN_MARKER" "$CONFIG" && grep -qF "$END_MARKER" "$CONFIG"; then
+# If the file does not exist yet, bootstrap a minimal Continue config.
+if [[ ! -f "$CONFIG" ]]; then
+    new_config=$(cat <<EOF
+%YAML 1.1
+---
+name: Earth AI
+version: 1.0.0
+schema: v1
+
+defaults: &defaults
+  provider: openai
+  apiBase: http://${HOST}:${PORT}/v1
+  apiKey: ${KEY}
+
+chat_roles: &chat_roles
+  roles: [chat, edit, apply]
+
+models:
+${generated}
+
+  - name: qwen2.5-coder:1.5b (autocomplete)
+    <<: *defaults
+    model: ollama/qwen2.5-coder-1.5b
+    roles: [autocomplete]
+    autocompleteOptions:
+      debounceDelay: 250
+      maxPromptTokens: 1024
+
+  - name: nomic-embed
+    <<: *defaults
+    model: ollama/nomic-embed
+    roles: [embed]
+EOF
+)
+elif grep -qF "$BEGIN_MARKER" "$CONFIG" && grep -qF "$END_MARKER" "$CONFIG"; then
     new_config=$(awk -v begin="$BEGIN_MARKER" -v end="$END_MARKER" -v block="$generated" '
         index($0, begin) > 0 {print block; in_block=1; next}
         index($0, end)   > 0 {in_block=0; next}
@@ -142,6 +186,7 @@ if $DRY_RUN; then
 fi
 
 # Atomic write
+mkdir -p "$(dirname "$CONFIG")"
 tmp=$(mktemp)
 echo "$new_config" > "$tmp"
 mv "$tmp" "$CONFIG"
