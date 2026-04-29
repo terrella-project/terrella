@@ -7,6 +7,7 @@ All Earth AI runtime services in a single docker-compose project (`name: earth-a
 | `open-webui` | 8080 | Browser chat UI for humans. |
 | `litellm` | 4000 | OpenAI-compatible API proxy. Logs every call. |
 | `github-mcp` | 8765 | GitHub MCP tool server (SSE). Registered in Open WebUI automatically. |
+| `ollama-exporter` | 11435 | Prometheus exporter for host ollama loaded-model state. |
 | `postgres` | 5433 | Backing store for LiteLLM + monthly subscription table. |
 | `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. Bound to localhost. |
 | `grafana` | 3000 | Dashboards — AI Stack Overview. |
