@@ -191,14 +191,14 @@ models:
     roles: [embed]
 ```
 
-**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter):
+**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter) and writes `./new-config.yaml` in your current directory by default:
 
 ```bash
 cd ~/src/jomkz/earth-ai
 LITELLM_KEY=sk-… ./stack/scripts/sync-continue-config.sh
 ```
 
-That replaces only the lines between the `>>>` and `<<<` markers — your autocomplete and embed entries are preserved. Re-run whenever you add or remove models in earth's `litellm/config.yaml`.
+That replaces only the lines between the `>>>` and `<<<` markers — your autocomplete and embed entries are preserved. Re-run whenever you add or remove models in earth's `litellm/config.yaml`. Use `--config ~/.continue/agents/new-config.yaml` if you want to write straight to Continue's live config file.
 
 Optional flags:
 
