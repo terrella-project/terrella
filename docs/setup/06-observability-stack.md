@@ -5,8 +5,7 @@ All Earth AI runtime services run as a single docker-compose project. This phase
 - **Open WebUI** — browser-based chat UI for local and cloud models.
 - A **single OpenAI-compatible endpoint** (LiteLLM) that fans out to Anthropic, Gemini, OpenAI, and ollama based on the model name in each request.
 - **Per-call cost logging** to Postgres.
-- **Prometheus** scraping LiteLLM's `/metrics`.
-- **Prometheus** scraping LiteLLM's `/metrics` and an Ollama host exporter for loaded-model state.
+- **Prometheus** scraping a LiteLLM exporter and an Ollama host exporter for operational metrics.
 - A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all spend appears in one chart.
 
 This phase is **not** in `provision.sh` because it has secrets to wire up.
@@ -17,9 +16,10 @@ This phase is **not** in `provision.sh` because it has secrets to wire up.
 |---|---|---|
 | `open-webui` | 8080 | Browser chat UI for humans. Talks to ollama and optionally cloud providers. |
 | `litellm` | 4000 | OpenAI-compatible proxy → Anthropic / Gemini / OpenAI / ollama. Logs every call. |
+| `litellm-exporter` | 11436 | Prometheus exporter for LiteLLM health and model-route count. |
 | `ollama-exporter` | 11435 | Prometheus exporter for host ollama state (loaded models, VRAM, installed inventory). |
 | `postgres` | 5433 | Backing store for LiteLLM + the `monthly_costs` manual-entry table. |
-| `prometheus` | 9090 | Scrapes LiteLLM `/metrics`. |
+| `prometheus` | 9090 | Scrapes the LiteLLM and ollama exporters. |
 | `grafana` | 3000 | Dashboards. |
 
 > ollama runs **outside** this stack — it's already up from [ollama setup](03-ollama.md). Services that need it connect via `network_mode: host`.
@@ -38,6 +38,7 @@ All secrets live in `stack/.env` (gitignored, `chmod 600`). Never commit this fi
 | `LITELLM_MASTER_KEY` | LiteLLM admin key. Used to sign in to `/ui` and create virtual keys. Never share this. |
 | `LITELLM_SALT_KEY` | LiteLLM encryption salt for stored secrets — randomly generated |
 | `GRAFANA_ADMIN_PASSWORD` | Grafana `admin` account password — randomly generated |
+| `LITELLM_EXPORTER_API_KEY` | Optional read-only LiteLLM virtual key for the exporter. Scoped to `/models` so Grafana can track route count without admin access. |
 
 ### Provider API keys (fill in after `generate-env.sh`)
 
@@ -49,11 +50,13 @@ All secrets live in `stack/.env` (gitignored, `chmod 600`). Never commit this fi
 | `GEMINI_API_KEY` | Google Gemini API key — enables Gemini models in LiteLLM |
 | `OPENAI_API_KEY` | OpenAI API key (`sk-…`) — enables GPT models in LiteLLM (optional) |
 
-Leave a key blank to disable that provider. After editing `.env`, restart LiteLLM to pick up changes:
+Leave a key blank to disable that provider. After editing `.env`, recreate the affected services so Docker Compose re-reads the env values:
 
 ```bash
-docker compose restart litellm
+docker compose up -d litellm litellm-exporter
 ```
+
+`docker compose restart` only restarts the existing containers; it does not reload values interpolated from `.env`.
 
 ## 6.3 Bring it up
 
@@ -76,6 +79,7 @@ docker compose up -d
 ```
 
 `generate-env.sh` populates `.env` with a Postgres password, a Grafana admin password, and the LiteLLM master key. The file is `chmod 600` and gitignored — it never leaves the machine.
+If you want the LiteLLM exporter to report `litellm_model_routes`, create a read-only virtual key scoped to `/models` and place it in `LITELLM_EXPORTER_API_KEY`, then recreate the `litellm-exporter` service.
 
 ## 6.4 URLs (from the host running the stack)
 

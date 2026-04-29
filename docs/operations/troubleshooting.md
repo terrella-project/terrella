@@ -109,7 +109,7 @@ If it errors, work through these in order:
 
 1. **`.env` missing or wrong perms** — `ls -la .env` should show `-rw-------`. Re-run `./scripts/generate-env.sh` to regenerate (then re-do `init-billing-table.sh`).
 2. **Containers down** — `docker compose ps`; `docker compose up -d`.
-3. **Backend keys missing** — open `stack/.env` and confirm `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OPENAI_API_KEY` are filled in for the providers you expect to use. Then `docker compose restart litellm` to reload the values.
+3. **Backend keys missing** — open `stack/.env` and confirm `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` / `OPENAI_API_KEY` are filled in for the providers you expect to use. Then run `docker compose up -d litellm litellm-exporter` so Compose recreates the affected services with the new env values. `docker compose restart` is not enough here.
 4. **Network host mode** — LiteLLM uses `network_mode: host` so it can reach ollama on `127.0.0.1`. If your distro doesn't permit host-mode networking, the container will start but calls to `/v1/chat/completions` with `ollama/*` models will time out.
 
 ## Grafana shows no data

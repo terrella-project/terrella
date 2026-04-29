@@ -24,6 +24,7 @@ POSTGRES_DB=litellm
 LITELLM_MASTER_KEY=sk-master-$(rand)
 LITELLM_SALT_KEY=$(rand)
 GRAFANA_ADMIN_PASSWORD=$(rand)
+LITELLM_EXPORTER_API_KEY=${LITELLM_EXPORTER_API_KEY:-}
 
 # Backend provider API keys — fill these in (or export before running this script to auto-populate).
 ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
@@ -44,3 +45,4 @@ chmod 777 data/grafana   # Grafana container uid 472 needs write access
 echo "Wrote $(pwd)/.env (mode 600)."
 echo "Created data/ subdirectories."
 echo "Open .env and fill in ANTHROPIC_API_KEY, GEMINI_API_KEY, and OPENAI_API_KEY before starting the stack."
+echo "Leave LITELLM_EXPORTER_API_KEY blank unless you have created a read-only LiteLLM key for route-count metrics."
