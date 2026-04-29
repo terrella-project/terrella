@@ -5,6 +5,7 @@
 model_list:
   # ── Anthropic ────────────────────────────────────────────────────────────
   # Aliases: claude-sonnet → latest sonnet, claude-opus → latest opus
+  # Raw provider model IDs below are managed by update-litellm-config.sh.
   - model_name: claude-sonnet
     litellm_params:
       model: anthropic/claude-sonnet-4-6
@@ -17,30 +18,42 @@ model_list:
     litellm_params:
       model: anthropic/claude-haiku-4-5-20251001
       api_key: os.environ/ANTHROPIC_API_KEY
-  # Pinned versions
-  - model_name: claude-opus-4-7
+  # Available raw model IDs (managed by update-litellm-config.sh).
+  # Available raw model IDs (managed by update-litellm-config.sh).
+  # >>> anthropic catalog (managed by update-litellm-config.sh) >>>
+  - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: anthropic/claude-opus-4-7
+      model: anthropic/claude-haiku-4-5-20251001
       api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: claude-sonnet-4-6
+  - model_name: claude-opus-4-1-20250805
     litellm_params:
-      model: anthropic/claude-sonnet-4-6
+      model: anthropic/claude-opus-4-1-20250805
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: claude-opus-4-5-20251101
+    litellm_params:
+      model: anthropic/claude-opus-4-5-20251101
       api_key: os.environ/ANTHROPIC_API_KEY
   - model_name: claude-opus-4-6
     litellm_params:
       model: anthropic/claude-opus-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: claude-sonnet-4-5
+  - model_name: claude-opus-4-7
+    litellm_params:
+      model: anthropic/claude-opus-4-7
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: claude-sonnet-4-5-20250929
     litellm_params:
       model: anthropic/claude-sonnet-4-5-20250929
       api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: claude-opus-4-5
+  - model_name: claude-sonnet-4-6
     litellm_params:
-      model: anthropic/claude-opus-4-5-20251101
+      model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
+  # <<< anthropic catalog <<<
 
   # ── Google Gemini ────────────────────────────────────────────────────────
   # Aliases: gemini-pro → latest pro tier, gemini-flash → latest flash tier
+  # Raw provider model IDs below are managed by update-litellm-config.sh.
   - model_name: gemini-pro
     litellm_params:
       model: gemini/gemini-pro-latest
@@ -49,31 +62,122 @@ model_list:
     litellm_params:
       model: gemini/gemini-flash-latest
       api_key: os.environ/GEMINI_API_KEY
-  - model_name: gemini-flash-lite
+  # Available raw model IDs (managed by update-litellm-config.sh).
+  # Available raw model IDs (managed by update-litellm-config.sh).
+  # >>> gemini catalog (managed by update-litellm-config.sh) >>>
+  - model_name: gemini-2.0-flash
     litellm_params:
-      model: gemini/gemini-2.5-flash-lite
+      model: gemini/gemini-2.0-flash
       api_key: os.environ/GEMINI_API_KEY
-  # Gemini 3 (latest generation, currently preview)
-  - model_name: gemini-3-pro
+  - model_name: gemini-2.0-flash-001
     litellm_params:
-      model: gemini/gemini-3-pro-preview
+      model: gemini/gemini-2.0-flash-001
       api_key: os.environ/GEMINI_API_KEY
-  - model_name: gemini-3-flash
+  - model_name: gemini-2.0-flash-lite
     litellm_params:
-      model: gemini/gemini-3-flash-preview
+      model: gemini/gemini-2.0-flash-lite
       api_key: os.environ/GEMINI_API_KEY
-  # Pinned 2.5 versions
-  - model_name: gemini-2.5-pro
+  - model_name: gemini-2.0-flash-lite-001
     litellm_params:
-      model: gemini/gemini-2.5-pro
+      model: gemini/gemini-2.0-flash-lite-001
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-computer-use-preview-10-2025
+    litellm_params:
+      model: gemini/gemini-2.5-computer-use-preview-10-2025
       api_key: os.environ/GEMINI_API_KEY
   - model_name: gemini-2.5-flash
     litellm_params:
       model: gemini/gemini-2.5-flash
       api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-flash-image
+    litellm_params:
+      model: gemini/gemini-2.5-flash-image
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-flash-lite
+    litellm_params:
+      model: gemini/gemini-2.5-flash-lite
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-flash-preview-tts
+    litellm_params:
+      model: gemini/gemini-2.5-flash-preview-tts
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-2.5-pro-preview-tts
+    litellm_params:
+      model: gemini/gemini-2.5-pro-preview-tts
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3-flash-preview
+    litellm_params:
+      model: gemini/gemini-3-flash-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3-pro-image-preview
+    litellm_params:
+      model: gemini/gemini-3-pro-image-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3-pro-preview
+    litellm_params:
+      model: gemini/gemini-3-pro-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3.1-flash-image-preview
+    litellm_params:
+      model: gemini/gemini-3.1-flash-image-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3.1-flash-lite-preview
+    litellm_params:
+      model: gemini/gemini-3.1-flash-lite-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3.1-flash-tts-preview
+    litellm_params:
+      model: gemini/gemini-3.1-flash-tts-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3.1-pro-preview
+    litellm_params:
+      model: gemini/gemini-3.1-pro-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-3.1-pro-preview-customtools
+    litellm_params:
+      model: gemini/gemini-3.1-pro-preview-customtools
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-embedding-001
+    litellm_params:
+      model: gemini/gemini-embedding-001
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-embedding-2
+    litellm_params:
+      model: gemini/gemini-embedding-2
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-embedding-2-preview
+    litellm_params:
+      model: gemini/gemini-embedding-2-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-flash-latest
+    litellm_params:
+      model: gemini/gemini-flash-latest
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-flash-lite-latest
+    litellm_params:
+      model: gemini/gemini-flash-lite-latest
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-pro-latest
+    litellm_params:
+      model: gemini/gemini-pro-latest
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-robotics-er-1.5-preview
+    litellm_params:
+      model: gemini/gemini-robotics-er-1.5-preview
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: gemini-robotics-er-1.6-preview
+    litellm_params:
+      model: gemini/gemini-robotics-er-1.6-preview
+      api_key: os.environ/GEMINI_API_KEY
+  # <<< gemini catalog <<<
 
   # ── OpenAI ───────────────────────────────────────────────────────────────
   # Aliases: gpt → latest flagship, gpt-mini / gpt-nano → lower-cost tiers
+  # Stable raw model IDs below are managed by update-litellm-config.sh.
   - model_name: gpt
     litellm_params:
       model: openai/gpt-5.5
@@ -86,10 +190,48 @@ model_list:
     litellm_params:
       model: openai/gpt-5.4-nano
       api_key: os.environ/OPENAI_API_KEY
-  # Pinned versions
-  - model_name: gpt-5.5
+  # Stable core model IDs (managed by update-litellm-config.sh).
+  # Stable core model IDs (managed by update-litellm-config.sh).
+  # >>> openai catalog (managed by update-litellm-config.sh) >>>
+  - model_name: gpt-4.1
     litellm_params:
-      model: openai/gpt-5.5
+      model: openai/gpt-4.1
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-4.1-mini
+    litellm_params:
+      model: openai/gpt-4.1-mini
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-4.1-nano
+    litellm_params:
+      model: openai/gpt-4.1-nano
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-4o-mini
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-5
+    litellm_params:
+      model: openai/gpt-5
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-5-mini
+    litellm_params:
+      model: openai/gpt-5-mini
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-5-nano
+    litellm_params:
+      model: openai/gpt-5-nano
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-5.1
+    litellm_params:
+      model: openai/gpt-5.1
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: gpt-5.2
+    litellm_params:
+      model: openai/gpt-5.2
       api_key: os.environ/OPENAI_API_KEY
   - model_name: gpt-5.4
     litellm_params:
@@ -103,34 +245,36 @@ model_list:
     litellm_params:
       model: openai/gpt-5.4-nano
       api_key: os.environ/OPENAI_API_KEY
-  - model_name: gpt-4o
+  - model_name: gpt-5.5
     litellm_params:
-      model: openai/gpt-4o
+      model: openai/gpt-5.5
       api_key: os.environ/OPENAI_API_KEY
+  - model_name: o1
+    litellm_params:
+      model: openai/o1
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: o1-pro
+    litellm_params:
+      model: openai/o1-pro
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: o3
+    litellm_params:
+      model: openai/o3
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: o3-mini
+    litellm_params:
+      model: openai/o3-mini
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: o4-mini
+    litellm_params:
+      model: openai/o4-mini
+      api_key: os.environ/OPENAI_API_KEY
+  # <<< openai catalog <<<
 
   # ── Local: ollama on the host ───────────────────────────────────────────
   # LiteLLM runs with network_mode: host, so 127.0.0.1 is the host's localhost
   # which is where ollama listens (port 11434).
-  - model_name: ollama/qwen2.5-coder-14b
-    litellm_params:
-      model: ollama/qwen2.5-coder:14b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/qwen2.5-coder-32b
-    litellm_params:
-      model: ollama/qwen2.5-coder:32b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/qwen2.5-coder-1.5b
-    litellm_params:
-      model: ollama/qwen2.5-coder:1.5b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/deepseek-r1-14b
-    litellm_params:
-      model: ollama/deepseek-r1:14b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/gemma2-9b
-    litellm_params:
-      model: ollama/gemma2:9b
-      api_base: http://127.0.0.1:11434
+  # Preferred aliases stay manual; the full installed catalog below is managed.
   - model_name: ollama/qwen2.5-coder-32b-q2
     litellm_params:
       model: ollama/qwen2.5-coder:32b-instruct-q2_K
@@ -139,6 +283,38 @@ model_list:
     litellm_params:
       model: ollama/nomic-embed-text:latest
       api_base: http://127.0.0.1:11434
+  # Installed raw model IDs (managed by update-litellm-config.sh).
+  # Installed raw model IDs (managed by update-litellm-config.sh).
+  # >>> ollama catalog (managed by update-litellm-config.sh) >>>
+  - model_name: ollama/deepseek-r1-14b
+    litellm_params:
+      model: ollama/deepseek-r1:14b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/gemma2-9b
+    litellm_params:
+      model: ollama/gemma2:9b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/nomic-embed-text-latest
+    litellm_params:
+      model: ollama/nomic-embed-text:latest
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-1.5b
+    litellm_params:
+      model: ollama/qwen2.5-coder:1.5b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-14b
+    litellm_params:
+      model: ollama/qwen2.5-coder:14b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-32b
+    litellm_params:
+      model: ollama/qwen2.5-coder:32b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-32b-instruct-q2_K
+    litellm_params:
+      model: ollama/qwen2.5-coder:32b-instruct-q2_K
+      api_base: http://127.0.0.1:11434
+  # <<< ollama catalog <<<
 
 litellm_settings:
   # Drop unsupported params silently (e.g. when ollama doesn't accept some OpenAI fields).

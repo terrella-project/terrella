@@ -90,10 +90,11 @@ curl -s http://localhost:4000/v1/models \
   | python3 -m json.tool | grep '"id"'
 ```
 
-If your model isn't in the output, add it to `litellm/config.yaml` and restart LiteLLM:
+If your model isn't in the output, refresh the managed LiteLLM catalog and restart LiteLLM:
 
 ```bash
 cd ~/src/jomkz/earth-ai/stack
+./scripts/update-litellm-config.sh
 docker compose restart litellm
 ```
 

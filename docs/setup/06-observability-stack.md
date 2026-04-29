@@ -96,7 +96,6 @@ stack/
 ├── README.md
 ├── data/                              # created by generate-env.sh; bind-mounted into containers
 │   ├── postgres/
-│   ├── prometheus/
 │   └── grafana/
 ├── scripts/
 │   ├── generate-env.sh                # one-time: write .env with random secrets
@@ -104,6 +103,7 @@ stack/
 │   ├── log-billing.sh                 # interactive: insert a monthly subscription cost row
 │   ├── smoke.sh                       # probe LiteLLM end-to-end
 │   ├── list-models.sh                 # diff configured models vs live provider APIs
+│   ├── update-litellm-config.sh       # refresh managed model catalogs in LiteLLM config
 │   ├── update-ollama-models.sh        # re-pull installed ollama models + anything in models.list
 │   └── sync-continue-config.sh        # regenerate Continue.dev chat-tier from LiteLLM
 ├── sql/
@@ -119,7 +119,8 @@ stack/
             └── dashboards/dashboards.yml
 ```
 
-The authoritative routing table — which model alias maps to which provider, which keys exist, per-key spend caps — lives in [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml).
+The authoritative routing table — which model alias maps to which provider, which keys exist, per-key spend caps — lives in [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml). The alias entries are hand-edited; the per-provider catalog blocks inside that file are managed by `./scripts/update-litellm-config.sh`.
+Prometheus stores its TSDB in a named Docker volume (`prometheus-data`) rather than under `stack/data/`.
 
 ## 6.6 Verify end-to-end
 
