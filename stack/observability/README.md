@@ -38,3 +38,5 @@ URLs (all bound to `127.0.0.1`):
 - Postgres: `localhost:5433`
 
 Authoritative routing config: [`litellm/config.yaml`](litellm/config.yaml).
+The alias entries there are hand-edited; the per-provider catalog blocks are
+managed by `../scripts/update-litellm-config.sh`.

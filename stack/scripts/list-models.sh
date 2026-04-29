@@ -12,6 +12,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 CONFIG="observability/litellm/config.yaml"
+HELPER="scripts/provider-models.py"
 
 if [[ ! -f .env ]]; then
     echo "ERROR: .env not found. Run scripts/generate-env.sh first." >&2
@@ -19,14 +20,16 @@ if [[ ! -f .env ]]; then
 fi
 
 # shellcheck disable=SC1091
+set -a
 source .env
+set +a
 
 target="${1:-all}"
 
 # Extract raw model IDs from litellm_params in config.yaml for a given provider prefix.
 configured_ids() {
     local prefix="$1"
-    grep -E "^\s+model: ${prefix}/" "$CONFIG" \
+    grep -E "^[[:space:]]+model: ${prefix}/" "$CONFIG" \
         | sed -E "s|.*model: ${prefix}/||" \
         | sort
 }
@@ -53,25 +56,30 @@ diff_report() {
     fi
 }
 
+print_list() {
+    local heading="$1"
+    local values="$2"
+
+    echo "$heading"
+    if [[ -n "$values" ]]; then
+        echo "$values" | sed 's/^/    /'
+    else
+        echo "    (none)"
+    fi
+}
+
 # ── Anthropic ──────────────────────────────────────────────────────────────
 if [[ "$target" == "anthropic" || "$target" == "all" ]]; then
     echo "=== Anthropic ==="
     if [[ -z "${ANTHROPIC_API_KEY:-}" ]]; then
         echo "  ANTHROPIC_API_KEY not set — skipping."
     else
-        available=$(curl -s https://api.anthropic.com/v1/models \
-            -H "x-api-key: $ANTHROPIC_API_KEY" \
-            -H "anthropic-version: 2023-06-01" \
-            | python3 -c "
-import sys, json
-for m in json.load(sys.stdin).get('data', []):
-    print(m['id'])
-" | sort)
-
         configured=$(configured_ids "anthropic")
+        available=$("$HELPER" anthropic)
 
-        echo "  Available from API:"
-        echo "$available" | sed 's/^/    /'
+        print_list "  Configured in config.yaml:" "$configured"
+        echo
+        print_list "  Available from API:" "$available"
         echo
         diff_report "$configured" "$available"
     fi
@@ -84,19 +92,12 @@ if [[ "$target" == "gemini" || "$target" == "all" ]]; then
     if [[ -z "${GEMINI_API_KEY:-}" ]]; then
         echo "  GEMINI_API_KEY not set — skipping."
     else
-        available=$(curl -s "https://generativelanguage.googleapis.com/v1beta/models?key=$GEMINI_API_KEY" \
-            | python3 -c "
-import sys, json
-for m in json.load(sys.stdin).get('models', []):
-    name = m.get('name','').replace('models/','')
-    if 'gemini' in name.lower():
-        print(name)
-" | sort)
-
         configured=$(configured_ids "gemini")
+        available=$("$HELPER" gemini)
 
-        echo "  Available from API:"
-        echo "$available" | sed 's/^/    /'
+        print_list "  Configured in config.yaml:" "$configured"
+        echo
+        print_list "  Available from API:" "$available"
         echo
         diff_report "$configured" "$available"
     fi
@@ -109,20 +110,12 @@ if [[ "$target" == "openai" || "$target" == "all" ]]; then
     if [[ -z "${OPENAI_API_KEY:-}" ]]; then
         echo "  OPENAI_API_KEY not set — skipping."
     else
-        available=$(curl -s https://api.openai.com/v1/models \
-            -H "Authorization: Bearer $OPENAI_API_KEY" \
-            | python3 -c "
-import sys, json
-for m in json.load(sys.stdin).get('data', []):
-    mid = m.get('id', '')
-    if mid.startswith(('gpt-', 'o1', 'o3', 'o4')):
-        print(mid)
-" | sort)
-
         configured=$(configured_ids "openai")
+        available=$("$HELPER" openai)
 
-        echo "  Available from API:"
-        echo "$available" | sed 's/^/    /'
+        print_list "  Configured in config.yaml:" "$configured"
+        echo
+        print_list "  Available from API (stable core models):" "$available"
         echo
         diff_report "$configured" "$available"
     fi
@@ -135,25 +128,16 @@ if [[ "$target" == "ollama" || "$target" == "all" ]]; then
     if ! curl -sf --max-time 3 http://localhost:11434/api/tags > /dev/null 2>&1; then
         echo "  ollama not reachable on localhost:11434 — is it running?"
     else
-        available=$(curl -s http://localhost:11434/api/tags \
-            | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-for m in data.get('models', []):
-    size_gb = m.get('size', 0) / 1e9
-    print(f\"{m['name']}  ({size_gb:.1f} GB)\")
-" | sort)
-
-        configured=$(grep -E "^\s+model: ollama/" "$CONFIG" \
+        configured=$(grep -E "^[[:space:]]+model: ollama/" "$CONFIG" \
             | sed 's|.*model: ollama/||' \
             | sort)
+        available=$("$HELPER" ollama)
 
-        available_names=$(echo "$available" | awk '{print $1}' | sort)
-
-        echo "  Installed:"
-        echo "$available" | sed 's/^/    /'
+        print_list "  Configured in config.yaml:" "$configured"
         echo
-        diff_report "$configured" "$available_names"
+        print_list "  Installed locally:" "$available"
+        echo
+        diff_report "$configured" "$available"
     fi
     echo
 fi

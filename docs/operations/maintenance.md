@@ -107,7 +107,18 @@ curl -s http://localhost:11434/api/tags \
   | python3 -m json.tool                       # full JSON with sizes/quants
 ```
 
-To check whether anything in your LiteLLM config is stale or what new provider models have been released, run [`stack/scripts/list-models.sh`](../../stack/scripts/list-models.sh) — it diffs the live API model lists (Anthropic, Gemini, OpenAI, ollama) against `litellm/config.yaml`.
+To check whether anything in your LiteLLM config is stale or what new provider models have been released, run [`stack/scripts/list-models.sh`](../../stack/scripts/list-models.sh) — it diffs the live API model lists (Anthropic, Gemini, OpenAI, ollama) against `litellm/config.yaml`. For OpenAI, it intentionally compares against a curated set of stable core chat/reasoning model IDs so snapshots and specialized audio/image/realtime variants do not drown the signal.
+
+To refresh the managed provider catalogs in-place, run:
+
+```bash
+cd ~/src/jomkz/earth-ai/stack
+./scripts/update-litellm-config.sh --dry-run   # preview
+./scripts/update-litellm-config.sh             # write changes
+docker compose restart litellm
+```
+
+That script updates the marked catalog blocks for Anthropic, Gemini, OpenAI, and ollama while leaving your hand-edited aliases and non-model settings alone.
 
 ---
 

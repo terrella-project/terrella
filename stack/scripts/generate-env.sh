@@ -37,8 +37,8 @@ chmod 600 .env
 
 # Pre-create bind-mount directories so Docker doesn't create them as root,
 # which would prevent Grafana (uid 472) from writing its data directory.
-mkdir -p data/postgres data/prometheus data/grafana
-chmod 750 data/postgres data/prometheus
+mkdir -p data/postgres data/grafana
+chmod 750 data/postgres
 chmod 777 data/grafana   # Grafana container uid 472 needs write access
 
 echo "Wrote $(pwd)/.env (mode 600)."
