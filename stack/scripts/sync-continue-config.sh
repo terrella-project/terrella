@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 # Regenerate the chat-tier section of a Continue config file from LiteLLM's
-# live model list. By default it targets ./new-config.yaml in the current
+# live model list. By default it targets ./earth-ai-config.yaml in the current
 # working directory. Preserves the autocomplete and embed model entries
 # (anything NOT in the chat-tier block).
 #
 # How it works:
-#   - Queries http://<host>:4000/v1/models with the LiteLLM virtual key
+#   - Queries http://<host>:4000/models with the LiteLLM virtual key
+#     (falls back to /v1/models for broader compatibility)
 #   - Filters out embedding/autocomplete models (matched by name suffix)
 #   - Rewrites the block between the markers below; everything else is kept
 #
 # Usage:
-#   LITELLM_HOST=earth LITELLM_KEY=sk-... ./sync-continue-config.sh
-#   ./sync-continue-config.sh --host earth --key sk-...
-#   ./sync-continue-config.sh               # writes ./new-config.yaml
+#   LITELLM_HOST=localhost LITELLM_KEY=sk-... ./sync-continue-config.sh
+#   ./sync-continue-config.sh --host localhost --key sk-...
+#   ./sync-continue-config.sh               # writes ./earth-ai-config.yaml
 #   ./sync-continue-config.sh --dry-run     # print to stdout instead of writing
 #   # When run from stack/, falls back to stack/.env -> LITELLM_EXPORTER_API_KEY
 #
@@ -23,8 +24,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 STACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$STACK_DIR/.env"
-CONFIG="${CONTINUE_CONFIG:-$PWD/new-config.yaml}"
-HOST="${LITELLM_HOST:-earth}"
+CONFIG="${CONTINUE_CONFIG:-$PWD/earth-ai-config.yaml}"
+HOST="${LITELLM_HOST:-localhost}"
 KEY="${LITELLM_KEY:-}"
 PORT="${LITELLM_PORT:-4000}"
 DRY_RUN=false
@@ -62,11 +63,16 @@ if [[ -z "$KEY" ]]; then
 fi
 
 # Fetch live model list.
-api="http://${HOST}:${PORT}/v1/models"
+base_url="http://${HOST}:${PORT}"
+api="${base_url}/models"
 echo "Fetching models from $api..." >&2
 json_tmp=$(mktemp)
 trap 'rm -f "$json_tmp"' EXIT
-curl -fsS --max-time 10 "$api" -H "Authorization: Bearer $KEY" -o "$json_tmp"
+if ! curl -fsS --max-time 10 "$api" -H "x-litellm-api-key: $KEY" -o "$json_tmp"; then
+    api="${base_url}/v1/models"
+    echo "Falling back to $api..." >&2
+    curl -fsS --max-time 10 "$api" -H "Authorization: Bearer $KEY" -o "$json_tmp"
+fi
 
 # Generate the YAML block.
 # Skip embed/autocomplete models — those stay hardcoded in the config.
@@ -135,7 +141,7 @@ schema: v1
 defaults: &defaults
   provider: openai
   apiBase: http://${HOST}:${PORT}/v1
-  apiKey: ${KEY}
+  apiKey: ""
 
 chat_roles: &chat_roles
   roles: [chat, edit, apply]

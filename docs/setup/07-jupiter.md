@@ -191,20 +191,20 @@ models:
     roles: [embed]
 ```
 
-**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter) and writes `./new-config.yaml` in your current directory by default:
+**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter) and writes `./earth-ai-config.yaml` in your current directory by default:
 
 ```bash
 cd ~/src/jomkz/earth-ai
 LITELLM_KEY=sk-… ./stack/scripts/sync-continue-config.sh
 ```
 
-That replaces only the lines between the `>>>` and `<<<` markers — your autocomplete and embed entries are preserved. Re-run whenever you add or remove models in earth's `litellm/config.yaml`. Use `--config ~/.continue/agents/new-config.yaml` if you want to write straight to Continue's live config file.
+That replaces only the lines between the `>>>` and `<<<` markers — your autocomplete and embed entries are preserved. Re-run whenever you add or remove models in earth's `litellm/config.yaml`. The generated file leaves `apiKey` blank on purpose, so you can fill it in yourself or use `--config ~/.continue/agents/new-config.yaml` to target an existing Continue config that already has the right key.
 
 Optional flags:
 
 | Flag | Purpose |
 |---|---|
-| `--host earth` | LiteLLM hostname (default: `earth`) |
+| `--host localhost` | LiteLLM hostname (default: `localhost`) |
 | `--port 4000` | Override port |
 | `--dry-run` | Print to stdout instead of writing |
 
