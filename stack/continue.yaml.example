@@ -1,0 +1,259 @@
+%YAML 1.1
+---
+name: Earth AI
+version: 1.0.0
+schema: v1
+
+defaults: &defaults
+  provider: openai
+  apiBase: http://localhost:4000/v1
+  apiKey: ""
+
+chat_roles: &chat_roles
+  roles: [chat, edit, apply]
+
+models:
+# >>> chat-tier models (managed by sync-continue-config.sh) >>>
+  # ── Anthropic ─────────────────────────────────────────────────────────
+  - name: claude-haiku
+    <<: *defaults
+    model: claude-haiku
+    <<: *chat_roles
+  - name: claude-haiku-4-5-20251001
+    <<: *defaults
+    model: claude-haiku-4-5-20251001
+    <<: *chat_roles
+  - name: claude-opus
+    <<: *defaults
+    model: claude-opus
+    <<: *chat_roles
+  - name: claude-opus-4-1-20250805
+    <<: *defaults
+    model: claude-opus-4-1-20250805
+    <<: *chat_roles
+  - name: claude-opus-4-5-20251101
+    <<: *defaults
+    model: claude-opus-4-5-20251101
+    <<: *chat_roles
+  - name: claude-opus-4-6
+    <<: *defaults
+    model: claude-opus-4-6
+    <<: *chat_roles
+  - name: claude-opus-4-7
+    <<: *defaults
+    model: claude-opus-4-7
+    <<: *chat_roles
+  - name: claude-sonnet
+    <<: *defaults
+    model: claude-sonnet
+    <<: *chat_roles
+  - name: claude-sonnet-4-5-20250929
+    <<: *defaults
+    model: claude-sonnet-4-5-20250929
+    <<: *chat_roles
+  - name: claude-sonnet-4-6
+    <<: *defaults
+    model: claude-sonnet-4-6
+    <<: *chat_roles
+  # ── Gemini ────────────────────────────────────────────────────────────
+  - name: gemini-2.0-flash
+    <<: *defaults
+    model: gemini-2.0-flash
+    <<: *chat_roles
+  - name: gemini-2.0-flash-001
+    <<: *defaults
+    model: gemini-2.0-flash-001
+    <<: *chat_roles
+  - name: gemini-2.0-flash-lite
+    <<: *defaults
+    model: gemini-2.0-flash-lite
+    <<: *chat_roles
+  - name: gemini-2.0-flash-lite-001
+    <<: *defaults
+    model: gemini-2.0-flash-lite-001
+    <<: *chat_roles
+  - name: gemini-2.5-computer-use-preview-10-2025
+    <<: *defaults
+    model: gemini-2.5-computer-use-preview-10-2025
+    <<: *chat_roles
+  - name: gemini-2.5-flash
+    <<: *defaults
+    model: gemini-2.5-flash
+    <<: *chat_roles
+  - name: gemini-2.5-flash-lite
+    <<: *defaults
+    model: gemini-2.5-flash-lite
+    <<: *chat_roles
+  - name: gemini-2.5-pro
+    <<: *defaults
+    model: gemini-2.5-pro
+    <<: *chat_roles
+  - name: gemini-3-flash-preview
+    <<: *defaults
+    model: gemini-3-flash-preview
+    <<: *chat_roles
+  - name: gemini-3-pro-preview
+    <<: *defaults
+    model: gemini-3-pro-preview
+    <<: *chat_roles
+  - name: gemini-3.1-flash-lite-preview
+    <<: *defaults
+    model: gemini-3.1-flash-lite-preview
+    <<: *chat_roles
+  - name: gemini-3.1-pro-preview
+    <<: *defaults
+    model: gemini-3.1-pro-preview
+    <<: *chat_roles
+  - name: gemini-3.1-pro-preview-customtools
+    <<: *defaults
+    model: gemini-3.1-pro-preview-customtools
+    <<: *chat_roles
+  - name: gemini-flash
+    <<: *defaults
+    model: gemini-flash
+    <<: *chat_roles
+  - name: gemini-flash-latest
+    <<: *defaults
+    model: gemini-flash-latest
+    <<: *chat_roles
+  - name: gemini-flash-lite-latest
+    <<: *defaults
+    model: gemini-flash-lite-latest
+    <<: *chat_roles
+  - name: gemini-pro
+    <<: *defaults
+    model: gemini-pro
+    <<: *chat_roles
+  - name: gemini-pro-latest
+    <<: *defaults
+    model: gemini-pro-latest
+    <<: *chat_roles
+  # ── OpenAI ────────────────────────────────────────────────────────────
+  - name: gpt
+    <<: *defaults
+    model: gpt
+    <<: *chat_roles
+  - name: gpt-4.1
+    <<: *defaults
+    model: gpt-4.1
+    <<: *chat_roles
+  - name: gpt-4.1-mini
+    <<: *defaults
+    model: gpt-4.1-mini
+    <<: *chat_roles
+  - name: gpt-4.1-nano
+    <<: *defaults
+    model: gpt-4.1-nano
+    <<: *chat_roles
+  - name: gpt-4o
+    <<: *defaults
+    model: gpt-4o
+    <<: *chat_roles
+  - name: gpt-4o-mini
+    <<: *defaults
+    model: gpt-4o-mini
+    <<: *chat_roles
+  - name: gpt-5
+    <<: *defaults
+    model: gpt-5
+    <<: *chat_roles
+  - name: gpt-5-mini
+    <<: *defaults
+    model: gpt-5-mini
+    <<: *chat_roles
+  - name: gpt-5-nano
+    <<: *defaults
+    model: gpt-5-nano
+    <<: *chat_roles
+  - name: gpt-5.1
+    <<: *defaults
+    model: gpt-5.1
+    <<: *chat_roles
+  - name: gpt-5.2
+    <<: *defaults
+    model: gpt-5.2
+    <<: *chat_roles
+  - name: gpt-5.4
+    <<: *defaults
+    model: gpt-5.4
+    <<: *chat_roles
+  - name: gpt-5.4-mini
+    <<: *defaults
+    model: gpt-5.4-mini
+    <<: *chat_roles
+  - name: gpt-5.4-nano
+    <<: *defaults
+    model: gpt-5.4-nano
+    <<: *chat_roles
+  - name: gpt-5.5
+    <<: *defaults
+    model: gpt-5.5
+    <<: *chat_roles
+  - name: gpt-mini
+    <<: *defaults
+    model: gpt-mini
+    <<: *chat_roles
+  - name: gpt-nano
+    <<: *defaults
+    model: gpt-nano
+    <<: *chat_roles
+  # ── Local (ollama) ────────────────────────────────────────────────────
+  - name: ollama/deepseek-r1-14b
+    <<: *defaults
+    model: ollama/deepseek-r1-14b
+    <<: *chat_roles
+  - name: ollama/gemma2-9b
+    <<: *defaults
+    model: ollama/gemma2-9b
+    <<: *chat_roles
+  - name: ollama/qwen2.5-coder-14b
+    <<: *defaults
+    model: ollama/qwen2.5-coder-14b
+    <<: *chat_roles
+  - name: ollama/qwen2.5-coder-32b
+    <<: *defaults
+    model: ollama/qwen2.5-coder-32b
+    <<: *chat_roles
+  - name: ollama/qwen2.5-coder-32b-instruct-q2_K
+    <<: *defaults
+    model: ollama/qwen2.5-coder-32b-instruct-q2_K
+    <<: *chat_roles
+  - name: ollama/qwen2.5-coder-32b-q2
+    <<: *defaults
+    model: ollama/qwen2.5-coder-32b-q2
+    <<: *chat_roles
+  # ── Other ─────────────────────────────────────────────────────────────
+  - name: o1
+    <<: *defaults
+    model: o1
+    <<: *chat_roles
+  - name: o1-pro
+    <<: *defaults
+    model: o1-pro
+    <<: *chat_roles
+  - name: o3
+    <<: *defaults
+    model: o3
+    <<: *chat_roles
+  - name: o3-mini
+    <<: *defaults
+    model: o3-mini
+    <<: *chat_roles
+  - name: o4-mini
+    <<: *defaults
+    model: o4-mini
+    <<: *chat_roles
+# <<< chat-tier models <<<
+
+  - name: qwen2.5-coder:1.5b (autocomplete)
+    <<: *defaults
+    model: ollama/qwen2.5-coder-1.5b
+    roles: [autocomplete]
+    autocompleteOptions:
+      debounceDelay: 250
+      maxPromptTokens: 1024
+
+  - name: nomic-embed
+    <<: *defaults
+    model: ollama/nomic-embed
+    roles: [embed]
