@@ -2,24 +2,65 @@
 # Docs: https://docs.litellm.ai/docs/proxy/configs
 # After changing this file: docker compose restart litellm
 
+litellm_settings:
+  # Drop unsupported params silently (e.g. when ollama doesn't accept some OpenAI fields).
+  drop_params: True
+  # Track real spend per call (LiteLLM has built-in pricing for Anthropic / Gemini / OpenAI).
+  set_verbose: True
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  # Health probes hit ollama and providers periodically.
+  background_health_checks: True
+  health_check_interval: 300
+
+teams:
+
+  # Track Pro
+  - team_id: "85a9216a-a85a-435f-9dff-f704537cfc06"  
+    models: [] # empty list is "all models"
+
+# If a call fails, return the *real* error instead of trying to call OpenAI.
+fallbacks: []
+
 model_list:
   # ── Anthropic ────────────────────────────────────────────────────────────
-  # Aliases: claude-sonnet → latest sonnet, claude-opus → latest opus
+  # Manual Aliases: claude-sonnet → latest sonnet, claude-opus → latest opus
   # Raw provider model IDs below are managed by update-litellm-config.sh.
   - model_name: claude-sonnet
+    model_aliases: ["claude-sonnet-4-6"]
     litellm_params:
       model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: claude-sonnet-4-5
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5-20250929
+      api_key: os.environ/ANTHROPIC_API_KEY
+
   - model_name: claude-opus
+    model_aliases: ["claude-opus-4-7"]
     litellm_params:
       model: anthropic/claude-opus-4-7
       api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: claude-opus-4-5
+    litellm_params:
+      model: anthropic/claude-opus-4-5-20251101
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: claude-opus-4-6
+    litellm_params:
+      model: anthropic/claude-opus-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+
   - model_name: claude-haiku
+    model_aliases: ["claude-haiku-4-5"]
     litellm_params:
       model: anthropic/claude-haiku-4-5-20251001
       api_key: os.environ/ANTHROPIC_API_KEY
-  # Available raw model IDs (managed by update-litellm-config.sh).
-  # Available raw model IDs (managed by update-litellm-config.sh).
+ 
   # >>> anthropic catalog (managed by update-litellm-config.sh) >>>
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
@@ -52,18 +93,28 @@ model_list:
   # <<< anthropic catalog <<<
 
   # ── Google Gemini ────────────────────────────────────────────────────────
-  # Aliases: gemini-pro → latest pro tier, gemini-flash → latest flash tier
+  # Manual Aliases: gemini-pro → latest pro tier, gemini-flash → latest flash tier
   # Raw provider model IDs below are managed by update-litellm-config.sh.
   - model_name: gemini-pro
     litellm_params:
       model: gemini/gemini-pro-latest
       api_key: os.environ/GEMINI_API_KEY
+
   - model_name: gemini-flash
     litellm_params:
       model: gemini/gemini-flash-latest
       api_key: os.environ/GEMINI_API_KEY
-  # Available raw model IDs (managed by update-litellm-config.sh).
-  # Available raw model IDs (managed by update-litellm-config.sh).
+
+  - model_name: gemini-2.5-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: gemini-2.5-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+
   # >>> gemini catalog (managed by update-litellm-config.sh) >>>
   - model_name: gemini-2.0-flash
     litellm_params:
@@ -176,22 +227,43 @@ model_list:
   # <<< gemini catalog <<<
 
   # ── OpenAI ───────────────────────────────────────────────────────────────
-  # Aliases: gpt → latest flagship, gpt-mini / gpt-nano → lower-cost tiers
+  # Manual Aliases: gpt → latest flagship, gpt-mini / gpt-nano → lower-cost tiers
   # Stable raw model IDs below are managed by update-litellm-config.sh.
   - model_name: gpt
     litellm_params:
-      model: openai/gpt-5.5
+      model: gpt-5-5
       api_key: os.environ/OPENAI_API_KEY
+
   - model_name: gpt-mini
+    model_aliases: ["gpt-5-4-mini"]
     litellm_params:
       model: openai/gpt-5.4-mini
       api_key: os.environ/OPENAI_API_KEY
+
   - model_name: gpt-nano
+    model_aliases: ["gpt-5.4-nano"]
     litellm_params:
       model: openai/gpt-5.4-nano
       api_key: os.environ/OPENAI_API_KEY
-  # Stable core model IDs (managed by update-litellm-config.sh).
-  # Stable core model IDs (managed by update-litellm-config.sh).
+
+  - model_name: gpt-4o
+    model_aliases: ["4o"]
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: gpt-5-4
+    model_aliases: ["gpt54"]
+    litellm_params:
+      model: openai/gpt-5.4
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: gpt-5-5
+    model_aliases: ["gpt-5", "gpt55", "gpt5"]
+    litellm_params:
+      model: openai/gpt-5.5
+      api_key: os.environ/OPENAI_API_KEY
+
   # >>> openai catalog (managed by update-litellm-config.sh) >>>
   - model_name: gpt-4.1
     litellm_params:
@@ -205,7 +277,7 @@ model_list:
     litellm_params:
       model: openai/gpt-4.1-nano
       api_key: os.environ/OPENAI_API_KEY
-  - model_name: gpt-4o
+  - model_name: openai/gpt-4o
     litellm_params:
       model: openai/gpt-4o
       api_key: os.environ/OPENAI_API_KEY
@@ -272,21 +344,48 @@ model_list:
   # <<< openai catalog <<<
 
   # ── Local: ollama on the host ───────────────────────────────────────────
-  # LiteLLM runs with network_mode: host, so 127.0.0.1 is the host's localhost
-  # which is where ollama listens (port 11434).
-  # Preferred aliases stay manual; the full installed catalog below is managed.
-  - model_name: ollama/qwen2.5-coder-32b-q2
+  # Manual Aliases: 
+  # Stable raw model IDs below are managed by update-litellm-config.sh.
+  - model_name: deepseek
+    model_aliases: ["deepseek-r1-14b", "deepseek-r1"]
+    litellm_params:
+      model: ollama/deepseek-r1:14b
+      api_base: http://127.0.0.1:11434
+  
+  - model_name: gemma2
+    model_aliases: ["gemma2-9b"]
+    litellm_params:
+      model: ollama/gemma2-9b
+      api_base: http://127.0.0.1:11434
+
+  - model_name: qwen2.5-coder
+    model_aliases: ["qwen2.5-coder-14b"]
+    litellm_params:
+      model: ollama/qwen2.5-coder:14b
+      api_base: http://127.0.0.1:11434
+
+  - model_name: qwen2.5-coder-15b
+    litellm_params:
+      model: ollama/qwen2.5-coder:1.5b
+      api_base: http://127.0.0.1:11434
+
+  - model_name: qwen2.5-coder-32b
+    litellm_params:
+      model: ollama/qwen2.5-coder-32b
+      api_base: http://127.0.0.1:11434
+
+  - model_name: qwen2.5-coder-32b-instruct
     litellm_params:
       model: ollama/qwen2.5-coder:32b-instruct-q2_K
       api_base: http://127.0.0.1:11434
-  - model_name: ollama/nomic-embed
+
+  - model_name: nomic-embed
     litellm_params:
       model: ollama/nomic-embed-text:latest
       api_base: http://127.0.0.1:11434
-  # Installed raw model IDs (managed by update-litellm-config.sh).
-  # Installed raw model IDs (managed by update-litellm-config.sh).
+
   # >>> ollama catalog (managed by update-litellm-config.sh) >>>
-  - model_name: ollama/deepseek-r1-14b
+  - model_name: ollama/deepseek-r1:14b
     litellm_params:
       model: ollama/deepseek-r1:14b
       api_base: http://127.0.0.1:11434
@@ -315,29 +414,3 @@ model_list:
       model: ollama/qwen2.5-coder:32b-instruct-q2_K
       api_base: http://127.0.0.1:11434
   # <<< ollama catalog <<<
-
-litellm_settings:
-  # Drop unsupported params silently (e.g. when ollama doesn't accept some OpenAI fields).
-  drop_params: True
-  # Track real spend per call (LiteLLM has built-in pricing for Anthropic / Gemini / OpenAI).
-  set_verbose: False
-  # Per-call logs are persisted to Postgres automatically via database_url in general_settings.
-
-general_settings:
-  master_key: os.environ/LITELLM_MASTER_KEY
-  database_url: os.environ/DATABASE_URL
-  # Health probes hit ollama and providers periodically.
-  background_health_checks: True
-  health_check_interval: 300
-
-# Virtual API keys are NOT stored here — create them via the admin UI at
-# http://localhost:4000/ui (sign in with master_key) and persist to the DB.
-# Suggested keys:
-#   sk-machine-earth-ubuntu24      (this WSL)
-#   sk-machine-earth-ai             (Earth-AI WSL)
-#   sk-machine-laptop
-#   sk-machine-mac-mini
-#   sk-tool-agent-runner            (CI / automation scripts)
-#   sk-tool-opencode
-#   sk-tool-continue                (editor inline completions)
-# Each key can have its own monthly spend cap and rate limit.
