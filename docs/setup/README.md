@@ -12,30 +12,31 @@ Build the Earth AI workstation from a fresh Windows 11 install. Follow the steps
 | [06 — Full stack](06-observability-stack.md) | LiteLLM + Postgres + Prometheus + Grafana — the proxy + dashboards | ~10 min |
 | [07 — Jupiter](07-jupiter.md) | Set up the Windows laptop as a dev client — WSL, Tailscale, VS Code, Claude Code, OpenCode | ~20 min |
 
-## The fast path: `provision.sh`
+## The fast path: `provision.sh` + `sync-models.sh`
 
-Steps 02–05 are automated by [`provision/provision.sh`](../../provision/provision.sh). It is **idempotent** — safe to re-run. Use the manual instructions in this folder when:
+Steps 02–05 are automated by two scripts in [`provision/`](../../provision/). Both are **idempotent** — safe to re-run. Use the manual instructions in this folder when:
 
-- You want to understand what the script is doing, or
+- You want to understand what the scripts are doing, or
 - Something failed and you need to redo just one step, or
-- You're adapting the script for a different machine.
+- You're adapting them for a different machine.
 
 ```bash
 # Inside the Earth-AI WSL terminal, after step 01 is done:
 cd ~/src/jomkz/earth-ai
-bash provision/provision.sh
+bash provision/provision.sh    # machine setup: apt, systemd, ollama, Docker, Aider
+bash provision/sync-models.sh  # pull the models listed in provision/models.list
 ```
 
-The list of ollama models the script pulls lives in [`provision/models.list`](../../provision/models.list) — edit that file to change the baseline. See [reference/local-models.md](../reference/local-models.md#baseline-set-pulled-by-provisionsh) for what each model is for.
+The model catalog lives in [`provision/models.list`](../../provision/models.list) — edit that file to add or remove models, then re-run `sync-models.sh`. See [reference/local-models.md](../reference/local-models.md) for what each model is for.
 
-After it finishes:
+After `provision.sh` finishes:
 
 ```powershell
 # In Windows PowerShell:
 wsl --shutdown
 ```
 
-Then reopen the Earth-AI terminal and continue with [step 06 — full stack](06-observability-stack.md), which is **not** in `provision.sh` because it has secrets to load.
+Then reopen the Earth-AI terminal (you can run `sync-models.sh` before or after the shutdown), and continue with [step 06 — full stack](06-observability-stack.md), which is **not** in `provision.sh` because it has secrets to load.
 
 ## Two WSL distros — why?
 

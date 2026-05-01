@@ -100,8 +100,19 @@ for m in sorted(d['models'], key=lambda x: x['name']):
 
 > If you pull a model ad-hoc with `ollama pull`, it will live on disk but won't be re-pulled by a fresh provision on another machine. Add it to [`provision/models.list`](../../provision/models.list) to make it part of the reproducible baseline.
 
+## Benchmarking throughput
+
+To measure actual tok/s, TTFT, and VRAM footprint for the installed models, run the benchmark script:
+
+```bash
+cd ~/src/jomkz/earth-ai/stack
+python3 scripts/benchmark-models.py
+```
+
+See [operations/benchmarking.md](../operations/benchmarking.md) for full usage, output reference, and how to interpret results.
+
 ## Ideas / TODO
 
-- [ ] Try `qwen2.5-coder:32b-instruct-q4_K_M` (different quant) and compare with `qwen2.5-coder:32b`.
+- [ ] Try `qwen2.5-coder:32b-instruct-q4_K_M` (different quant) and compare with `qwen2.5-coder:32b` using the benchmark script.
 - [ ] Add a small reasoning model like `phi-4` for fast structured output.
-- [ ] Decide whether to keep both `32b` and `32b-instruct-q2_K` once I've measured throughput.
+- [ ] Decide whether to keep both `32b` and `32b-instruct-q2_K` — run `benchmark-models.py --models qwen2.5-coder-32b,qwen2.5-coder-32b-instruct` and compare tok/s vs quality.

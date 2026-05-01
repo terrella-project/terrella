@@ -7,7 +7,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MODELS_FILE="${MODELS_FILE:-${SCRIPT_DIR}/models.list}"
 
 echo "🚀 Starting AI Workstation Provisioning..."
 
@@ -61,18 +60,5 @@ fi
 "$HOME/tools/aider/venv/bin/pip" install --upgrade pip
 "$HOME/tools/aider/venv/bin/pip" install --upgrade aider-chat
 
-# 6. Pull baseline ollama models from models.list
-echo "▶ ollama models (from ${MODELS_FILE})"
-if [[ ! -f "$MODELS_FILE" ]]; then
-    echo "  ⚠️  ${MODELS_FILE} not found — skipping model pulls"
-else
-    # Strip comments and blank lines, take first whitespace-separated field.
-    while IFS= read -r model; do
-        [[ -z "$model" ]] && continue
-        echo "  pulling ${model}..."
-        ollama pull "$model"
-    done < <(sed -E 's/#.*$//; s/[[:space:]]+$//; /^[[:space:]]*$/d' "$MODELS_FILE" \
-              | awk '{print $1}')
-fi
-
 echo "✅ Provisioning complete. Run 'wsl --shutdown' in PowerShell, then reopen the terminal."
+echo "   To sync Ollama models, run: ./sync-models.sh"

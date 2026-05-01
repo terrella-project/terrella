@@ -1,16 +1,34 @@
-# Baseline ollama models pulled by provision/provision.sh.
+# Ollama model catalog — pulled by provision/sync-models.sh.
 #
 # Format: one model name per line. Blank lines and lines starting with '#'
 # are ignored. Anything after a '#' on a line is treated as a comment.
 #
-# To add a model: append a line and re-run provision.sh (it's idempotent —
+# To add a model: append a line and re-run sync-models.sh (it's idempotent —
 # `ollama pull` is a no-op if the model is already present).
 # To remove a model: delete its line here AND run `ollama rm <model>` by
 # hand. provision.sh never removes anything.
 
+# --- curated (specific tags, sized for this machine) ---
 nomic-embed-text                # 274 MB    embeddings (RAG / semantic search)
 qwen2.5-coder:1.5b              # 0.99 GB   tab-completion / inline FIM
 qwen2.5-coder:14b               # 8.99 GB   daily-driver coder (fits 16 GB VRAM)
 qwen2.5-coder:32b               # 19.85 GB  best local quality (overflows VRAM)
 deepseek-r1:14b                 # 8.99 GB   reasoning / chain-of-thought
 gemma2:9b                       # 5.44 GB   generalist / summaries / log triage
+
+# --- general purpose ---
+llama3.1                        # 4.7 GB    strong all-rounder; safe default recommendation
+llama3.2                        # 2.0 GB    compact (3B); good when speed matters
+mistral                         # 4.1 GB    fast, high quality-to-speed ratio; great for drafts / Q&A
+mixtral                         # 26.1 GB   MoE; deeper analysis, higher-quality long-form (needs RAM)
+qwen2                           # 4.4 GB    general chat + multilingual
+qwen2.5                         # 4.7 GB    general chat + structured output + multilingual
+
+# --- coding ---
+codellama                       # 3.8 GB    code generation, explanation, debugging
+deepseek-coder                  # 3.8 GB    strong coding assistant; often beats older code models
+
+# --- lightweight / fast ---
+phi3                            # 2.3 GB    lightweight; great for low-latency / quick Q&A
+gemma                           # 5.0 GB    compact generalist (Google); efficient, easy to run
+tinyllama                       # 638 MB    ultra-fast; testing, simple automation, low-resource
