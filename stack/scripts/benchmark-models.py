@@ -585,6 +585,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--timeout", type=int, default=120)
     p.add_argument("--no-vram", action="store_true")
     p.add_argument("--no-history", action="store_true")
+    p.add_argument("--no-write", action="store_true", help="Skip persisting results to Postgres")
     p.add_argument("--db-url", default="")
     p.add_argument("--yes", "-y", action="store_true", help="Skip confirmation for cloud models")
     return p.parse_args()
@@ -660,7 +661,7 @@ def main() -> None:
 
     print_results(results, history, track_vram)
 
-    if db_url:
+    if db_url and not args.no_write:
         write_results(db_url, results)
 
 

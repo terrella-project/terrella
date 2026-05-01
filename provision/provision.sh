@@ -13,7 +13,7 @@ echo "🚀 Starting AI Workstation Provisioning..."
 # 1. System updates and core dependencies
 echo "▶ apt update / install"
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y zstd python3-pip python3-venv curl git
+sudo apt install -y zstd python3-pip python3-venv python3-psycopg2 curl git jq
 
 # 2. Configure systemd for WSL
 echo "▶ /etc/wsl.conf"
@@ -25,7 +25,19 @@ systemd=true
 default=${USER}
 EOF
 
-# 3. Install ollama and apply network / CORS overrides
+# 3. GitHub CLI
+echo "▶ gh"
+if ! command -v gh &> /dev/null; then
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+        | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    sudo apt update
+    sudo apt install -y gh
+fi
+
+# 5. Install ollama and apply network / CORS overrides
 echo "▶ ollama"
 if ! command -v ollama &> /dev/null; then
     curl -fsSL https://ollama.com/install.sh | sh
@@ -42,7 +54,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable ollama
 sudo systemctl restart ollama
 
-# 4. Install Docker Engine + add user to docker group
+# 6. Install Docker Engine + add user to docker group
 echo "▶ docker"
 if ! command -v docker &> /dev/null; then
     curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
@@ -51,7 +63,7 @@ if ! command -v docker &> /dev/null; then
 fi
 sudo usermod -aG docker "$USER"
 
-# 5. Aider in a venv at ~/tools/aider
+# 7. Aider in a venv at ~/tools/aider
 echo "▶ aider"
 mkdir -p "$HOME/tools/aider"
 if [[ ! -x "$HOME/tools/aider/venv/bin/aider" ]]; then
