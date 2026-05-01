@@ -37,6 +37,7 @@ The script reads `observability/litellm/config.yaml` automatically, so it picks 
 | `--yes` / `-y` | off | Skip cloud-model confirmation prompt |
 | `--no-vram` | off | Skip nvidia-smi VRAM readings |
 | `--no-history` | off | Skip Postgres historical comparison |
+| `--no-write` | off | Skip persisting results to Postgres |
 | `--db-url URL` | `$DATABASE_URL` | Override Postgres connection string |
 
 ## Output
@@ -110,14 +111,29 @@ Cloud models won't have a VRAM column (not applicable) and their latency is domi
 
 On the first call to any ollama model, ollama loads the weights from disk into VRAM. That load is included in the TTFT measurement for that sample. With `--runs 3`, you get one cold and two warm samples — the p50 naturally de-emphasises the cold outlier.
 
-If you want to pre-warm a model before benchmarking (so all samples are warm):
+If you want to pre-warm a model before benchmarking (so all samples are warm), use `--no-write` with a single throwaway run first — the model stays loaded in VRAM between the two invocations:
 
 ```bash
-# Send a throwaway call to load the model first
-curl -s http://localhost:11434/api/generate \
-  -d '{"model":"qwen2.5-coder:14b","prompt":"hi","stream":false}' > /dev/null
+# Warm-up pass (discarded), then the real benchmark
+python3 scripts/benchmark-models.py --models qwen2.5-coder --runs 1 --no-write
 python3 scripts/benchmark-models.py --models qwen2.5-coder
 ```
+
+This works for multiple models too — the warm-up pass loads each one in sequence, and Ollama keeps them resident until its keep-alive timeout (default 5 minutes), so run both passes back-to-back.
+
+## Running on the same machine as Ollama
+
+The benchmark script runs on the same WSL instance that serves LiteLLM and Ollama. That's convenient but introduces a few measurement effects worth knowing about.
+
+**CPU contention.** The script itself is lightweight, but if a model runs on CPU (no GPU or partial VRAM offload), the benchmark process competes for the same cores during inference. Tok/s numbers will be slightly lower than they would be on an idle machine.
+
+**TTFT includes model load time.** When Ollama hasn't loaded a model yet, the first request blocks until the weights are in VRAM. That load time is included in the TTFT sample. With the default `--runs 3` you get one cold sample and two warm ones — the p50 de-emphasises the outlier, but it doesn't disappear. Use the `--no-write` pre-warm two-pass approach (see [First run is slow](#first-run-is-slow)) if you want all samples to be warm.
+
+**VRAM delta is approximate.** The script snapshots VRAM before and after the full model run (all prompts × runs). If Ollama evicts a previously loaded model during the run, or hasn't fully unloaded it before starting the next model, the delta will be off. Treat the VRAM column as an order-of-magnitude guide rather than a precise measurement.
+
+**Single-client throughput only.** Results reflect one request at a time from one client. Real usage with multiple concurrent users will produce lower tok/s and higher latency — the benchmark numbers are most useful for comparing models against each other, not for predicting production capacity.
+
+**WSL2 memory pressure.** WSL2 balloons its memory allocation as models load. If the total model footprint approaches the Windows host's WSL memory limit, Windows will start paging, which shows up as wide p50→p95 latency spreads. If you see p95 values several times higher than p50, check your WSL memory limit in `.wslconfig`.
 
 ## Historical data from LiteLLM
 

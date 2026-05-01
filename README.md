@@ -44,7 +44,8 @@ The whole guide lives under `docs/` and is structured for someone building this 
    cd stack
    ./scripts/generate-env.sh   # first time only — writes .env with random secrets
    docker compose up -d
-   ./scripts/init-billing-table.sh  # first time only — creates monthly_costs table
+   ./scripts/init-billing-table.sh   # first time only — creates monthly_costs table
+   ./scripts/init-benchmark-table.sh # first time only — creates benchmark_results table
    ```
    → Open WebUI <http://127.0.0.1:8080> · LiteLLM <http://127.0.0.1:4000> · Grafana <http://127.0.0.1:3000>.
 
