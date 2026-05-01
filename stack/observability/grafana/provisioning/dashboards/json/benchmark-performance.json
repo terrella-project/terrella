@@ -1,0 +1,219 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "schemaVersion": 39,
+  "tags": ["ai", "benchmark"],
+  "title": "Benchmark Performance",
+  "uid": "benchmark-performance",
+  "version": 1,
+  "time": { "from": "now-30d", "to": "now" },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Last run",
+      "id": 1,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": { "unit": "dateTimeAsIso" },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT MAX(run_at) AS \"Last Run\" FROM benchmark_results"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Models OK (last run)",
+      "id": 2,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) AS \"Models OK\" FROM benchmark_results WHERE run_at = (SELECT MAX(run_at) FROM benchmark_results) AND error IS NULL"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Runs in range",
+      "id": 3,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(DISTINCT run_at) AS \"Runs\" FROM benchmark_results WHERE $__timeFilter(run_at)"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Models tracked",
+      "id": 4,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(DISTINCT model) AS \"Models\" FROM benchmark_results WHERE error IS NULL AND $__timeFilter(run_at)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Throughput — tok/s p50",
+      "id": 5,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 4 },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "spanNulls": false, "showPoints": "always", "pointSize": 6 }
+        },
+        "overrides": []
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at AS \"time\", model AS metric, tok_per_sec_p50 AS value FROM benchmark_results WHERE $__timeFilter(run_at) AND error IS NULL AND tok_per_sec_p50 IS NOT NULL ORDER BY run_at ASC"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Time to first token — p50 (ms)",
+      "id": 6,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "spanNulls": false, "showPoints": "always", "pointSize": 6 }
+        },
+        "overrides": []
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "asc" } },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at AS \"time\", model AS metric, ttft_p50_ms AS value FROM benchmark_results WHERE $__timeFilter(run_at) AND error IS NULL AND ttft_p50_ms IS NOT NULL ORDER BY run_at ASC"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Total latency — p50 (ms)",
+      "id": 7,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "spanNulls": false, "showPoints": "always", "pointSize": 6 }
+        },
+        "overrides": []
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "asc" } },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at AS \"time\", model AS metric, lat_p50_ms AS value FROM benchmark_results WHERE $__timeFilter(run_at) AND error IS NULL AND lat_p50_ms IS NOT NULL ORDER BY run_at ASC"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Total latency — p95 (ms)",
+      "id": 8,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "spanNulls": false, "showPoints": "always", "pointSize": 6 }
+        },
+        "overrides": []
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "asc" } },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at AS \"time\", model AS metric, lat_p95_ms AS value FROM benchmark_results WHERE $__timeFilter(run_at) AND error IS NULL AND lat_p95_ms IS NOT NULL ORDER BY run_at ASC"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "VRAM footprint (GB)",
+      "id": 9,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decgbytes",
+          "custom": { "spanNulls": false, "showPoints": "always", "pointSize": 6 }
+        },
+        "overrides": []
+      },
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at AS \"time\", model AS metric, vram_mb::float / 1024 AS value FROM benchmark_results WHERE $__timeFilter(run_at) AND error IS NULL AND vram_mb IS NOT NULL ORDER BY run_at ASC"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Recent benchmark runs",
+      "id": 10,
+      "datasource": { "type": "postgres", "uid": "LiteLLM-Postgres" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "options": { "sortBy": [{ "displayName": "run_at", "desc": true }] },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT run_at, model, provider, ROUND(ttft_p50_ms::numeric, 0) AS ttft_p50_ms, ROUND(tok_per_sec_p50::numeric, 1) AS tok_per_sec_p50, ROUND(lat_p50_ms::numeric, 0) AS lat_p50_ms, ROUND(lat_p95_ms::numeric, 0) AS lat_p95_ms, ROUND(vram_mb::numeric / 1024, 2) AS vram_gb, sample_count, error FROM benchmark_results WHERE $__timeFilter(run_at) ORDER BY run_at DESC, model ASC LIMIT 200"
+        }
+      ]
+    }
+  ]
+}

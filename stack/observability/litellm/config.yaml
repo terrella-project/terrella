@@ -355,7 +355,7 @@ model_list:
   - model_name: gemma2
     model_aliases: ["gemma2-9b"]
     litellm_params:
-      model: ollama/gemma2-9b
+      model: ollama/gemma2:9b
       api_base: http://127.0.0.1:11434
 
   - model_name: qwen2.5-coder
@@ -371,7 +371,7 @@ model_list:
 
   - model_name: qwen2.5-coder-32b
     litellm_params:
-      model: ollama/qwen2.5-coder-32b
+      model: ollama/qwen2.5-coder:32b
       api_base: http://127.0.0.1:11434
 
   - model_name: qwen2.5-coder-32b-instruct

@@ -20,6 +20,7 @@ If you're new, read it in this order:
 | Work from jupiter (or Mac mini) and reach earth's models | [operations/cross-machine-access.md](operations/cross-machine-access.md) |
 | Stop the AI stack so you can play a game | [operations/maintenance.md#gaming-toggle](operations/maintenance.md#gaming-toggle) |
 | Back up Open WebUI chats | [operations/maintenance.md#backup--restore-open-webui](operations/maintenance.md#backup--restore-open-webui) |
+| Measure how fast a local model actually runs | [operations/benchmarking.md](operations/benchmarking.md) |
 | Log this month's Copilot / Claude bill | [operations/manual-billing.md](operations/manual-billing.md) |
 | Diagnose "WebUI won't load" / "GPU not used" | [operations/troubleshooting.md](operations/troubleshooting.md) |
 
