@@ -27,7 +27,7 @@
           "refId": "A",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT MAX(run_at) AS \"Last Run\" FROM benchmark_results"
+          "rawSql": "SELECT EXTRACT(EPOCH FROM MAX(run_at)) * 1000 AS \"Last Run\" FROM benchmark_results"
         }
       ]
     },
