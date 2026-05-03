@@ -1,12 +1,12 @@
 {
 	"folders": [
 		{
-			"name": "🏠 Home",
-			"path": "/home/john"
-		},
-		{
 			"name": "🤖 Earth AI (Workspace)",
 			"path": "."
+		},
+		{
+			"name": "🏠 Home",
+			"path": "/home/john"
 		}
 	],
 	"settings": {
