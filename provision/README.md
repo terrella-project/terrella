@@ -11,7 +11,7 @@ Machine provisioner and model manager for the Earth-AI WSL distro. These two scr
 ## Provision the machine
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 bash provision/provision.sh
 ```
 
@@ -22,7 +22,7 @@ Re-running is safe — every step is idempotent (`apt install` is a no-op for al
 ## Pull / update models
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 bash provision/sync-models.sh
 ```
 

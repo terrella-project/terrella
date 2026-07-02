@@ -68,7 +68,7 @@ Per the existing in-repo `runner/agent_runner.py`, MCP tools are NOT available i
 | Claude Code | per-repo `CLAUDE.md`, workspace `CLAUDE.md`, `.claude/settings.local.json` |
 | OpenCode | workspace `opencode.json` |
 | `agent_runner.py` | per-agent `.agent.md` files in `.github/agents/` |
-| LiteLLM | `~/src/jomkz/earth-ai/stack/observability/litellm/config.yaml` |
+| LiteLLM | `~/src/jomkz/terrella/stack/observability/litellm/config.yaml` |
 | ollama | `~/.ollama/` (on Earth-AI) |
 | MCP | workspace `mcp.json` |
-| Secrets | `~/src/jomkz/earth-ai/stack/.env` (API keys + generated secrets; see [setup/06-observability-stack.md](../setup/06-observability-stack.md#62-environment-variables)) |
+| Secrets | `~/src/jomkz/terrella/stack/.env` (API keys + generated secrets; see [setup/06-observability-stack.md](../setup/06-observability-stack.md#62-environment-variables)) |

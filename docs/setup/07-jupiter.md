@@ -161,7 +161,7 @@ Install **Continue** from the VS Code marketplace, then configure it to use eart
 ```yaml
 %YAML 1.1
 ---
-name: Earth AI
+name: Terrella
 version: 1.0.0
 schema: v1
 
@@ -191,10 +191,10 @@ models:
     roles: [embed]
 ```
 
-**Sync the chat-tier list** from LiteLLM. The script lives in the earth-ai repo (clone it once on jupiter) and writes `./earth-ai-config.yaml` in your current directory by default:
+**Sync the chat-tier list** from LiteLLM. The script lives in the terrella repo (clone it once on jupiter) and writes `./terrella-config.yaml` in your current directory by default:
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 LITELLM_KEY=sk-… ./stack/scripts/sync-continue-config.sh
 ```
 

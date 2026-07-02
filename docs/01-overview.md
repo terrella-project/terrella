@@ -1,6 +1,6 @@
 # Overview
 
-**Earth AI** is a personal AI workstation built on a single Windows 11 desktop with an NVIDIA RTX 5080. It runs local large-language models (LLMs) for everyday coding work, falls back to paid cloud APIs (Anthropic, Google Gemini, OpenAI) for hard problems, and keeps a single dashboard that shows what was used, when, and at what cost.
+**Terrella** is a personal AI stack, first deployed on a single desktop (**earth**, NVIDIA RTX 5080; this page still describes the legacy Windows 11 + WSL setup that M0 is migrating to Fedora). It runs local large-language models (LLMs) for everyday coding work, falls back to paid cloud APIs (Anthropic, Google Gemini, OpenAI) for hard problems, and keeps a single dashboard that shows what was used, when, and at what cost.
 
 The goals, in priority order:
 
@@ -73,6 +73,7 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 
 | Term | Meaning |
 |---|---|
+| **terrella** | Historically, a small magnetized model of Earth used for lab experiments — here, the project name: a homelab-scale AI stack, named for the PC (**earth**) it started on ([ADR-0008](adr/ADR-0008-project-name-terrella.md)). |
 | **WSL** | Windows Subsystem for Linux — runs a real Linux kernel as a lightweight VM on Windows. We use WSL2 with two distros. |
 | **WSL distro** | A separate Linux installation under WSL. We have two: `Ubuntu-24.04` (dev) and `Earth-AI` (AI services). |
 | **Mirrored networking** | A WSL2 feature where the Linux side sees the same `localhost` as Windows, so cross-distro and Windows↔Linux traffic doesn't need port forwarding. |

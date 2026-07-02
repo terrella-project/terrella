@@ -8,7 +8,7 @@ body:
     id: summary
     attributes:
       label: Summary
-      description: One-paragraph summary of the proposed change to a public contract (earthai.yaml schema, CLI command contract, node protocol).
+      description: One-paragraph summary of the proposed change to a public contract (terrella.yaml schema, CLI command contract, node protocol).
     validations:
       required: true
   - type: textarea

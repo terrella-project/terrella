@@ -14,9 +14,9 @@ directly — a schema coupling that would make any future swap expensive.
 ## Decision
 
 - **Keep LiteLLM** as the gateway for now.
-- **Isolate it**: the `earthai` gateway driver renders LiteLLM's config from `earthai.yaml`;
-  all consumers (Grafana, spend reports, the routing advisor) query **`earthai_spend` /
-  `earthai_requests` SQL views**, never LiteLLM tables directly (M2). A gateway swap then
+- **Isolate it**: the `terrella` gateway driver renders LiteLLM's config from `terrella.yaml`;
+  all consumers (Grafana, spend reports, the routing advisor) query **`terrella_spend` /
+  `terrella_requests` SQL views**, never LiteLLM tables directly (M2). A gateway swap then
   means a new driver + new view definitions — nothing else moves.
 - Run a **time-boxed M3 spike** on alternatives. Disqualifying criterion: a per-request cost
   ledger queryable from Postgres/OTel with fidelity ≥ `LiteLLM_SpendLogs`. The spike must

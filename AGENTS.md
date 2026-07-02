@@ -1,6 +1,6 @@
-# Agent Instructions — earth-ai
+# Agent Instructions — terrella
 
-This is a personal AI workstation repo evolving into an installable tool (`earthai`). Read `README.md`, `ROADMAP.md`, and `docs/01-overview.md` before making changes. Work tracking follows [`docs/project-management.md`](docs/project-management.md) (issue types, `component:*` labels, milestones M0–M7, conventional commits, CHANGELOG entry per PR); architectural decisions are ADRs in [`docs/adr/`](docs/adr/).
+This is a personal AI workstation repo evolving into an installable tool (`terrella`). Read `README.md`, `ROADMAP.md`, and `docs/01-overview.md` before making changes. Work tracking follows [`docs/project-management.md`](docs/project-management.md) (issue types, `component:*` labels, milestones M0–M7, conventional commits, CHANGELOG entry per PR); architectural decisions are ADRs in [`docs/adr/`](docs/adr/).
 
 ## Repo structure
 
@@ -12,7 +12,8 @@ This is a personal AI workstation repo evolving into an installable tool (`earth
 | `docs/reference/` | Look-up docs: machines, models, subscriptions, tools, routing |
 | `docs/setup/` | Numbered installation guide (01–07; WSL-era, migrating in M0) |
 | `docs/operations/` | Day-2 ops: cross-machine access, maintenance, billing, troubleshooting |
-| `docs/runbooks/` | Operator runbooks (GitHub project setup, …) |
+| `docs/runbooks/` | Operator runbooks (GitHub project setup, rename migration, …) |
+| `deploy/earth/` | John's deployment overlay (machines, subscriptions, billing) — personal-deployment docs, not tool docs |
 | `provision/` | `provision.sh` one-shot installer + `models.list` (legacy; absorbed by CLI in M1) |
 | `stack/` | docker-compose: all services — Open WebUI, LiteLLM, Postgres, Prometheus, Grafana (legacy; quadlets in M0) |
 | `stack/observability/` | config files for LiteLLM, Prometheus, and Grafana (mounted read-only) |
@@ -20,16 +21,30 @@ This is a personal AI workstation repo evolving into an installable tool (`earth
 
 ## Machines
 
-Three machines; see [`docs/reference/machines.md`](docs/reference/machines.md) for full specs and prerequisites status.
+Three machines; see [`deploy/earth/machines.md`](deploy/earth/machines.md) for full specs and prerequisites status.
 
 - **earth** — primary workstation (i9-12900K, RTX 5080, 64 GB). **Now runs Fedora 44**; the old Windows 11 + WSL install remains bootable for taking data backups (M0). The machines doc still describes the WSL-era setup until the M0 docs pass.
 - **jupiter** — laptop, mobile dev only, reaches earth via Tailscale.
 - **Mac mini** — iOS dev (Xcode), same fallback as jupiter; potential Apple-silicon inference node at M7.
 
+## Naming rules (do NOT "finish" the rename)
+
+The project is **terrella** (formerly earth-ai; [ADR-0008](docs/adr/ADR-0008-project-name-terrella.md)).
+These remaining `earth`/`earth-ai` names are **live infrastructure, not leftovers** — never rename them in docs or config:
+
+- **`Earth-AI`** — the legacy WSL distro on the earth PC.
+- **`earth-ai`** in URLs like `http://earth-ai:11434` — the Tailscale MagicDNS hostname.
+- **`name: earth-ai`** in `stack/docker-compose.yml` — prefixes the live data volumes; renaming it orphans running Postgres/Grafana data (see the comment in that file).
+- **`earth`**, **`jupiter`**, Mac mini — machine hostnames.
+
+All of these retire with the M0 migration, deliberately.
+
 ## Doc conventions
 
 - Cross-link between docs files using relative paths (e.g. `[machines.md](machines.md)`).
-- Prerequisites and version info live in the tables in `docs/reference/machines.md` — update that table when software is installed or upgraded.
+- **Placement rule:** generic tool documentation goes in `docs/`; anything specific to John's machines, subscriptions, or billing goes in `deploy/earth/`.
+- New files get REUSE/SPDX license metadata (covered repo-wide by `REUSE.toml`; add an SPDX header only if a file needs a different license than its directory default).
+- Prerequisites and version info live in the tables in `deploy/earth/machines.md` — update that table when software is installed or upgraded.
 - `_TODO_` is the placeholder for not-yet-gathered info in tables.
 - Installed tool versions go in [`docs/reference/tools.md`](docs/reference/tools.md).
 - Local model list is maintained in [`docs/reference/local-models.md`](docs/reference/local-models.md) and `provision/models.list`.

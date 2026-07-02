@@ -12,10 +12,10 @@ generator, diffs are noisy, and correctness depends on marker discipline.
 
 ## Decision
 
-User intent lives in **one validated config file** (`earthai.yaml`, pydantic-validated, JSON
+User intent lives in **one validated config file** (`terrella.yaml`, pydantic-validated, JSON
 Schema exported). Every runtime artifact is a **100% rendered build output that no human
 edits**: quadlets, gateway config, `prometheus.yml`, Grafana provisioning, systemd
-targets/timers, client configs, and (from M5) the routing table. `earthai apply --diff` is
+targets/timers, client configs, and (from M5) the routing table. `terrella apply --diff` is
 the terraform-plan analogue; provider-catalog syncs become *inputs to the renderer*, not
 in-place file mutations.
 

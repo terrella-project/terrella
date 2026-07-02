@@ -7,7 +7,7 @@ How work is planned, tracked, and prioritized in this repository. The model is
 → [uio](https://github.com/uio-project/uio/blob/main/docs/project-management.md) /
 [astrocyte](https://github.com/mkzsystems/astrocyte/blob/main/docs/project-management.md)),
 with all of fighters-legacy's "Rev 2" lessons applied from day one. Adoption rationale and
-earth-ai-specific tailoring: [ADR-0007](adr/ADR-0007-github-native-pm-framework.md).
+terrella-specific tailoring: [ADR-0007](adr/ADR-0007-github-native-pm-framework.md).
 
 The desired state lives in [`.github/project.yml`](../.github/project.yml) and is reconciled
 by [`scripts/project-sync.sh`](../scripts/project-sync.sh) — the same
@@ -29,7 +29,7 @@ config-in/artifacts-out principle the product itself follows
 
 ## Issue types (source of truth)
 
-GitHub **issue types** (org-level on `mkzsystems`) — not labels — classify work. Set exactly
+GitHub **issue types** (org-level on `terrella-project`) — not labels — classify work. Set exactly
 one on every issue; there are deliberately **no `type:*` labels**:
 
 | Type | Use for |
@@ -55,7 +55,7 @@ three families:
   issues at triage.
 - **RFC workflow** — `rfc` + `status: under-discussion|accepted|rejected|implemented`. An
   RFC is a Feature/Task carrying the `rfc` label, reserved for public contracts (chiefly the
-  `earthai.yaml` schema) once they freeze post-OSS; ADRs in [docs/adr/](adr/) cover
+  `terrella.yaml` schema) once they freeze post-OSS; ADRs in [docs/adr/](adr/) cover
   everything pre-1.0.
 - **Meta** — `epic` (mirror for filtering), `backlog`, `needs-triage`, `needs-info`,
   `needs-decision`, `blocked`, `no-changelog`, `release`, plus kept GitHub defaults (`bug`,
@@ -70,7 +70,7 @@ introduced at M6 when the CLI ships publicly.
 
 ## The board
 
-Org Project **[earth-ai 1.0](https://github.com/orgs/mkzsystems/projects)** holds every open
+Org Project **[terrella 1.0](https://github.com/orgs/terrella-project/projects)** holds every open
 item; the built-in **auto-add** workflows add new issues/PRs and sub-issues automatically.
 
 | View | Layout | Purpose |
@@ -92,7 +92,7 @@ When opening or grooming an issue, set all of:
 - [ ] **Milestone** — its phase (or the `backlog` label if unscheduled)
 - [ ] **`component:*` label(s)** — the subsystem(s) it touches
 - [ ] **Parent** — link it under its phase Epic if applicable
-- [ ] **Board** — confirm it's on *earth-ai 1.0* (auto-add covers new issues); Status `Todo`
+- [ ] **Board** — confirm it's on *terrella 1.0* (auto-add covers new issues); Status `Todo`
 - [ ] **Effort** — set when the issue enters active planning
 
 ## Delivery loop: issue → branch → PR → merge
@@ -100,7 +100,7 @@ When opening or grooming an issue, set all of:
 1. **Branch** off `main`: `<type>/<short-kebab>` (e.g. `feat/quadlet-renderer`,
    `chore/adopt-pm-framework`).
 2. **Commit** with [Conventional Commits](https://www.conventionalcommits.org/); the scope
-   mirrors the `component:*` label (`feat(gateway): render aliases from earthai.yaml`).
+   mirrors the `component:*` label (`feat(gateway): render aliases from terrella.yaml`).
    No DCO sign-off is required (revisited with REUSE/SPDX at M6).
 3. **PR** referencing the issue (`Closes #NNN`); the title is conventional-commit form
    (enforced by `pr-title-lint`); the path labeler applies `component:*` automatically.
@@ -114,7 +114,7 @@ When opening or grooming an issue, set all of:
 - **ADRs** ([docs/adr/](adr/), `ADR-NNNN-*.md`) — lightweight, dated records for
   architectural decisions during pre-1.0 development.
 - **RFCs** — the label-driven workflow (`rfc` + `status:*`) reserved for public contracts
-  after they freeze (post-M6): the `earthai.yaml` schema, CLI command contracts, the node
+  after they freeze (post-M6): the `terrella.yaml` schema, CLI command contracts, the node
   registration protocol.
 
 ## Agents and automation

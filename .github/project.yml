@@ -1,4 +1,4 @@
-# Declarative project-management spec for earth-ai.
+# Declarative project-management spec for terrella.
 #
 # This file is the single source of truth for repo labels, the phase
 # milestones, the org issue-type taxonomy, and the org Project board's custom
@@ -17,7 +17,7 @@ labels:
   # -- Component labels (path-routed by .github/labeler.yml) ------------------
   - name: "component:cli"
     color: "1d76db"
-    description: "Component: earthai CLI (commands, UX)"
+    description: "Component: terrella CLI (commands, UX)"
   - name: "component:provision"
     color: "1d76db"
     description: "Component: host provisioning & distro adapters"
@@ -102,7 +102,7 @@ labels:
     description: "Release engineering & publishing"
 
 # ---------------------------------------------------------------------------
-# Issue types (org-level; already enabled on mkzsystems). Validate-only: the
+# Issue types (org-level; must exist on the org — see the runbook). Validate-only: the
 # reconciler warns if any are missing but does not create org objects here.
 # ---------------------------------------------------------------------------
 issue_types:
@@ -122,15 +122,15 @@ issue_types:
 # ---------------------------------------------------------------------------
 milestones:
   - title: "M0 — Fedora migration"
-    description: "Full stack on Fedora 44 via hand-written quadlets; data restored from the WSL install; earthai.target gaming toggle."
-  - title: "M1 — earthai CLI MVP"
-    description: "earthai provision && earthai apply reproduces M0 from earthai.yaml; golden-file tests; full CI matrix."
+    description: "Full stack on Fedora 44 via hand-written quadlets; data restored from the WSL install; terrella.target gaming toggle."
+  - title: "M1 — terrella CLI MVP"
+    description: "terrella provision && terrella apply reproduces M0 from terrella.yaml; golden-file tests; full CI matrix."
   - title: "M2 — Config, secrets & 2026 models"
-    description: "Gateway + serving fully config-rendered; podman secrets + sops-age; 2026 model refresh; DB migrations + earthai_* views."
+    description: "Gateway + serving fully config-rendered; podman secrets + sops-age; 2026 model refresh; DB migrations + terrella_* views."
   - title: "M3 — Observability v2"
-    description: "OTel GenAI tracing; Langfuse-vs-Phoenix spike; gateway-alternatives spike → ADRs; dashboards on earthai_* views."
+    description: "OTel GenAI tracing; Langfuse-vs-Phoenix spike; gateway-alternatives spike → ADRs; dashboards on terrella_* views."
   - title: "M4 — Agentic ops v1"
-    description: "Stack-ops MCP server (earthai mcp serve); systemd-timer agents: bench regression, spend report, catalog watcher."
+    description: "Stack-ops MCP server (terrella mcp serve); systemd-timer agents: bench regression, spend report, catalog watcher."
   - title: "M5 — Benchmark-informed routing"
     description: "Task-class evals; routing advisor proposes routing.yaml as a PR with rationale; rendered into gateway config."
   - title: "M6 — OSS launch"
@@ -143,9 +143,9 @@ milestones:
 # reconciler validates fields and warns if any are missing.
 # ---------------------------------------------------------------------------
 project:
-  owner: "mkzsystems"
+  owner: "terrella-project"
   number: 12
-  title: "earth-ai 1.0"
+  title: "terrella 1.0"
   fields:
     - name: "Effort"
       type: "single_select"

@@ -3,26 +3,26 @@
 # Label names must match .github/project.yml. See docs/project-management.md.
 #
 # Paths reflect the current transition-period layout (stack/ + provision/);
-# package paths (earthai/**) are mapped ahead of the M1 scaffold and extend as
+# package paths (terrella/**) are mapped ahead of the M1 scaffold and extend as
 # the package lands.
 
 "component:cli":
   - changed-files:
       - any-glob-to-any-file:
-          - "earthai/cli/**"
+          - "terrella/cli/**"
 
 "component:provision":
   - changed-files:
       - any-glob-to-any-file:
           - "provision/**"
-          - "earthai/platform/**"
+          - "terrella/platform/**"
 
 "component:runtime":
   - changed-files:
       - any-glob-to-any-file:
           - "stack/docker-compose.yml"
           - "stack/quadlet/**"
-          - "earthai/render/**"
+          - "terrella/render/**"
 
 "component:gateway":
   - changed-files:
@@ -30,7 +30,7 @@
           - "stack/observability/litellm/config.yaml"
           - "stack/scripts/update-litellm-config.sh"
           - "stack/scripts/provider-models.py"
-          - "earthai/drivers/gateway/**"
+          - "terrella/drivers/gateway/**"
 
 "component:serving":
   - changed-files:
@@ -39,7 +39,7 @@
           - "provision/sync-models.sh"
           - "stack/scripts/update-ollama-models.sh"
           - "stack/scripts/list-models.sh"
-          - "earthai/drivers/serving/**"
+          - "terrella/drivers/serving/**"
 
 "component:observability":
   - changed-files:
@@ -48,7 +48,7 @@
           - "stack/observability/prometheus/**"
           - "stack/observability/litellm/litellm_exporter.py"
           - "stack/observability/ollama/**"
-          - "earthai/exporters/**"
+          - "terrella/exporters/**"
 
 "component:data":
   - changed-files:
@@ -56,38 +56,38 @@
           - "stack/sql/**"
           - "stack/scripts/init-*.sh"
           - "stack/scripts/log-billing.sh"
-          - "earthai/db/**"
+          - "terrella/db/**"
 
 "component:routing":
   - changed-files:
       - any-glob-to-any-file:
           - "docs/reference/routing.md"
-          - "earthai/bench/**"
+          - "terrella/bench/**"
           - "stack/scripts/benchmark-models.py"
 
 "component:agents":
   - changed-files:
       - any-glob-to-any-file:
-          - "earthai/agents/**"
+          - "terrella/agents/**"
 
 "component:mcp":
   - changed-files:
       - any-glob-to-any-file:
-          - "earthai/mcp/**"
+          - "terrella/mcp/**"
 
 "component:client":
   - changed-files:
       - any-glob-to-any-file:
           - "stack/continue.yaml.example"
           - "stack/scripts/sync-continue-config.sh"
-          - "earthai/client/**"
+          - "terrella/client/**"
 
 "component:secrets":
   - changed-files:
       - any-glob-to-any-file:
           - "stack/scripts/generate-env.sh"
           - "stack/.env.example"
-          - "earthai/secrets/**"
+          - "terrella/secrets/**"
 
 "component:docs":
   - changed-files:
