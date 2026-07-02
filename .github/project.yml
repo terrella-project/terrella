@@ -144,7 +144,7 @@ milestones:
 # ---------------------------------------------------------------------------
 project:
   owner: "terrella-project"
-  number: 12
+  number: 1
   title: "terrella 1.0"
   fields:
     - name: "Effort"
