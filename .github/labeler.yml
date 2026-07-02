@@ -1,0 +1,103 @@
+# Path-based PR labeling for actions/labeler@v5.
+# Applies `component:*` labels automatically based on the files a PR touches.
+# Label names must match .github/project.yml. See docs/project-management.md.
+#
+# Paths reflect the current transition-period layout (stack/ + provision/);
+# package paths (earthai/**) are mapped ahead of the M1 scaffold and extend as
+# the package lands.
+
+"component:cli":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "earthai/cli/**"
+
+"component:provision":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "provision/**"
+          - "earthai/platform/**"
+
+"component:runtime":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/docker-compose.yml"
+          - "stack/quadlet/**"
+          - "earthai/render/**"
+
+"component:gateway":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/observability/litellm/config.yaml"
+          - "stack/scripts/update-litellm-config.sh"
+          - "stack/scripts/provider-models.py"
+          - "earthai/drivers/gateway/**"
+
+"component:serving":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "provision/models.list"
+          - "provision/sync-models.sh"
+          - "stack/scripts/update-ollama-models.sh"
+          - "stack/scripts/list-models.sh"
+          - "earthai/drivers/serving/**"
+
+"component:observability":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/observability/grafana/**"
+          - "stack/observability/prometheus/**"
+          - "stack/observability/litellm/litellm_exporter.py"
+          - "stack/observability/ollama/**"
+          - "earthai/exporters/**"
+
+"component:data":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/sql/**"
+          - "stack/scripts/init-*.sh"
+          - "stack/scripts/log-billing.sh"
+          - "earthai/db/**"
+
+"component:routing":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/reference/routing.md"
+          - "earthai/bench/**"
+          - "stack/scripts/benchmark-models.py"
+
+"component:agents":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "earthai/agents/**"
+
+"component:mcp":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "earthai/mcp/**"
+
+"component:client":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/continue.yaml.example"
+          - "stack/scripts/sync-continue-config.sh"
+          - "earthai/client/**"
+
+"component:secrets":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "stack/scripts/generate-env.sh"
+          - "stack/.env.example"
+          - "earthai/secrets/**"
+
+"component:docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "**/*.md"
+
+"component:ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/workflows/**"
+          - ".github/*.yml"
+          - "scripts/project-sync.sh"

@@ -1,0 +1,32 @@
+name: PR title lint
+
+# Enforces Conventional-Commit form on PR titles (the squash-merge commit
+# subject). Scopes mirror the `component:*` labels; see
+# docs/project-management.md.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            chore
+            refactor
+            test
+            ci
+            perf
+            build
+          requireScope: false

@@ -1,0 +1,158 @@
+# Declarative project-management spec for earth-ai.
+#
+# This file is the single source of truth for repo labels, the phase
+# milestones, the org issue-type taxonomy, and the org Project board's custom
+# fields. It is reconciled by `scripts/project-sync.sh` (run locally by a
+# maintainer, or by the `project-sync` workflow once PROJECT_ADMIN_TOKEN is set).
+#
+# The reconciler is NON-DESTRUCTIVE: it creates/updates/renames the entries
+# listed here but never deletes labels/milestones that are absent. See
+# docs/project-management.md for the full model.
+
+# ---------------------------------------------------------------------------
+# Labels
+#   `from:` renames an existing label in place (preserving issue associations).
+# ---------------------------------------------------------------------------
+labels:
+  # -- Component labels (path-routed by .github/labeler.yml) ------------------
+  - name: "component:cli"
+    color: "1d76db"
+    description: "Component: earthai CLI (commands, UX)"
+  - name: "component:provision"
+    color: "1d76db"
+    description: "Component: host provisioning & distro adapters"
+  - name: "component:runtime"
+    color: "1d76db"
+    description: "Component: podman/quadlets/systemd service layer"
+  - name: "component:gateway"
+    color: "1d76db"
+    description: "Component: LLM gateway (LiteLLM driver, aliases, virtual keys)"
+  - name: "component:serving"
+    color: "1d76db"
+    description: "Component: local model serving (ollama driver, model catalog)"
+  - name: "component:observability"
+    color: "1d76db"
+    description: "Component: Prometheus, Grafana, exporters, tracing"
+  - name: "component:data"
+    color: "1d76db"
+    description: "Component: Postgres schema, migrations, views, cost ledger"
+  - name: "component:routing"
+    color: "1d76db"
+    description: "Component: model routing table, evals, routing advisor"
+  - name: "component:agents"
+    color: "1d76db"
+    description: "Component: timer agents & agentic workflows"
+  - name: "component:mcp"
+    color: "1d76db"
+    description: "Component: stack-ops MCP server & MCP integrations"
+  - name: "component:client"
+    color: "1d76db"
+    description: "Component: client config rendering (Continue.dev, env, macOS)"
+  - name: "component:secrets"
+    color: "1d76db"
+    description: "Component: secrets management (podman secrets, sops-age)"
+  - name: "component:docs"
+    color: "1d76db"
+    description: "Component: documentation"
+  - name: "component:ci"
+    color: "1d76db"
+    description: "Component: CI/CD, workflows & repo automation"
+
+  # -- RFC workflow (reserved for public contracts; see project-management.md) -
+  - name: "rfc"
+    color: "6f42c1"
+    description: "Request for comments on a public contract"
+  - name: "status: under-discussion"
+    color: "fbca04"
+    description: "RFC: open for discussion"
+  - name: "status: accepted"
+    color: "0e8a16"
+    description: "RFC: accepted, awaiting implementation"
+  - name: "status: rejected"
+    color: "d93f0b"
+    description: "RFC: rejected"
+  - name: "status: implemented"
+    color: "5319e7"
+    description: "RFC: implemented"
+
+  # -- Meta labels -----------------------------------------------------------
+  - name: "epic"
+    color: "3e4b9e"
+    description: "Tracks a multi-issue initiative via sub-issues"
+  - name: "backlog"
+    color: "cccccc"
+    description: "Not yet scheduled to a milestone"
+  - name: "needs-triage"
+    color: "e99695"
+    description: "Awaiting triage (type/milestone/component)"
+  - name: "needs-info"
+    color: "d876e3"
+    description: "Waiting on more information"
+  - name: "needs-decision"
+    color: "fbca04"
+    description: "Blocked on a decision (usually an ADR)"
+  - name: "blocked"
+    color: "b60205"
+    description: "Blocked by another issue or external factor"
+  - name: "no-changelog"
+    color: "ededed"
+    description: "Exempt this PR from the CHANGELOG requirement"
+  - name: "release"
+    color: "0e8a16"
+    description: "Release engineering & publishing"
+
+# ---------------------------------------------------------------------------
+# Issue types (org-level; already enabled on mkzsystems). Validate-only: the
+# reconciler warns if any are missing but does not create org objects here.
+# ---------------------------------------------------------------------------
+issue_types:
+  - name: "Epic"
+    description: "A large, multi-issue initiative tracked via sub-issues"
+  - name: "Feature"
+    description: "A request, idea, or new functionality"
+  - name: "Task"
+    description: "A specific, well-scoped piece of work (incl. docs/chore work)"
+  - name: "Spike"
+    description: "A time-boxed investigation that informs follow-on work"
+  - name: "Bug"
+    description: "An unexpected problem or incorrect behavior"
+
+# ---------------------------------------------------------------------------
+# Phase milestones (undated; sizes & sequencing live in ROADMAP.md).
+# ---------------------------------------------------------------------------
+milestones:
+  - title: "M0 — Fedora migration"
+    description: "Full stack on Fedora 44 via hand-written quadlets; data restored from the WSL install; earthai.target gaming toggle."
+  - title: "M1 — earthai CLI MVP"
+    description: "earthai provision && earthai apply reproduces M0 from earthai.yaml; golden-file tests; full CI matrix."
+  - title: "M2 — Config, secrets & 2026 models"
+    description: "Gateway + serving fully config-rendered; podman secrets + sops-age; 2026 model refresh; DB migrations + earthai_* views."
+  - title: "M3 — Observability v2"
+    description: "OTel GenAI tracing; Langfuse-vs-Phoenix spike; gateway-alternatives spike → ADRs; dashboards on earthai_* views."
+  - title: "M4 — Agentic ops v1"
+    description: "Stack-ops MCP server (earthai mcp serve); systemd-timer agents: bench regression, spend report, catalog watcher."
+  - title: "M5 — Benchmark-informed routing"
+    description: "Task-class evals; routing advisor proposes routing.yaml as a PR with rationale; rendered into gateway config."
+  - title: "M6 — OSS launch"
+    description: "LICENSE, CONTRIBUTING, SECURITY, CoC, PyPI release pipeline, de-personalized docs, final secret audit."
+  - title: "M7 — Multi-node"
+    description: "Platform-agnostic node agent, cross-node model placement, federated metrics, cluster copilot; A2A reassessment."
+
+# ---------------------------------------------------------------------------
+# Org Project board. The `number` is filled in once the board exists; the
+# reconciler validates fields and warns if any are missing.
+# ---------------------------------------------------------------------------
+project:
+  owner: "mkzsystems"
+  number: 12
+  title: "earth-ai 1.0"
+  fields:
+    - name: "Effort"
+      type: "single_select"
+      options: ["XS", "S", "M", "L", "XL"]
+    - name: "Order"
+      type: "number"
+    - name: "Start Date"
+      type: "date"
+    - name: "Target Date"
+      type: "date"

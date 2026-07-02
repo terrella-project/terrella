@@ -1,6 +1,12 @@
 # 🌍 Project Earth — Universal AI Workstation
 
-A reproducible setup for a personal AI workstation — Windows 11 host + WSL2 + NVIDIA RTX 5080 — running local LLMs (via [ollama](https://ollama.com)) for everyday coding, with paid cloud APIs (Anthropic / Gemini / OpenAI) reserved for hard problems. Every API call is logged to Postgres and visualized in Grafana, so total spend across local + paid services is always one chart away.
+A reproducible setup for a personal AI workstation — **Fedora Linux (primary) or WSL2/Ubuntu (supported)** with an NVIDIA RTX 5080 — running local LLMs (via [ollama](https://ollama.com)) for everyday coding, with paid cloud APIs (Anthropic / Gemini / OpenAI) reserved for hard problems. Every API call is logged to Postgres and visualized in Grafana, so total spend across local + paid services is always one chart away.
+
+## 🧭 Direction & roadmap
+
+This project is evolving from a workstation blueprint into an **installable open-source tool** — a CLI (working name `earthai`) that provisions and manages a personal AI stack on any Linux box, running on Podman + Quadlets, with a multi-node homelab as the end state. The plan lives in [ROADMAP.md](ROADMAP.md) (phases M0–M7), architectural decisions in [docs/adr/](docs/adr/), and work tracking in [docs/project-management.md](docs/project-management.md).
+
+> **Transition note:** earth (the reference machine) now runs Fedora 44; the docs below still describe the WSL-era setup and are being migrated as part of [M0](ROADMAP.md#phases). The `stack/` and `provision/` trees remain the working reference until the CLI reproduces them (see the transition policy in ROADMAP.md).
 
 ```
 Open WebUI (chat for humans)  ──┐
