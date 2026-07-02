@@ -1,0 +1,10 @@
+# Keep GitHub Actions pinned-SHA versions fresh.
+# The `pip` ecosystem is added when the real package lands (M1).
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "component:ci"

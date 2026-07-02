@@ -18,3 +18,4 @@ Statuses: `Accepted`, `Superseded by ADR-XXXX`, `Deprecated`.
 | [ADR-0006](ADR-0006-config-in-artifacts-out.md) | One validated config in, everything generated out | Accepted |
 | [ADR-0007](ADR-0007-github-native-pm-framework.md) | Adopt the GitHub-native PM framework | Accepted |
 | [ADR-0008](ADR-0008-project-name-terrella.md) | Rename the project to terrella; move to the terrella-project org | Accepted |
+| [ADR-0009](ADR-0009-licensing-and-compliance.md) | Apache-2.0, REUSE compliance now, DCO deferred | Accepted |

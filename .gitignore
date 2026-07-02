@@ -1,0 +1,12 @@
+# Python build artifacts (stub package; see pyproject.toml)
+dist/
+build/
+*.egg-info/
+__pycache__/
+
+# Local environment / secrets — never commit
+stack/.env
+.env
+
+# Generated Continue.dev config
+terrella-config.yaml
