@@ -1,0 +1,19 @@
+name: REUSE compliance
+
+# Verifies every file has licensing metadata (REUSE.toml covers the tree).
+# See ADR-0009 and CONTRIBUTING.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: fsfe/reuse-action@bb774aa972c2a89ff34781233d275075cbddf542 # v5
