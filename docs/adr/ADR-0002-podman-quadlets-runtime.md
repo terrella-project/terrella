@@ -19,7 +19,7 @@ shield.
 - **Host networking is dropped**, not ported: services join a named podman network and
   publish only on loopback and the Tailscale interface; firewalld zones are managed
   explicitly.
-- An **`earthai.target`** systemd target groups the stack — `systemctl stop earthai.target`
+- An **`terrella.target`** systemd target groups the stack — `systemctl stop terrella.target`
   frees VRAM and replaces the old `wsl --shutdown` gaming toggle.
 - Escape hatch: the renderer supports per-service rootful/rootless choice in case rootless
   GPU access fights back (SELinux booleans, CDI edge cases).

@@ -23,7 +23,7 @@ Try, in order:
 
 1. **Is the container up?**
    ```bash
-   cd ~/src/jomkz/earth-ai/stack
+   cd ~/src/jomkz/terrella/stack
    docker compose ps
    ```
    If `open-webui` is not "running", `docker compose up -d` and check `docker compose logs open-webui --tail=100`.
@@ -93,7 +93,7 @@ curl -s http://localhost:4000/v1/models \
 If your model isn't in the output, refresh the managed LiteLLM catalog and restart LiteLLM:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 ./scripts/update-litellm-config.sh
 docker compose restart litellm
 ```
@@ -101,7 +101,7 @@ docker compose restart litellm
 ## LiteLLM smoke test fails
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 ./scripts/smoke.sh
 ```
 

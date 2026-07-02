@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📖 Project management & triage
-    url: https://github.com/mkzsystems/earth-ai/blob/main/docs/project-management.md
+    url: https://github.com/terrella-project/terrella/blob/main/docs/project-management.md
     about: How issues, types, labels, milestones, and the board work before you file.
   - name: 🗺️ Roadmap
-    url: https://github.com/mkzsystems/earth-ai/blob/main/ROADMAP.md
+    url: https://github.com/terrella-project/terrella/blob/main/ROADMAP.md
     about: Phases M0–M7, vision, and sequencing rules.

@@ -1,8 +1,13 @@
-# Earth AI services — Open WebUI + LiteLLM proxy + Postgres + Prometheus + Grafana.
+# Terrella services — Open WebUI + LiteLLM proxy + Postgres + Prometheus + Grafana.
 # Intended host: Earth-AI WSL on machine `earth`.
 # Ollama runs outside this stack (Phase 3), on the host's WSL distro.
 # All Postgres/Grafana ports bind to 127.0.0.1 — cross-machine access is via Tailscale.
 
+# Do NOT rename this project: it prefixes the live named volumes
+# (earth-ai_open-webui, earth-ai_prometheus-data, Postgres/Grafana data).
+# Renaming would make `docker compose up` create fresh empty volumes and orphan
+# the running data. This legacy stack is retired at M0; the quadlet stack adopts
+# terrella naming with a deliberate data migration (see ADR-0008).
 name: earth-ai
 
 services:

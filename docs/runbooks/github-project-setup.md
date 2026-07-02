@@ -5,7 +5,7 @@ How to stand up and maintain the declarative project-management sync. See
 
 ## Prerequisites
 
-- Maintainer access to the `mkzsystems` org.
+- Maintainer access to the `terrella-project` org.
 - The [`gh`](https://cli.github.com/) CLI, authenticated with a session that has
   `admin:org` and `project` scopes (`gh auth refresh -s admin:org,project`).
 
@@ -30,8 +30,8 @@ bash scripts/project-sync.sh --dry-run
 Custom fields are scriptable; views and auto-add are UI-only:
 
 ```bash
-OWNER=mkzsystems
-gh project create --owner "$OWNER" --title "earth-ai 1.0"
+OWNER=terrella-project
+gh project create --owner "$OWNER" --title "terrella 1.0"
 # Note the returned project number, set it as `project.number` in .github/project.yml, then:
 NUM=<number>
 gh project field-create "$NUM" --owner "$OWNER" --name "Effort" \
@@ -50,9 +50,9 @@ bash scripts/project-sync.sh
 Verify:
 
 ```bash
-gh label list -R mkzsystems/earth-ai --limit 100
-gh api repos/mkzsystems/earth-ai/milestones --jq '.[].title'
-gh project field-list <NUM> --owner mkzsystems
+gh label list -R terrella-project/terrella --limit 100
+gh api repos/terrella-project/terrella/milestones --jq '.[].title'
+gh project field-list <NUM> --owner terrella-project
 ```
 
 ## Running it in CI (unattended)
@@ -64,7 +64,7 @@ issue types and org Projects cannot be written by the default `GITHUB_TOKEN`.
 1. Create a PAT with `repo`, `project`, and org read (`admin:org`) scopes — or reuse the
    org's existing `PROJECT_ADMIN_TOKEN` used by astrocyte.
 2. Add it as the repo secret **`PROJECT_ADMIN_TOKEN`**
-   (`gh secret set PROJECT_ADMIN_TOKEN -R mkzsystems/earth-ai`).
+   (`gh secret set PROJECT_ADMIN_TOKEN -R terrella-project/terrella`).
 3. Trigger a run: `gh workflow run project-sync.yml` (or push a spec change).
 
 Until the secret exists, the workflow still runs but exits `0` with a warning and makes no
@@ -75,7 +75,7 @@ changes.
 New issues and pull requests are added to the board by the Project's **built-in workflows**
 (Project ⚙ → Workflows), not a repo Action:
 
-- **Auto-add to project** — adds new items from `mkzsystems/earth-ai` to the board.
+- **Auto-add to project** — adds new items from `terrella-project/terrella` to the board.
 - **Auto-add sub-issues to project** — pulls in sub-issues of tracked issues.
 
 Enable both when creating the board; confirm after any board rebuild.

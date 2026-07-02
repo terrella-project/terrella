@@ -1,6 +1,6 @@
 # Setup Guide
 
-Build the Earth AI workstation from a fresh Windows 11 install. Follow the steps in order — each ends with a verification step; fix failures before continuing.
+Build the Terrella workstation from a fresh Windows 11 install. Follow the steps in order — each ends with a verification step; fix failures before continuing.
 
 | Step | What you do | Time |
 |---|---|---|
@@ -22,7 +22,7 @@ Steps 02–05 are automated by two scripts in [`provision/`](../../provision/). 
 
 ```bash
 # Inside the Earth-AI WSL terminal, after step 01 is done:
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 bash provision/provision.sh    # machine setup: apt, systemd, ollama, Docker, Aider
 bash provision/sync-models.sh  # pull the models listed in provision/models.list
 ```

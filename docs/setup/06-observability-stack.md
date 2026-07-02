@@ -1,6 +1,6 @@
 # Full Stack (Open WebUI + LiteLLM + Postgres + Prometheus + Grafana)
 
-All Earth AI runtime services run as a single docker-compose project. This phase brings up:
+All Terrella runtime services run as a single docker-compose project. This phase brings up:
 
 - **Open WebUI** — browser-based chat UI for local and cloud models.
 - A **single OpenAI-compatible endpoint** (LiteLLM) that fans out to Anthropic, Gemini, OpenAI, and ollama based on the model name in each request.
@@ -63,7 +63,7 @@ docker compose up -d litellm litellm-exporter
 Steps 01–05 must be complete. Run from the `stack/` directory:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 
 # 1. First-time only: generate strong random secrets into .env
 ./scripts/generate-env.sh   # writes .env (gitignored, chmod 600)
@@ -131,7 +131,7 @@ Prometheus stores its TSDB in a named Docker volume (`prometheus-data`) rather t
 ## 6.6 Verify end-to-end
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 ./scripts/smoke.sh
 ```
 
@@ -173,7 +173,7 @@ Copilot Team and Claude Code Pro/Max are flat-rate, so they don't have per-call 
 
 This inserts a row into Postgres's `monthly_costs` table. The Grafana "Total spend" panel sums these rows alongside per-call LiteLLM costs so all spend lines up in one chart.
 
-→ Full procedure (and how to query / fix typos) in [operations/manual-billing.md](../operations/manual-billing.md).
+→ Full procedure (and how to query / fix typos) in [operations/manual-billing.md](../../deploy/earth/manual-billing.md).
 
 ## 6.9 Security posture
 

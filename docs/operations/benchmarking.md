@@ -12,7 +12,7 @@
 ## Basic usage
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 
 # Benchmark all local (ollama) chat models — the default
 python3 scripts/benchmark-models.py --key sk-<your-virtual-key>

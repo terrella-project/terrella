@@ -17,10 +17,10 @@ differences isolated in a **provisioning adapter** (`platform/` in the future pa
 | Tier | Platforms | Notes |
 |---|---|---|
 | **Server (full stack)** | Fedora (primary); Ubuntu — bare-metal or WSL | WSL is a **detection flag inside the debian adapter**, not a separate platform; the same apt path serves future bare-metal Ubuntu nodes. NVIDIA differs per distro: rpmfusion akmods (open kernel modules — required for Blackwell/RTX 5080) vs. apt/ubuntu-drivers. WSL specifics: `nvidia-ctk cdi generate --mode=wsl`, cgroup v2 / `.wslconfig` notes for rootless podman, single distro (the old two-distro dev/services split is retired), Windows-host firewall docs for LAN access. |
-| **Client** | macOS, any Linux/WSL | `earthai client` renders client configs (Continue.dev, shell env for tailnet endpoints, virtual keys) and must run on macOS from day one. |
+| **Client** | macOS, any Linux/WSL | `terrella client` renders client configs (Continue.dev, shell env for tailnet endpoints, virtual keys) and must run on macOS from day one. |
 | **Future inference node** | Apple-silicon macOS | The M7 node agent must **not hard-require quadlets/systemd** — the Python package + a serving driver (ollama-with-Metal or MLX) + launchd covers a Mac mini, a legitimate 2026 inference node. Out of scope until M7; the interface keeps the door open. |
 
-Gaming toggle on both server platforms: `earthai stop` (stops `earthai.target`, frees VRAM);
+Gaming toggle on both server platforms: `terrella stop` (stops `terrella.target`, frees VRAM);
 `wsl --shutdown` remains the WSL nuclear option.
 
 ## Consequences
