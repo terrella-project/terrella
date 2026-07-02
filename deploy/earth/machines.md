@@ -17,7 +17,7 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
   - **Ubuntu-24.04** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard. **This is the development workspace** (where project repos are cloned, where VS Code Remote-WSL connects).
 - **WSL networking:** mirrored mode — `localhost` is shared between the Windows host and both WSL distros, so from Ubuntu-24.04 I can reach `http://localhost:11434` and hit ollama running in Earth-AI.
 - **Role:** all heavy local model work runs here. Always-on. Other machines reach back to earth via Tailscale when away.
-- **Installed (Ubuntu-24.04):** see [tools.md](tools.md).
+- **Installed (Ubuntu-24.04):** see [tools.md](../../docs/reference/tools.md).
 
 ### Verify ollama is reachable from this WSL
 
@@ -25,7 +25,7 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
 curl -s http://localhost:11434/api/tags | jq '.models[].name'
 ```
 
-Expected: list of models from [local-models.md](local-models.md).
+Expected: list of models from [local-models.md](../../docs/reference/local-models.md).
 
 ## jupiter (laptop)
 

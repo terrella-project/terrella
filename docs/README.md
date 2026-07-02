@@ -1,6 +1,6 @@
-# Earth AI — Documentation
+# Terrella — Documentation
 
-Welcome. This folder is the single source of truth for how the **Earth AI** workstation is built, configured, and operated.
+Welcome. This folder is the single source of truth for how the **Terrella** stack is built, configured, and operated.
 
 If you're new, read it in this order:
 
@@ -21,12 +21,12 @@ If you're new, read it in this order:
 | Stop the AI stack so you can play a game | [operations/maintenance.md#gaming-toggle](operations/maintenance.md#gaming-toggle) |
 | Back up Open WebUI chats | [operations/maintenance.md#backup--restore-open-webui](operations/maintenance.md#backup--restore-open-webui) |
 | Measure how fast a local model actually runs | [operations/benchmarking.md](operations/benchmarking.md) |
-| Log this month's Copilot / Claude bill | [operations/manual-billing.md](operations/manual-billing.md) |
+| Log this month's Copilot / Claude bill | [operations/manual-billing.md](../deploy/earth/manual-billing.md) |
 | Diagnose "WebUI won't load" / "GPU not used" | [operations/troubleshooting.md](operations/troubleshooting.md) |
 
 ## Conventions used here
 
-- **Earth-AI** (with hyphen) refers specifically to the **WSL distro** that hosts ollama and the observability stack. Plain **earth** is the whole workstation.
+- **Terrella** is the project (formerly *earth-ai* — see [ADR-0008](adr/ADR-0008-project-name-terrella.md)). **Earth-AI** (with hyphen) is the legacy **WSL distro** that hosts ollama and the observability stack, and `earth-ai` is its Tailscale hostname — both keep their names until the M0 migration retires them. Plain **earth** is the whole workstation.
 - Code blocks tagged `bash` run inside a WSL terminal unless the prompt says otherwise (`PowerShell` blocks run on the Windows host).
 - A line starting with `# ` inside a code block is a comment, not a command.
 - Anything in `< angle brackets >` is a placeholder you replace before running.

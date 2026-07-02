@@ -27,7 +27,7 @@ Right-click Desktop → **New → Shortcut**. For the location, paste:
 wsl.exe --shutdown
 ```
 
-Name it "Terminate Earth AI". Double-click before starting a game.
+Name it "Terminate Terrella". Double-click before starting a game.
 
 ---
 
@@ -67,7 +67,7 @@ docker run --rm \
 Postgres holds the per-call cost log and the `monthly_costs` table. Back it up the same way:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 docker compose exec -T postgres pg_dump -U litellm litellm \
   | gzip > "litellm_pg_$(date +%Y%m%d).sql.gz"
 ```
@@ -86,7 +86,7 @@ gunzip -c litellm_pg_20260427.sql.gz \
 The set of models the provisioner pulls is in [`provision/models.list`](../../provision/models.list). To change the baseline:
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 $EDITOR provision/models.list
 bash provision/provision.sh        # pulls anything new (idempotent)
 
@@ -112,7 +112,7 @@ To check whether anything in your LiteLLM config is stale or what new provider m
 To refresh the managed provider catalogs in-place, run:
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 ./scripts/update-litellm-config.sh --dry-run   # preview
 ./scripts/update-litellm-config.sh             # write changes
 docker compose restart litellm
@@ -127,7 +127,7 @@ That script updates the marked catalog blocks for Anthropic, Gemini, OpenAI, and
 ollama does **not** auto-update. Pull the latest version of every installed model with:
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 ./stack/scripts/update-ollama-models.sh             # re-pulls all installed + adds anything in models.list
 ./stack/scripts/update-ollama-models.sh --installed-only   # skip models.list; only re-pull existing
 ```
@@ -139,7 +139,7 @@ cd ~/src/jomkz/earth-ai
 ## Updating containers
 
 ```bash
-cd ~/src/jomkz/earth-ai/stack
+cd ~/src/jomkz/terrella/stack
 docker compose pull
 docker compose up -d
 ```

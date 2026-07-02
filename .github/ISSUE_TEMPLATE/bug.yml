@@ -33,7 +33,7 @@ body:
       label: Environment
       value: |
         - Platform (Fedora / Ubuntu / WSL / macOS client):
-        - earth-ai commit / earthai version:
+        - terrella commit / terrella version:
         - podman version:
         - GPU / driver (if relevant):
     validations:

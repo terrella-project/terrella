@@ -39,7 +39,7 @@ sudo systemctl restart ollama
 The list of models to pull is checked into the repo at [`provision/models.list`](../../provision/models.list). The provisioner reads this file; you can also pull them by hand:
 
 ```bash
-cd ~/src/jomkz/earth-ai
+cd ~/src/jomkz/terrella
 # Either run the provisioner (idempotent) ...
 bash provision/provision.sh
 # ... or pull only the model section:

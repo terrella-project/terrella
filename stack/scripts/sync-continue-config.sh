@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Regenerate the chat-tier section of a Continue config file from LiteLLM's
-# live model list. By default it targets ./earth-ai-config.yaml in the current
+# live model list. By default it targets ./terrella-config.yaml in the current
 # working directory. Preserves the autocomplete and embed model entries
 # (anything NOT in the chat-tier block).
 #
@@ -13,7 +13,7 @@
 # Usage:
 #   LITELLM_HOST=localhost LITELLM_KEY=sk-... ./sync-continue-config.sh
 #   ./sync-continue-config.sh --host localhost --key sk-...
-#   ./sync-continue-config.sh               # writes ./earth-ai-config.yaml
+#   ./sync-continue-config.sh               # writes ./terrella-config.yaml
 #   ./sync-continue-config.sh --dry-run     # print to stdout instead of writing
 #   # When run from stack/, falls back to stack/.env -> LITELLM_EXPORTER_API_KEY
 #
@@ -24,7 +24,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 STACK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 ENV_FILE="$STACK_DIR/.env"
-CONFIG="${CONTINUE_CONFIG:-$PWD/earth-ai-config.yaml}"
+CONFIG="${CONTINUE_CONFIG:-$PWD/terrella-config.yaml}"
 HOST="${LITELLM_HOST:-localhost}"
 KEY="${LITELLM_KEY:-}"
 PORT="${LITELLM_PORT:-4000}"
@@ -134,7 +134,7 @@ if [[ ! -f "$CONFIG" ]]; then
     new_config=$(cat <<EOF
 %YAML 1.1
 ---
-name: Earth AI
+name: Terrella
 version: 1.0.0
 schema: v1
 
