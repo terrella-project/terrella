@@ -1,0 +1,26 @@
+name: Spike
+description: A time-boxed investigation that informs follow-on work
+title: "[Spike]: "
+type: Spike
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question to answer
+      description: What decision or uncertainty does this investigation resolve?
+    validations:
+      required: true
+  - type: input
+    id: timebox
+    attributes:
+      label: Time box
+      description: How much time is allotted (e.g. 2 weekends)?
+    validations:
+      required: true
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: Expected deliverable
+      description: What artifact does this produce? For architectural decisions this is an ADR in docs/adr/, plus follow-on issues.
+    validations:
+      required: true

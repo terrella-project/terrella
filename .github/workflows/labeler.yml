@@ -1,0 +1,19 @@
+name: Labeler
+
+# Applies `component:*` labels to PRs from changed file paths.
+# Mapping lives in .github/labeler.yml; see docs/project-management.md.
+
+on:
+  pull_request_target:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          sync-labels: false
