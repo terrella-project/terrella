@@ -9,3 +9,4 @@ Day-2 stuff: how to use the stack from other machines, keep it healthy, back up 
 | [benchmarking.md](benchmarking.md) | Measuring local model throughput (tok/s, TTFT, VRAM) with the benchmark script. |
 | [manual-billing.md](../../deploy/earth/manual-billing.md) | Logging Copilot / Claude Code monthly subscription costs into the Grafana dashboard. |
 | [troubleshooting.md](troubleshooting.md) | Common failures and how to fix them — Docker permissions, WebUI unreachable, GPU not utilized, ollama not listening. |
+| [release.md](release.md) | How releases ship to PyPI: Trusted Publishing pipeline, versioning policy, cutting a release. |

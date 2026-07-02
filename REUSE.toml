@@ -1,0 +1,13 @@
+version = 1
+SPDX-PackageName = "terrella"
+SPDX-PackageSupplier = "John McKenzie"
+SPDX-PackageDownloadLocation = "https://github.com/terrella-project/terrella"
+
+# Whole-tree default: Apache-2.0, single-license repo (ADR-0009).
+# Files needing a different license add their own SPDX header, which takes
+# precedence over this aggregate annotation.
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 John McKenzie"
+SPDX-License-Identifier = "Apache-2.0"

@@ -1,0 +1,29 @@
+# Stub package reserving the PyPI name; the M1 CLI scaffold grows from here
+# (ADR-0001, ADR-0008). Don't add code ahead of the roadmap.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "terrella"
+version = "0.0.1"
+description = "A homelab-scale personal AI stack: local models, multi-provider gateway, cost ledger, observability. CLI lands at M1 — this release only reserves the name."
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "John McKenzie" }]
+keywords = ["ai", "homelab", "llm", "ollama", "litellm", "podman", "quadlets"]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/terrella-project/terrella"
+Roadmap = "https://github.com/terrella-project/terrella/blob/main/ROADMAP.md"
+Changelog = "https://github.com/terrella-project/terrella/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["terrella"]

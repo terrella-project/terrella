@@ -11,6 +11,19 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
+  (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
+  `.github/CODEOWNERS` (#53; ADR-0009).
+- **REUSE/SPDX compliance**: whole-tree `REUSE.toml` + `LICENSES/`, `reuse lint` CI
+  workflow (#58 — DCO remains deferred).
+- **Supply-chain baseline**: OpenSSF Scorecard workflow + README badge, Dependabot for
+  GitHub Actions, all workflow actions pinned to commit SHAs.
+- **PyPI name reservation**: stub `terrella` package (`pyproject.toml` +
+  `terrella/__init__.py`) and a Trusted Publishing release workflow
+  (`.github/workflows/release.yml`); release process documented in
+  `docs/operations/release.md` (advances #54).
+- Root `.gitignore` (Python build artifacts, env files, generated configs).
+
 - Roadmap (`ROADMAP.md`) with phases M0–M7: Fedora migration → terrella CLI → config/secrets/
   2026 models → observability v2 → agentic ops → benchmark-informed routing → OSS launch →
   multi-node.
