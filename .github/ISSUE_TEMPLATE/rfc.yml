@@ -1,0 +1,33 @@
+name: RFC
+description: Request for comments on a public contract (post-OSS; pre-1.0 decisions use ADRs)
+title: "[RFC]: "
+type: Feature
+labels: ["rfc", "status: under-discussion"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One-paragraph summary of the proposed change to a public contract (earthai.yaml schema, CLI command contract, node protocol).
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this change needed? What breaks or improves?
+    validations:
+      required: true
+  - type: textarea
+    id: design
+    attributes:
+      label: Detailed design
+      description: The contract change in detail — schema diffs, CLI behavior, migration story for existing configs.
+    validations:
+      required: true
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: Drawbacks & alternatives
+    validations:
+      required: false

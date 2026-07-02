@@ -1,0 +1,29 @@
+name: Changelog check
+
+# Every PR must add an entry under [Unreleased] in CHANGELOG.md, unless it
+# carries the `no-changelog` label. See docs/project-management.md.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-changelog') }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require a CHANGELOG.md change
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}"...HEAD | grep -qxF "CHANGELOG.md"; then
+            echo "CHANGELOG.md updated — OK"
+          else
+            echo "::error::This PR does not modify CHANGELOG.md. Add an entry under [Unreleased], or apply the 'no-changelog' label."
+            exit 1
+          fi
