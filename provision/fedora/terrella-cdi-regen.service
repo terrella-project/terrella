@@ -1,0 +1,21 @@
+# terrella — regenerate the NVIDIA CDI spec at boot.
+#
+# Fallback for nvidia-container-toolkit builds that don't ship
+# nvidia-cdi-refresh.service/.path (< 1.17.7). The CDI spec at
+# /etc/cdi/nvidia.yaml pins driver library paths and goes stale after every
+# kernel/driver update; driver updates coincide with reboots, so a boot-time
+# oneshot ordered after akmods is sufficient.
+#
+# Installed by provision/fedora/bootstrap.sh to /etc/systemd/system/.
+
+[Unit]
+Description=Regenerate NVIDIA CDI spec for container GPU access
+After=akmods.service systemd-modules-load.service
+ConditionPathExists=/usr/bin/nvidia-ctk
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+
+[Install]
+WantedBy=multi-user.target

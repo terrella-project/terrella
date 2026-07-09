@@ -11,6 +11,13 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Fedora provisioning bootstrap** (`provision/fedora/bootstrap.sh` + runbook
+  `docs/runbooks/fedora-provisioning.md`): idempotent detect→apply→verify for the quadlet
+  stack's host prerequisites — NVIDIA open kernel modules (Blackwell), Secure Boot/MOK
+  detection, nvidia-container-toolkit + CDI spec with regeneration on driver updates
+  (toolkit refresh units or the `terrella-cdi-regen.service` fallback), podman, user
+  lingering, Tailscale, and day-1 rootless-GPU/SELinux acceptance tests. Doubles as the
+  behavioral spec for M1's fedora/dnf adapter (#4).
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).
