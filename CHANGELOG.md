@@ -11,6 +11,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Quadlet networking pattern** (`stack/quadlet/README.md`, spike #6): containers reach
+  host ollama at `http://host.containers.internal:11434` (pasta `--map-guest-addr`,
+  measured working through firewalld); loopback-bound host listeners are unreachable
+  (ollama keeps `OLLAMA_HOST=0.0.0.0`, LAN closed by firewalld); pasta does not hairpin
+  published loopback ports, so inter-service config uses container DNS names only.
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).
