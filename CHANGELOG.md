@@ -9,6 +9,15 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ## [Unreleased]
 
+### Fixed
+
+- **`OPENWEBUI_DB` wired through the env plumbing** (`stack/.env.example`,
+  `generate-env.sh`): the compose file interpolates it into Open WebUI's `DATABASE_URL`
+  but it only existed in the live `.env` — a fresh `generate-env.sh` run produced a
+  malformed URL. Inspection of the rescued data (#5) confirmed the dedicated `openwebui`
+  Postgres DB is the live chat store; `LITELLM_EXPORTER_API_KEY` added to `.env.example`
+  while at it (#8).
+
 ### Added
 
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
