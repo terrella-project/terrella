@@ -4,30 +4,41 @@ Day-to-day operations on the running stack.
 
 ## Gaming toggle
 
-WSL2 is on-demand: opening a terminal starts it, but **closing the window doesn't stop it**. Because ollama keeps models loaded in VRAM for fast first-token latency, leaving WSL up will steal frames from any 3D game on the same GPU.
+ollama keeps models loaded in VRAM for fast first-token latency, which steals frames from
+any 3D game on the same GPU. The stack is grouped under systemd targets (#11, ADR-0002),
+so freeing the GPU is one command — this replaces the WSL-era `wsl --shutdown`.
 
-### Stop everything (Gaming Mode)
+### Gaming Mode — free the VRAM
 
-```powershell
-# In Windows PowerShell:
-wsl --shutdown
+```bash
+systemctl --user stop terrella-inference.target
 ```
 
-This terminates the entire WSL VM. Docker, ollama, and Open WebUI all go down; **all VRAM is released back to the GPU**. This is the right move before launching a graphically demanding game.
+Stops the VRAM holders (host ollama, LiteLLM, Open WebUI) and **releases all model VRAM**
+(measured on earth: 10.8 GB → 1.5 GB desktop baseline). Prometheus, Grafana, Postgres,
+and the exporters keep running — metrics and the spend ledger stay live.
 
-### Start everything (AI Mode)
+To take the whole stack down instead:
 
-Open the **Earth-AI (WSL)** terminal. Because the docker-compose services and the ollama systemd unit both have `restart: always` / `enabled`, everything wakes up on its own.
-
-### Pro tip — desktop shortcut
-
-Right-click Desktop → **New → Shortcut**. For the location, paste:
-
-```
-wsl.exe --shutdown
+```bash
+systemctl --user stop terrella.target
 ```
 
-Name it "Terminate Terrella". Double-click before starting a game.
+### AI Mode — bring it back
+
+```bash
+systemctl --user start terrella-inference.target   # or terrella.target for everything
+```
+
+Both targets also start automatically at boot (user lingering +
+`WantedBy=default.target`), so a reboot lands in AI Mode.
+
+Check what's holding the GPU at any time:
+
+```bash
+nvidia-smi --query-gpu=memory.used --format=csv,noheader
+ollama ps
+```
 
 ---
 
