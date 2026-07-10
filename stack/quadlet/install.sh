@@ -97,7 +97,7 @@ run mkdir -p "$UNIT_DST" "$TARGET_DST"
 for f in "$QUADLET_DIR"/*.container "$QUADLET_DIR"/*.network "$QUADLET_DIR"/*.volume; do
     run install -m 644 "$f" "$UNIT_DST/$(basename "$f")"
 done
-for f in "$QUADLET_DIR"/*.target; do
+for f in "$QUADLET_DIR"/*.target "$QUADLET_DIR"/*.service; do
     run install -m 644 "$f" "$TARGET_DST/$(basename "$f")"
 done
 

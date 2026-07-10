@@ -11,6 +11,13 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **ollama as a systemd user service on Fedora** (`stack/quadlet/ollama.service`, #12):
+  official release tarball under `~/.local` (no root install), `OLLAMA_HOST=0.0.0.0`
+  carried over from the WSL drop-in pattern, member of `terrella-inference.target` so the
+  gaming toggle frees its VRAM. Deliberate deviation from the issue's "host (system)
+  service": a user unit lets one systemd manager own the whole stack. Model store copied
+  from the WSL image (109 GB, #5) and pruned to `provision/models.list`, which gains the
+  documented `qwen2.5-coder:32b-instruct-q2_K` 16 GB-VRAM variant.
 - **terrella quadlet stack** (`stack/quadlet/`, #7): hand-written podman Quadlet units for
   all 8 services — the golden reference for M1's renderer (#18). Rootless under the login
   user; named `terrella` network with container-DNS-only inter-service config; every port
