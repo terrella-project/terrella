@@ -129,8 +129,64 @@ install.
 
 ## Part 2 — restore into the terrella quadlet stack (#9)
 
-*Lands with the quadlet stack (#7/#9). Outline: start `terrella-postgres` alone (LiteLLM must
-not run its schema migrations against an empty DB first), `createdb openwebui`, pipe both
-dumps through `podman exec -i terrella-postgres psql`, `podman volume import` the open-webui
-and grafana tarballs, seed the new `.env` from `env.backup` verbatim, then start
-`terrella.target` and compare row counts against `baseline-rowcounts.txt`.*
+Executed on earth 2026-07-09 against the quadlet stack from #7. Prerequisite: the new
+`stack/.env` is seeded **verbatim** from `env.backup` (never `generate-env.sh --force` —
+a fresh `LITELLM_SALT_KEY` bricks the provider keys stored in the restored DB), and
+`stack/quadlet/install.sh` has rendered configs and split `env.d/`.
+
+### 1. Postgres first, alone
+
+LiteLLM runs schema migrations at startup; the dumps must land in an empty database
+**before** it ever connects:
+
+```bash
+systemctl --user start terrella-postgres.service        # Notify=healthy gates readiness
+podman exec terrella-postgres createdb -U litellm openwebui
+gunzip -c ~/wsl-backup/litellm.sql.gz   | podman exec -i terrella-postgres psql -q -U litellm -d litellm
+gunzip -c ~/wsl-backup/openwebui.sql.gz | podman exec -i terrella-postgres psql -q -U litellm -d openwebui
+```
+
+### 2. Volume imports
+
+`podman volume import` is the podman-native replacement for the old alpine-tar dance.
+The volumes must exist first — start their quadlet-generated services:
+
+```bash
+systemctl --user start terrella-openwebui-volume.service terrella-grafana-volume.service
+podman volume import terrella-openwebui ~/wsl-backup/open-webui.tar
+podman volume import terrella-grafana  ~/wsl-backup/grafana-data.tar
+```
+
+**Gotcha (hit live): the tarball's `./` entry overwrites the volume root's ownership.**
+Grafana (container uid 472) then can't create SQLite WAL files next to `grafana.db` and
+dies with `attempt to write a readonly database`. Fix the volume root after import:
+
+```bash
+podman unshare chown 472:0 ~/.local/share/containers/storage/volumes/terrella-grafana/_data
+```
+
+(The open-webui volume is unaffected — that container runs as root, which the tarball's
+root-owned entries map to correctly.)
+
+### 3. Start everything and validate
+
+```bash
+systemctl --user start terrella.target
+```
+
+Validation performed (all passed):
+
+| Check | Result |
+|---|---|
+| `SELECT count(*), max("startTime") FROM "LiteLLM_SpendLogs"` | 37 711 rows through 2026-05-12 — matches `baseline-rowcounts.txt` |
+| `SELECT count(*) FROM chat` (openwebui DB) | 22 — matches baseline |
+| `GET /v1/models` with the master key | 79 models — **DB-stored provider configs decrypt ⇒ salt key intact** |
+| Paid completion (`claude-haiku`) through the gateway | responds — provider keys decrypt end-to-end |
+| Local completion (`ollama/qwen2.5-coder-14b`) | responds — container → `host.containers.internal` → GPU |
+| Grafana login (old admin password) + datasources | works — restored data dir |
+| Open WebUI | serves; chats live in the restored `openwebui` DB |
+| `ss -tln` | every stack port bound to `127.0.0.1` only |
+
+The Prometheus TSDB deliberately started fresh (decision D6); `prometheus-data.tar`
+remains in `~/wsl-backup/` as insurance. The raw `pgdata-copy` is also kept there until
+the soak period ends (#78).

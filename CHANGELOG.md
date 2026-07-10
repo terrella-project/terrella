@@ -11,6 +11,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **M0 data restore** (`docs/runbooks/fedora-migration.md` Part 2, #9): WSL data restored
+  into the terrella quadlet stack — dumps into `terrella-postgres` before LiteLLM's first
+  start, `podman volume import` for the open-webui/grafana volumes (with the
+  volume-root-ownership gotcha and its `podman unshare chown` fix), full validation table
+  (row counts match baseline; salt key proven by 79 models decrypting + a paid completion).
 - **M0 data rescue runbook** (`docs/runbooks/fedora-migration.md`): offline extraction of
   the WSL-era stack data (secrets, Postgres dumps, volume tarballs, ollama models) from the
   old Windows install's mounted `ext4.vhdx` — no Windows boot required. Records the verified
