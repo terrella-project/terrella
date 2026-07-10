@@ -88,13 +88,17 @@ EOF
     umask 022
 fi
 
+# Units are COPIED, not symlinked: the deployed stack must not break when the
+# repo checkout switches to a branch without stack/quadlet/ (learned the hard
+# way — a broken symlink at daemon-reload deletes the generated service).
+# Copying is also exactly what the M1 renderer will do.
 echo "▶ quadlet units → $UNIT_DST, targets → $TARGET_DST"
 run mkdir -p "$UNIT_DST" "$TARGET_DST"
 for f in "$QUADLET_DIR"/*.container "$QUADLET_DIR"/*.network "$QUADLET_DIR"/*.volume; do
-    run ln -sf "$f" "$UNIT_DST/$(basename "$f")"
+    run install -m 644 "$f" "$UNIT_DST/$(basename "$f")"
 done
 for f in "$QUADLET_DIR"/*.target; do
-    run ln -sf "$f" "$TARGET_DST/$(basename "$f")"
+    run install -m 644 "$f" "$TARGET_DST/$(basename "$f")"
 done
 
 echo "▶ pre-pull pinned images (units assume images exist; no AutoUpdate — D5)"
