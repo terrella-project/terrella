@@ -1,0 +1,26 @@
+# terrella — host ollama as a systemd *user* service (#12, decision D2).
+#
+# Deliberate deviation from the WSL-era system unit: one user manager owns the
+# whole stack, so `systemctl --user stop terrella-inference.target` alone frees
+# all VRAM (the epic's gaming-toggle exit criterion). The binary is the official
+# release tarball extracted under ~/.local (bin/ollama + lib/ollama) — no root
+# install. GPU device nodes are world-rw on Fedora's nvidia rules.
+#
+# OLLAMA_HOST=0.0.0.0 carries over from the WSL drop-in pattern: containers
+# reach the host only via host.containers.internal (spike #6) — loopback-bound
+# listeners are invisible to them. The LAN side is closed by firewalld (#10).
+#
+# Installed to ~/.config/systemd/user/ by install.sh.
+
+[Unit]
+Description=Terrella ollama (host inference server)
+PartOf=terrella-inference.target
+
+[Service]
+ExecStart=%h/.local/bin/ollama serve
+Environment=OLLAMA_HOST=0.0.0.0
+Environment=OLLAMA_ORIGINS=*
+Restart=on-failure
+
+[Install]
+WantedBy=terrella-inference.target
