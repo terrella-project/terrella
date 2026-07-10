@@ -119,9 +119,11 @@ Consequence: **inter-service config must use container DNS names and in-network 
 WSL-era `127.0.0.1:<published>` form. Every `localhost` in `prometheus.yml`, Grafana's
 `datasources.yml`, and service env vars gets retargeted in #7.
 
-### Still to verify (blocked on tailscale install, #4/#10)
+### Deferred checks — both verified 2026-07-10 with #4/#10 applied
 
-- [ ] `tailscale serve --bg --tcp 4000 tcp://127.0.0.1:4000` forwards through the
-      pasta-published loopback port into the container.
-- [ ] Container → `host.containers.internal:11434` still passes once #10 replaces the
-      default `FedoraWorkstation` zone (its `1025-65535` open range must go).
+- [x] `tailscale serve --bg --tcp 4000 tcp://127.0.0.1:4000` forwards through the
+      pasta-published loopback port into the container — `earth:4000/health/liveness`,
+      `earth:11434/api/version`, and `earth:3000/api/health` all answer over the tailnet.
+- [x] Container → `host.containers.internal:11434` still passes with the `terrella-lan`
+      zone active (Fedora Workstation's `1025-65535` open range closed) — pasta traffic
+      does not traverse the LAN zone. HTTP 200.
