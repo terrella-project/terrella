@@ -1,0 +1,30 @@
+# terrella quadlet stack — Grafana datasource provisioning.
+# Container DNS names + in-network ports (Postgres 5432, not the host-published
+# 5433). Overrides the WSL-era datasources.yml during install.sh's copy of the
+# provisioning tree. Credentials interpolate from grafana.env at Grafana startup.
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: "prometheus"
+    type: prometheus
+    access: proxy
+    url: http://terrella-prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: 30s
+
+  - name: LiteLLM-Postgres
+    uid: "LiteLLM-Postgres"
+    type: postgres
+    access: proxy
+    url: terrella-postgres:5432
+    user: ${POSTGRES_USER}
+    secureJsonData:
+      password: ${POSTGRES_PASSWORD}
+    jsonData:
+      database: ${POSTGRES_DB}
+      sslmode: disable
+      postgresVersion: 1600
+      timescaledb: false
