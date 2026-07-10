@@ -26,6 +26,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **firewalld zone script** (`provision/fedora/firewall.sh`, #10): creates the
+  `terrella-lan` zone — Fedora Workstation's service set **without** its default
+  `1025-65535/tcp+udp` open range (which would expose host ollama to the LAN) — binds the
+  LAN interface to it, and puts `tailscale0` in `trusted`. Loopback + tailnet are the only
+  access paths; verification checklist included.
 - **First persisted benchmark baseline** (#13): full local-model suite run on the
   migrated Fedora stack and recorded to `benchmark_results` (the table never existed on
   WSL — runs were silently unpersisted without psycopg2). Headlines: qwen2.5-coder:14b
