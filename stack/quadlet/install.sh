@@ -110,9 +110,12 @@ grep -h '^Image=' "$QUADLET_DIR"/*.container | cut -d= -f2 | sort -u | while rea
     fi
 done
 
+# Quadlet-generated units get their [Install] wiring from the generator, but
+# plain units (targets, ollama.service) need an explicit enable to create the
+# .wants links (boot start via default.target + target membership).
 echo "▶ systemd reload + enable boot start"
 run systemctl --user daemon-reload
-run systemctl --user add-wants default.target terrella.target
+run systemctl --user enable terrella.target terrella-inference.target ollama.service
 
 echo
 echo "Done. Next: systemctl --user start terrella.target"
