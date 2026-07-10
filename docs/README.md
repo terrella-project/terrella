@@ -5,7 +5,10 @@ Welcome. This folder is the single source of truth for how the **Terrella** stac
 If you're new, read it in this order:
 
 1. **[Overview](01-overview.md)** — what this project is, what runs where, and the vocabulary you need.
-2. **[Setup guide](setup/README.md)** — step-by-step build of the workstation from a fresh Windows install.
+2. **[Setup guide](setup/README.md)** — building the workstation: Fedora is the primary
+   path ([runbooks/fedora-provisioning.md](runbooks/fedora-provisioning.md) +
+   [stack/quadlet/](../stack/quadlet/)); the numbered WSL guide remains for the supported
+   Windows/WSL platform (ADR-0004).
 3. **[Reference](reference/README.md)** — the "look it up" docs: machines, models, subscriptions, tools, and the model-routing decision table.
 4. **[Operations](operations/README.md)** — day-2 stuff: cross-machine access, backups, maintenance, troubleshooting, monthly billing entry.
 
@@ -19,14 +22,14 @@ If you're new, read it in this order:
 | See which models are installed and why | [reference/local-models.md](reference/local-models.md) |
 | Work from jupiter (or Mac mini) and reach earth's models | [operations/cross-machine-access.md](operations/cross-machine-access.md) |
 | Stop the AI stack so you can play a game | [operations/maintenance.md#gaming-toggle](operations/maintenance.md#gaming-toggle) |
-| Back up Open WebUI chats | [operations/maintenance.md#backup--restore-open-webui](operations/maintenance.md#backup--restore-open-webui) |
+| Back up the stack volumes / databases | [operations/maintenance.md#backup--restore-volumes-open-webui-grafana](operations/maintenance.md#backup--restore-volumes-open-webui-grafana) |
 | Measure how fast a local model actually runs | [operations/benchmarking.md](operations/benchmarking.md) |
 | Log this month's Copilot / Claude bill | [operations/manual-billing.md](../deploy/earth/manual-billing.md) |
 | Diagnose "WebUI won't load" / "GPU not used" | [operations/troubleshooting.md](operations/troubleshooting.md) |
 
 ## Conventions used here
 
-- **Terrella** is the project (formerly *earth-ai* — see [ADR-0008](adr/ADR-0008-project-name-terrella.md)). **Earth-AI** (with hyphen) is the legacy **WSL distro** that hosts ollama and the observability stack, and `earth-ai` is its Tailscale hostname — both keep their names until the M0 migration retires them. Plain **earth** is the whole workstation.
-- Code blocks tagged `bash` run inside a WSL terminal unless the prompt says otherwise (`PowerShell` blocks run on the Windows host).
+- **Terrella** is the project (formerly *earth-ai* — see [ADR-0008](adr/ADR-0008-project-name-terrella.md)). Plain **earth** is the workstation (Fedora 44 since the M0 migration). The legacy **Earth-AI** WSL distro and its `earth-ai` Tailscale hostname survive only on the old, unbooted Windows install and retire at [#78](https://github.com/terrella-project/terrella/issues/78).
+- Code blocks tagged `bash` run on earth's Fedora shell unless stated otherwise (WSL-era pages may still reference PowerShell on the Windows host).
 - A line starting with `# ` inside a code block is a comment, not a command.
 - Anything in `< angle brackets >` is a placeholder you replace before running.
