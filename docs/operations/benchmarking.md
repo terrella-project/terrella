@@ -4,15 +4,22 @@
 
 ## Prerequisites
 
-- The LiteLLM proxy is running (`docker compose up -d`)
+- The LiteLLM proxy is running (`systemctl --user start terrella.target`)
 - A virtual key from the LiteLLM admin UI at `http://localhost:4000/ui`
-- `nvidia-smi` in PATH (included with the NVIDIA driver — just works on Earth-AI)
-- `psycopg2` Python package for the historical comparison column (`pip install psycopg2-binary` once if you want it; the script skips gracefully without it)
+- `nvidia-smi` in PATH (included with the NVIDIA driver)
+- `psycopg2` Python package for persistence and the historical comparison column
+  (`pip install --user psycopg2-binary` once; the script skips gracefully without it —
+  **but then results are not recorded**, which is how the WSL era ended up with no
+  stored baseline)
+- The `benchmark_results` table exists (first time:
+  `podman exec -i terrella-postgres psql -U litellm -d litellm < sql/benchmark_results.sql`)
+- `DATABASE_URL` pointing at the published Postgres port:
+  `postgresql://litellm:<password>@127.0.0.1:5433/litellm`
 
 ## Basic usage
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/mkzsystems/terrella-project/terrella/stack
 
 # Benchmark all local (ollama) chat models — the default
 python3 scripts/benchmark-models.py --key sk-<your-virtual-key>
@@ -121,9 +128,34 @@ python3 scripts/benchmark-models.py --models qwen2.5-coder
 
 This works for multiple models too — the warm-up pass loads each one in sequence, and Ollama keeps them resident until its keep-alive timeout (default 5 minutes), so run both passes back-to-back.
 
+## Fedora baseline (2026-07-09)
+
+First recorded baseline, run against the freshly migrated quadlet stack (M0, #13) —
+RTX 5080 16 GB, native Fedora driver 595.80, ollama 0.31.2 as a user service. Persisted
+to `benchmark_results`; earlier WSL-era runs were never persisted (no `psycopg2`), so
+the *Hist* columns from the restored `LiteLLM_SpendLogs` are the only WSL-era comparator.
+
+| Model | TTFT p50 | Tok/s p50 | Lat p50 | VRAM |
+|---|---:|---:|---:|---:|
+| qwen2.5-coder-15b (1.5b FIM) | 209 ms | 455.3 t/s | 420 ms | 1.4 GB |
+| gemma2 (9b) | 419 ms | 133.7 t/s | 988 ms | 9.7 GB |
+| qwen2.5-coder (14b) | 421 ms | 98.3 t/s | 993 ms | 0.9 GB* |
+| qwen2.5-coder-32b-instruct (q2_K) | 516 ms | 66.0 t/s | 1534 ms | 14.4 GB |
+| qwen2.5-coder-32b | 3143 ms | 8.2 t/s | 9688 ms | (spills to RAM) |
+| deepseek (r1:14b) | 1383 ms | 0.0 t/s† | 1383 ms | 9.1 GB |
+
+\* VRAM delta under-reads when the model was already resident from a previous row.
+† `deepseek-r1` spends the token budget inside its `<think>` block and returns empty
+visible content at low `max_tokens`, so the script counts 0 output tokens — a
+known measurement artifact to fix with the M2 model refresh (#29), not an infra failure.
+
+Takeaways: the q2_K 32b variant earns its place (66 t/s inside 16 GB); the full 32b
+confirms its "overflows VRAM" warning; the 14b daily driver at ~98 t/s comfortably beats
+the WSL-era feel.
+
 ## Running on the same machine as Ollama
 
-The benchmark script runs on the same WSL instance that serves LiteLLM and Ollama. That's convenient but introduces a few measurement effects worth knowing about.
+The benchmark script runs on the same machine that serves LiteLLM and Ollama. That's convenient but introduces a few measurement effects worth knowing about.
 
 **CPU contention.** The script itself is lightweight, but if a model runs on CPU (no GPU or partial VRAM offload), the benchmark process competes for the same cores during inference. Tok/s numbers will be slightly lower than they would be on an idle machine.
 
@@ -133,7 +165,7 @@ The benchmark script runs on the same WSL instance that serves LiteLLM and Ollam
 
 **Single-client throughput only.** Results reflect one request at a time from one client. Real usage with multiple concurrent users will produce lower tok/s and higher latency — the benchmark numbers are most useful for comparing models against each other, not for predicting production capacity.
 
-**WSL2 memory pressure.** WSL2 balloons its memory allocation as models load. If the total model footprint approaches the Windows host's WSL memory limit, Windows will start paging, which shows up as wide p50→p95 latency spreads. If you see p95 values several times higher than p50, check your WSL memory limit in `.wslconfig`.
+**(WSL platform only) memory pressure.** WSL2 balloons its memory allocation as models load. If the total model footprint approaches the Windows host's WSL memory limit, Windows will start paging, which shows up as wide p50→p95 latency spreads. Native Fedora has no such ballooning — one of the reasons M0 migrated.
 
 ## Historical data from LiteLLM
 

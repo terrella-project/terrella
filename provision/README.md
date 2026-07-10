@@ -1,17 +1,18 @@
 # `provision/`
 
-Machine provisioner and model manager for the Earth-AI WSL distro. These two scripts are independent — run them separately.
+Machine provisioning and the model catalog.
 
 | File | Purpose |
 |---|---|
-| [`provision.sh`](provision.sh) | Idempotent machine setup: apt deps, systemd-in-WSL, ollama (with CORS / network overrides), Docker, Aider. Does **not** pull models. |
+| [`fedora/bootstrap.sh`](fedora/bootstrap.sh) | **The live provisioner** (Fedora, M0): idempotent detect→apply→verify for NVIDIA open modules, container toolkit + CDI, podman, linger, Tailscale. See [runbooks/fedora-provisioning.md](../docs/runbooks/fedora-provisioning.md). |
+| [`provision.sh`](provision.sh) | *Legacy WSL provisioner*: apt deps, systemd-in-WSL, ollama, Docker, Aider. Kept as the working reference until M1's provisioning framework absorbs it (ADR-0004). |
 | [`sync-models.sh`](sync-models.sh) | Reads [`models.list`](models.list) and pulls each model. Safe to re-run — `ollama pull` is a no-op for already-present models. |
 | [`models.list`](models.list) | The model catalog. One model per line; inline comments allowed. Edit this file to add or remove models. |
 
 ## Provision the machine
 
 ```bash
-cd ~/src/jomkz/terrella
+cd ~/src/mkzsystems/terrella-project/terrella
 bash provision/provision.sh
 ```
 
@@ -22,7 +23,7 @@ Re-running is safe — every step is idempotent (`apt install` is a no-op for al
 ## Pull / update models
 
 ```bash
-cd ~/src/jomkz/terrella
+cd ~/src/mkzsystems/terrella-project/terrella
 bash provision/sync-models.sh
 ```
 

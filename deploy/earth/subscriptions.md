@@ -60,7 +60,7 @@ Rotate cadence: _TODO — quarterly?_
 After each billing cycle:
 
 ```bash
-cd ~/src/jomkz/terrella/stack/observability
+cd ~/src/mkzsystems/terrella-project/terrella/stack/observability
 ./scripts/log-billing.sh
 # prompts: month (YYYY-MM), vendor, amount USD, notes
 ```

@@ -1,0 +1,20 @@
+# terrella — GitHub MCP tool server (SSE), consumed by Open WebUI via
+# TOOL_SERVER_CONNECTIONS on the terrella network.
+
+[Unit]
+Description=Terrella GitHub MCP server
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-github-mcp
+Image=ghcr.io/github/github-mcp-server:v1.5.0
+Network=terrella.network
+PublishPort=127.0.0.1:8765:8765
+EnvironmentFile=%h/.config/terrella/env.d/github-mcp.env
+Exec=http --port 8765
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

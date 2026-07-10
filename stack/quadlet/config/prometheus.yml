@@ -1,0 +1,19 @@
+# terrella quadlet stack — Prometheus scrape config.
+# Targets are container DNS names on the terrella network (in-network ports),
+# replacing the WSL-era 127.0.0.1 host-network targets. Installed to
+# ~/.config/terrella/prometheus/ by install.sh.
+
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: litellm_exporter
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["terrella-litellm-exporter:11436"]
+
+  - job_name: ollama_exporter
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["terrella-ollama-exporter:11435"]

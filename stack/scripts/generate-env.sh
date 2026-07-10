@@ -21,6 +21,7 @@ cat > .env <<EOF
 POSTGRES_USER=litellm
 POSTGRES_PASSWORD=$(rand)
 POSTGRES_DB=litellm
+OPENWEBUI_DB=openwebui
 LITELLM_MASTER_KEY=sk-master-$(rand)
 LITELLM_SALT_KEY=$(rand)
 GRAFANA_ADMIN_PASSWORD=$(rand)
