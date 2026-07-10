@@ -42,52 +42,53 @@ ollama ps
 
 ---
 
-## Backup / restore Open WebUI
+## Backup / restore volumes (Open WebUI, Grafana)
 
-The Open WebUI database (chats, settings, users) lives in the named Docker volume `open-webui`. Back it up before upgrades and on a regular cadence.
+Open WebUI's uploads/vector store live in the named podman volume `terrella-openwebui`
+(chats are in Postgres — see below); Grafana's users/prefs/annotations in
+`terrella-grafana`. `podman volume export/import` replaces the old alpine-tar dance:
 
 ### Backup
 
 ```bash
-cd ~  # or wherever you want the tarball saved
-docker run --rm \
-  -v open-webui:/data \
-  -v "$(pwd)":/backup \
-  alpine \
-  tar czf "/backup/openwebui_backup_$(date +%Y%m%d).tar.gz" /data
+podman volume export terrella-openwebui > "openwebui_backup_$(date +%Y%m%d).tar"
+podman volume export terrella-grafana  > "grafana_backup_$(date +%Y%m%d).tar"
 ```
-
-Result: a file like `openwebui_backup_20260427.tar.gz` in the current directory.
 
 ### Restore
 
 ```bash
-docker run --rm \
-  -v open-webui:/data \
-  -v "$(pwd)":/backup \
-  alpine \
-  sh -c "rm -rf /data/* && tar xzf /backup/openwebui_backup_20260427.tar.gz -C /"
+systemctl --user stop terrella-openwebui.service   # or terrella-grafana.service
+podman volume import terrella-openwebui openwebui_backup_20260709.tar
+systemctl --user start terrella-openwebui.service
 ```
 
-> Replace the filename with whichever backup you want to restore. The container wipes the volume contents before extracting, so you get an exact restore (not a merge).
+> `import` replaces the volume contents (exact restore, not a merge). If the restored
+> service fails with permission errors, the tarball's `./` entry may have overwritten the
+> volume root's owner — see the fix in
+> [runbooks/fedora-migration.md](../runbooks/fedora-migration.md) (`podman unshare chown`).
 
 ---
 
-## Backup the observability stack
+## Backup the databases
 
-Postgres holds the per-call cost log and the `monthly_costs` table. Back it up the same way:
+Postgres holds the per-call cost log (`litellm` DB) and Open WebUI's chats/settings/users
+(`openwebui` DB):
 
 ```bash
-cd ~/src/jomkz/terrella/stack
-docker compose exec -T postgres pg_dump -U litellm litellm \
+podman exec terrella-postgres pg_dump -U litellm -d litellm \
   | gzip > "litellm_pg_$(date +%Y%m%d).sql.gz"
+podman exec terrella-postgres pg_dump -U litellm -d openwebui \
+  | gzip > "openwebui_pg_$(date +%Y%m%d).sql.gz"
 ```
 
-Restore (with the stack stopped):
+Restore (into an empty database — stop the stack, keep only postgres up):
 
 ```bash
-gunzip -c litellm_pg_20260427.sql.gz \
-  | docker compose exec -T postgres psql -U litellm litellm
+systemctl --user stop terrella.target
+systemctl --user start terrella-postgres.service
+gunzip -c litellm_pg_20260709.sql.gz | podman exec -i terrella-postgres psql -U litellm -d litellm
+systemctl --user start terrella.target
 ```
 
 ---
@@ -97,9 +98,9 @@ gunzip -c litellm_pg_20260427.sql.gz \
 The set of models the provisioner pulls is in [`provision/models.list`](../../provision/models.list). To change the baseline:
 
 ```bash
-cd ~/src/jomkz/terrella
+cd ~/src/mkzsystems/terrella-project/terrella
 $EDITOR provision/models.list
-bash provision/provision.sh        # pulls anything new (idempotent)
+bash provision/sync-models.sh      # pulls anything new (idempotent)
 
 # To actually drop a model from disk, also remove it by hand:
 ollama rm <model-name>
@@ -123,10 +124,11 @@ To check whether anything in your LiteLLM config is stale or what new provider m
 To refresh the managed provider catalogs in-place, run:
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/mkzsystems/terrella-project/terrella/stack
 ./scripts/update-litellm-config.sh --dry-run   # preview
 ./scripts/update-litellm-config.sh             # write changes
-docker compose restart litellm
+./quadlet/install.sh                           # re-render ~/.config/terrella
+systemctl --user restart terrella-litellm.service
 ```
 
 That script updates the marked catalog blocks for Anthropic, Gemini, OpenAI, and ollama while leaving your hand-edited aliases and non-model settings alone.
@@ -138,7 +140,7 @@ That script updates the marked catalog blocks for Anthropic, Gemini, OpenAI, and
 ollama does **not** auto-update. Pull the latest version of every installed model with:
 
 ```bash
-cd ~/src/jomkz/terrella
+cd ~/src/mkzsystems/terrella-project/terrella
 ./stack/scripts/update-ollama-models.sh             # re-pulls all installed + adds anything in models.list
 ./stack/scripts/update-ollama-models.sh --installed-only   # skip models.list; only re-pull existing
 ```
@@ -149,38 +151,54 @@ cd ~/src/jomkz/terrella
 
 ## Updating containers
 
+Images are **pinned to exact version tags** in the quadlet units — no `:latest`, no
+auto-update (the units are the M1 renderer's golden fixtures; updates are deliberate):
+
 ```bash
-cd ~/src/jomkz/terrella/stack
-docker compose pull
-docker compose up -d
+cd ~/src/mkzsystems/terrella-project/terrella
+$EDITOR stack/quadlet/terrella-<service>.container    # bump the Image= tag
+stack/quadlet/install.sh                              # copies units, pulls the new image
+systemctl --user daemon-reload
+systemctl --user restart terrella-<service>.service
 ```
 
-> `docker compose pull` only re-downloads images. The named volumes (`open-webui`, the Postgres data dir) are preserved across container recreation.
+> Named volumes (`terrella-postgres`, `terrella-openwebui`, `terrella-grafana`,
+> `terrella-prometheus`) are preserved across container recreation. Take a DB/volume
+> backup before major-version bumps.
 
 ---
 
 ## Updating ollama itself
 
+ollama runs from the official release tarball under `~/.local` as a systemd **user**
+service (no root install):
+
 ```bash
-curl -fsSL https://ollama.com/install.sh | sh
-sudo systemctl restart ollama
+VER=v0.31.2   # pick the target release
+curl -fL -o /tmp/ollama.tar.zst \
+  "https://github.com/ollama/ollama/releases/download/$VER/ollama-linux-amd64.tar.zst"
+systemctl --user stop ollama.service
+tar --use-compress-program=unzstd -xf /tmp/ollama.tar.zst -C ~/.local
+systemctl --user start ollama.service
+ollama --version
 ```
 
-The systemd drop-in at `/etc/systemd/system/ollama.service.d/override.conf` is preserved across upgrades — that's why we put the `OLLAMA_HOST` / `OLLAMA_ORIGINS` config there in [ollama setup](../setup/03-ollama.md).
+The `OLLAMA_HOST` / `OLLAMA_ORIGINS` settings live in the unit itself
+(`stack/quadlet/ollama.service`), so upgrades can't clobber them.
 
 ---
 
-## Pruning unused Docker stuff
+## Pruning unused podman stuff
 
 Periodically reclaim disk:
 
 ```bash
-docker image prune -f                # dangling images
-docker container prune -f            # stopped containers
-docker volume ls                     # inspect before pruning volumes!
+podman image prune -f                # dangling images
+podman container prune -f            # stopped containers
+podman volume ls                     # inspect before pruning volumes!
 ```
 
-Don't run `docker volume prune` blindly — it would wipe `open-webui` and the Postgres volume.
+Don't run `podman volume prune` blindly — it would wipe the `terrella-*` data volumes.
 
 ---
 

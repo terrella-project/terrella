@@ -4,25 +4,34 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
 
 ## earth (primary workstation)
 
-- **Host OS:** Windows 11 Pro (Build 26200, 24H2), installed 1/3/2025
-- **Hostname:** `EARTH`
+- **OS:** Fedora 44 Workstation (kernel 7.0.14-201.fc44), reinstalled July 2026 — the M0
+  migration ([epic #3](https://github.com/terrella-project/terrella/issues/3)). The old
+  Windows 11 + WSL install remains on its own disk (bootable, mounted read-only for the
+  data rescue) until #78 retires it.
+- **Hostname:** `earth`
 - **Hardware:** MSI MS-7D30
-  - CPU: 12th Gen Intel Core i9-12900K — 16 cores / 24 threads, ~3187 MHz base
-  - RAM: 64 GB (65,328 MB)
-  - GPU: NVIDIA GeForce RTX 5080 (16 GB VRAM, Windows driver 32.0.15.9571), Intel UHD Graphics 770 (driver 32.0.101.7082)
-  - BIOS: AMI 1.10, 12/3/2021
-  - Networking: Intel Wi-Fi 6E AX211 160MHz
-- **WSL distros:**
-  - **Earth-AI** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard-WSL2. Hosts **ollama** (port 11434) and will host the **AI observability stack** (LiteLLM + Postgres + Prometheus + Grafana). GPU visible via nvidia-smi: RTX 5080 16303 MiB, Linux driver 595.71.
-  - **Ubuntu-24.04** — WSL 2, Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard. **This is the development workspace** (where project repos are cloned, where VS Code Remote-WSL connects).
-- **WSL networking:** mirrored mode — `localhost` is shared between the Windows host and both WSL distros, so from Ubuntu-24.04 I can reach `http://localhost:11434` and hit ollama running in Earth-AI.
+  - CPU: 12th Gen Intel Core i9-12900K — 16 cores / 24 threads
+  - RAM: 64 GB
+  - GPU: NVIDIA GeForce RTX 5080 (16 GB VRAM, Blackwell — open kernel modules required),
+    driver 595.80 via rpmfusion akmod-nvidia; Intel UHD Graphics 770 (iGPU)
+  - Networking: Intel Wi-Fi 6E AX211 160MHz (`wlo1`)
+- **Stack:** rootless podman quadlets under the login user
+  ([stack/quadlet/](../../stack/quadlet/)) — Open WebUI, LiteLLM, Postgres, Prometheus,
+  Grafana, exporters, github-mcp on the named `terrella` network, every port on
+  `127.0.0.1` only; **ollama** runs on the host as a systemd user service
+  (`0.0.0.0:11434`, firewalled from the LAN). `systemctl --user stop
+  terrella-inference.target` is the gaming toggle. No WSL, no dev/services distro split —
+  the repo is cloned at `~/src/mkzsystems/terrella-project/terrella` and developed
+  in place.
 - **Role:** all heavy local model work runs here. Always-on. Other machines reach back to earth via Tailscale when away.
-- **Installed (Ubuntu-24.04):** see [tools.md](../../docs/reference/tools.md).
+- **Installed:** see [tools.md](../../docs/reference/tools.md).
 
-### Verify ollama is reachable from this WSL
+### Verify the stack from earth
 
 ```bash
+systemctl --user status terrella.target
 curl -s http://localhost:11434/api/tags | jq '.models[].name'
+curl -s http://127.0.0.1:4000/health/liveness
 ```
 
 Expected: list of models from [local-models.md](../../docs/reference/local-models.md).
@@ -69,32 +78,33 @@ Reuse the local models and the LiteLLM proxy on earth so spend on paid services 
 **One-time setup:**
 
 ```bash
-# On every machine (earth, Earth-AI WSL, jupiter, Mac mini)
+# On every machine (earth, jupiter, Mac mini)
 # https://tailscale.com/download
 tailscale up --ssh
 ```
 
-**On Earth-AI WSL** (so the tailnet sees ollama and LiteLLM):
+**On earth** (so the tailnet sees ollama and LiteLLM — the only remote path; every stack
+port binds loopback):
 
 ```bash
-# Optional: expose only on the tailnet, not LAN
-tailscale serve --bg --tcp 11434 tcp://localhost:11434
-tailscale serve --bg --tcp 4000  tcp://localhost:4000
+tailscale serve --bg --tcp 11434 tcp://127.0.0.1:11434
+tailscale serve --bg --tcp 4000  tcp://127.0.0.1:4000
 tailscale serve status
 ```
 
-**From jupiter / Mac mini** — point clients at Earth-AI's MagicDNS name:
+**From jupiter / Mac mini** — point clients at earth's MagicDNS name:
 
 ```bash
 # ollama
-export OLLAMA_HOST=http://earth-ai:11434
+export OLLAMA_HOST=http://earth:11434
 
-# LiteLLM (use the same hostname as Earth-AI advertises on tailnet)
-export OPENAI_BASE_URL=http://earth-ai:4000
+# LiteLLM (use the same hostname as earth advertises on tailnet)
+export OPENAI_BASE_URL=http://earth:4000
 export OPENAI_API_KEY=<my-virtual-key-for-this-machine>
 ```
 
-(Replace `earth-ai` with whatever Tailscale magic-DNS name the Earth-AI node ends up with — check `tailscale status`. On jupiter, add these to your WSL `~/.bashrc` so they persist across sessions.)
+(The WSL-era node was `earth-ai`; it retires at #78. Check `tailscale status` for the
+live name. On jupiter, add these to your WSL `~/.bashrc` so they persist across sessions.)
 
 ### Tailscale ACL note
 
@@ -106,32 +116,28 @@ By default the tailnet is fully open between my own devices. No ACL changes are 
 
 Run these on each machine to get accurate version strings for the prerequisites table below.
 
-**Windows (PowerShell) — earth host or jupiter host:**
+**Windows (PowerShell) — jupiter host:**
 ```powershell
 # Full hardware summary
 systeminfo
-
-# GPU (earth only)
-Get-WmiObject Win32_VideoController | Select-Object Name, AdapterRAM, DriverVersion
 
 # OS / hardware detail
 Get-ComputerInfo | Select-Object CsName, CsProcessors, CsNumberOfLogicalProcessors, CsTotalPhysicalMemory, OsName, WindowsVersion | Format-List
 ```
 
-**Linux / WSL — Ubuntu-24.04, Earth-AI, or jupiter WSL:**
+**Linux — earth (Fedora) or jupiter WSL:**
 ```bash
-echo "=== OS ===" && lsb_release -a
+echo "=== OS ===" && cat /etc/os-release | head -2
 echo "=== Kernel ===" && uname -r
 echo "=== CPU ===" && lscpu | grep -E 'Model name|Socket|Thread|Core|CPU\(s\)'
 echo "=== RAM ===" && free -h
-echo "=== GPU (WSL only) ===" && nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader 2>/dev/null || echo "no GPU"
+echo "=== GPU ===" && nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader 2>/dev/null || echo "no GPU"
 ```
 
-**Prerequisites table one-liner (Linux / WSL):**
+**Prerequisites table one-liner (Linux):**
 ```bash
-printf "Docker: "; docker version --format '{{.Server.Version}}' 2>/dev/null || echo "not installed"
-printf "Compose: "; docker compose version --short 2>/dev/null || echo "not installed"
-printf "Tailscale: "; tailscale version 2>/dev/null || echo "not installed"
+printf "podman: "; podman --version 2>/dev/null || echo "not installed"
+printf "Tailscale: "; tailscale version 2>/dev/null | head -1 || echo "not installed"
 printf "ollama: "; ollama --version 2>/dev/null || echo "not installed"
 printf "gh: "; gh --version 2>/dev/null | head -1 || echo "not installed"
 ```
@@ -146,12 +152,12 @@ echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>
 
 ## Prerequisites status
 
-| Item | earth (Ubuntu-24.04) | earth (Earth-AI) | jupiter | Mac mini |
-|---|---|---|---|---|
-| Docker + Compose v2 | ✅ 29.4.1 / v5.1.3 | ✅ 29.4.1 / v5.1.3 | n/a (not needed) | _TODO_ |
-| Tailscale | ❌ not installed | ❌ not installed | ✅ | _TODO_ |
-| ollama | n/a (uses Earth-AI's) | ✅ 0.20.6 | n/a (uses earth's) | n/a |
-| VS Code + Remote-WSL | ✅ | n/a | ✅ | n/a |
-| Claude Code CLI | _TODO_ | n/a | ❌ not installed | _TODO_ |
-| OpenCode | _TODO_ | n/a | ❌ not installed | _TODO_ |
-| gh (GitHub CLI) | ✅ | ❌ not installed | ✅ 2.45.0 | _TODO_ |
+| Item | earth (Fedora 44) | jupiter | Mac mini |
+|---|---|---|---|
+| podman | ✅ 5.8.3 (rootless quadlets) | n/a (not needed) | _TODO_ |
+| Tailscale | ⏳ pending (#4 bootstrap apply) | ✅ | _TODO_ |
+| ollama | ✅ 0.31.2 (user service, `~/.local`) | n/a (uses earth's) | n/a |
+| VS Code | ✅ | ✅ (Remote-WSL) | n/a |
+| Claude Code CLI | ✅ | ❌ not installed | _TODO_ |
+| OpenCode | _TODO_ | ❌ not installed | _TODO_ |
+| gh (GitHub CLI) | ✅ 2.96.0 | ✅ 2.45.0 | _TODO_ |
