@@ -26,6 +26,33 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **ollama as a systemd user service on Fedora** (`stack/quadlet/ollama.service`, #12):
+  official release tarball under `~/.local` (no root install), `OLLAMA_HOST=0.0.0.0`
+  carried over from the WSL drop-in pattern, member of `terrella-inference.target` so the
+  gaming toggle frees its VRAM. Deliberate deviation from the issue's "host (system)
+  service": a user unit lets one systemd manager own the whole stack. Model store copied
+  from the WSL image (109 GB, #5) and pruned to `provision/models.list`, which gains the
+  documented `qwen2.5-coder:32b-instruct-q2_K` 16 GB-VRAM variant.
+- **terrella quadlet stack** (`stack/quadlet/`, #7): hand-written podman Quadlet units for
+  all 8 services — the golden reference for M1's renderer (#18). Rootless under the login
+  user; named `terrella` network with container-DNS-only inter-service config; every port
+  published on loopback only; images pinned to exact version tags (no AutoUpdate);
+  `terrella.target`/`terrella-inference.target` grouping; per-service `EnvironmentFile=`
+  secrets split by `install.sh` (which also renders configs to `~/.config/terrella/`,
+  links units, and pre-pulls images). Postgres/Grafana move from WSL-era bind mounts to
+  named volumes; github-mcp updates to v1.x (streamable HTTP `/mcp` + per-request bearer
+  auth, replacing SSE).
+- **Quadlet networking pattern** (`stack/quadlet/README.md`, spike #6): containers reach
+  host ollama at `http://host.containers.internal:11434` (pasta `--map-guest-addr`,
+  measured working through firewalld); loopback-bound host listeners are unreachable
+  (ollama keeps `OLLAMA_HOST=0.0.0.0`, LAN closed by firewalld); pasta does not hairpin
+  published loopback ports, so inter-service config uses container DNS names only.
+- **M0 data rescue runbook** (`docs/runbooks/fedora-migration.md`): offline extraction of
+  the WSL-era stack data (secrets, Postgres dumps, volume tarballs, ollama models) from the
+  old Windows install's mounted `ext4.vhdx` — no Windows boot required. Records the verified
+  backups, baseline row counts, and two findings: Open WebUI's live store is the dedicated
+  `openwebui` Postgres DB (resolves #8's investigation), and no WSL `benchmark_results`
+  baseline ever existed (#13 will baseline against restored spend-log history) (#5).
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).

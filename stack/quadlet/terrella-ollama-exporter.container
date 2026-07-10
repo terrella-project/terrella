@@ -1,0 +1,24 @@
+# terrella — ollama Prometheus exporter: scrapes host ollama via the
+# host-gateway (see README / spike #6). Folded into the package at M3 (#36).
+
+[Unit]
+Description=Terrella ollama exporter
+After=ollama.service
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-ollama-exporter
+Image=docker.io/library/python:3.12.13-slim
+Network=terrella.network
+Volume=%h/.config/terrella/exporters/ollama_exporter.py:/app/ollama_exporter.py:ro,Z
+PublishPort=127.0.0.1:11435:11435
+Environment=OLLAMA_BASE_URL=http://host.containers.internal:11434
+Environment=OLLAMA_EXPORTER_HOST=0.0.0.0
+Environment=OLLAMA_EXPORTER_PORT=11435
+Exec=python /app/ollama_exporter.py
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

@@ -1,0 +1,25 @@
+# terrella — Grafana: dashboards over Prometheus metrics + the Postgres spend ledger.
+
+[Unit]
+Description=Terrella Grafana
+After=terrella-prometheus.service terrella-postgres.service
+Wants=terrella-prometheus.service terrella-postgres.service
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-grafana
+Image=docker.io/grafana/grafana:13.1.0
+Network=terrella.network
+Volume=terrella-grafana.volume:/var/lib/grafana
+Volume=%h/.config/terrella/grafana/provisioning:/etc/grafana/provisioning:ro,Z
+PublishPort=127.0.0.1:3000:3000
+EnvironmentFile=%h/.config/terrella/env.d/grafana.env
+Environment=GF_SECURITY_ADMIN_USER=admin
+Environment=GF_INSTALL_PLUGINS=
+Environment=GF_AUTH_ANONYMOUS_ENABLED=false
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

@@ -13,6 +13,7 @@ nomic-embed-text                # 274 MB    embeddings (RAG / semantic search)
 qwen2.5-coder:1.5b              # 0.99 GB   tab-completion / inline FIM
 qwen2.5-coder:14b               # 8.99 GB   daily-driver coder (fits 16 GB VRAM)
 qwen2.5-coder:32b               # 19.85 GB  best local quality (overflows VRAM)
+qwen2.5-coder:32b-instruct-q2_K # 12.31 GB  32b squeezed into 16 GB VRAM (see troubleshooting.md)
 deepseek-r1:14b                 # 8.99 GB   reasoning / chain-of-thought
 gemma2:9b                       # 5.44 GB   generalist / summaries / log triage
 
