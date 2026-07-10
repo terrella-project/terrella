@@ -11,6 +11,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **firewalld zone script** (`provision/fedora/firewall.sh`, #10): creates the
+  `terrella-lan` zone — Fedora Workstation's service set **without** its default
+  `1025-65535/tcp+udp` open range (which would expose host ollama to the LAN) — binds the
+  LAN interface to it, and puts `tailscale0` in `trusted`. Loopback + tailnet are the only
+  access paths; verification checklist included.
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).
