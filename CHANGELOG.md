@@ -11,6 +11,14 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Changed
 
+- **Docs updated for the Fedora + podman reality** (#14): maintenance.md backup/restore
+  is podman-native (`podman volume export/import`, `podman exec pg_dump`, pinned-tag
+  image updates); troubleshooting.md rewritten for rootless quadlets (systemctl --user,
+  SELinux `:Z`, host-gateway, restored-volume ownership); cross-machine-access.md gains
+  the earth node name, Fedora install steps, and the LAN-posture section;
+  machines.md/tools.md reflect Fedora 44 + quadlets (no WSL distros); setup guide and
+  stack/provision READMEs marked with the Fedora-primary / legacy-WSL split; stale
+  `~/src/jomkz` paths updated in live docs (WSL-era setup pages keep theirs until #79).
 - **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
   (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
   observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
