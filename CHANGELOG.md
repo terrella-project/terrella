@@ -9,6 +9,13 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ## [Unreleased]
 
+### Changed
+
+- **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
+  (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
+  observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
+  `wsl --shutdown` / desktop-shortcut procedure; boot lands in AI Mode via lingering.
+
 ### Fixed
 
 - **`OPENWEBUI_DB` wired through the env plumbing** (`stack/.env.example`,
