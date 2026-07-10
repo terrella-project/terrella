@@ -9,6 +9,12 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ## [Unreleased]
 
+### Fixed
+
+- **`firewall.sh`: reload before activating the new zone** — `--new-zone` only writes
+  permanent config, so binding the interface and `--set-default-zone` failed with
+  `INVALID_ZONE: terrella-lan` on first run (#10 follow-up).
+
 ### Changed
 
 - **Docs updated for the Fedora + podman reality** (#14): maintenance.md backup/restore
