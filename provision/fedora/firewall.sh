@@ -26,6 +26,11 @@ else
     done
 fi
 
+# --new-zone only touches permanent config; the interface activation and
+# --set-default-zone below operate on runtime, which doesn't know the zone
+# until a reload (otherwise: "Error: INVALID_ZONE: terrella-lan").
+run sudo firewall-cmd --reload
+
 echo "▶ bind LAN interfaces to terrella-lan + make it the default zone"
 DEFAULT_IFACE="$(ip -o -4 route show to default | awk '{print $5}' | head -1)"
 if [[ -n $DEFAULT_IFACE && $DEFAULT_IFACE != tailscale0 ]]; then
