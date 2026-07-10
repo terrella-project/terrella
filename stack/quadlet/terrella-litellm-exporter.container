@@ -1,0 +1,26 @@
+# terrella — LiteLLM Prometheus exporter: single-file stdlib script bind-mounted
+# into a stock python image (folded into the package at M3, #36).
+
+[Unit]
+Description=Terrella LiteLLM exporter
+After=terrella-litellm.service
+Wants=terrella-litellm.service
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-litellm-exporter
+Image=docker.io/library/python:3.12.13-slim
+Network=terrella.network
+Volume=%h/.config/terrella/exporters/litellm_exporter.py:/app/litellm_exporter.py:ro,Z
+PublishPort=127.0.0.1:11436:11436
+EnvironmentFile=%h/.config/terrella/env.d/litellm-exporter.env
+Environment=LITELLM_BASE_URL=http://terrella-litellm:4000
+Environment=LITELLM_EXPORTER_HOST=0.0.0.0
+Environment=LITELLM_EXPORTER_PORT=11436
+Exec=python /app/litellm_exporter.py
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

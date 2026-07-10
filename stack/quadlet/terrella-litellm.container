@@ -1,0 +1,25 @@
+# terrella — LiteLLM gateway: local ollama + paid providers, per-request cost logging.
+# Reaches host ollama via host.containers.internal (see README / spike #6);
+# the api_base entries live in the rendered config.yaml.
+
+[Unit]
+Description=Terrella LiteLLM gateway
+Requires=terrella-postgres.service
+After=terrella-postgres.service
+PartOf=terrella-inference.target
+
+[Container]
+ContainerName=terrella-litellm
+Image=ghcr.io/berriai/litellm:v1.83.14-stable
+Network=terrella.network
+PublishPort=127.0.0.1:4000:4000
+EnvironmentFile=%h/.config/terrella/env.d/litellm.env
+Environment=STORE_MODEL_IN_DB=True
+Volume=%h/.config/terrella/litellm/config.yaml:/app/config.yaml:ro,Z
+Exec=--config /app/config.yaml --port 4000 --telemetry False
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella-inference.target

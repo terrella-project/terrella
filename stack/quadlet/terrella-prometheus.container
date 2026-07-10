@@ -1,0 +1,22 @@
+# terrella — Prometheus: scrapes the litellm/ollama exporters (30s interval).
+# No --web.listen-address flag: inside the network it binds 0.0.0.0:9090 and the
+# host only sees the loopback-published port.
+
+[Unit]
+Description=Terrella Prometheus
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-prometheus
+Image=docker.io/prom/prometheus:v3.13.0
+Network=terrella.network
+Volume=%h/.config/terrella/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro,Z
+Volume=terrella-prometheus.volume:/prometheus
+PublishPort=127.0.0.1:9090:9090
+Exec=--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

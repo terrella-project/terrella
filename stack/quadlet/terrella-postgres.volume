@@ -1,0 +1,6 @@
+# Named volume for the Postgres data dir. Replaces the WSL-era ./data/postgres
+# bind mount: podman chowns named volumes to the image's mapped uid, which is
+# what makes rootless Postgres work without manual uid gymnastics (ADR-0002).
+
+[Volume]
+VolumeName=terrella-postgres

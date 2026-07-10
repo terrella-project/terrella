@@ -1,5 +1,12 @@
 # Setup Guide
 
+> **Fedora is the primary platform since M0** (ADR-0002/ADR-0004). To build the stack on
+> Fedora: run [`provision/fedora/bootstrap.sh`](../../provision/fedora/bootstrap.sh)
+> (see [runbooks/fedora-provisioning.md](../runbooks/fedora-provisioning.md)), then
+> deploy the quadlet stack per [`stack/quadlet/README.md`](../../stack/quadlet/README.md).
+> The numbered guide below is the **legacy Windows/WSL path** — still supported (WSL is a
+> detection flag in the future debian adapter, ADR-0004), but no new features land here.
+
 Build the Terrella workstation from a fresh Windows 11 install. Follow the steps in order — each ends with a verification step; fix failures before continuing.
 
 | Step | What you do | Time |
@@ -22,7 +29,7 @@ Steps 02–05 are automated by two scripts in [`provision/`](../../provision/). 
 
 ```bash
 # Inside the Earth-AI WSL terminal, after step 01 is done:
-cd ~/src/jomkz/terrella
+cd ~/src/mkzsystems/terrella-project/terrella
 bash provision/provision.sh    # machine setup: apt, systemd, ollama, Docker, Aider
 bash provision/sync-models.sh  # pull the models listed in provision/models.list
 ```

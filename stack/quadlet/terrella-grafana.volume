@@ -1,0 +1,6 @@
+# Grafana data volume (users, prefs, annotations). Replaces the WSL-era
+# chmod-777 ./data/grafana bind mount; podman maps ownership to Grafana's
+# uid 472 automatically.
+
+[Volume]
+VolumeName=terrella-grafana

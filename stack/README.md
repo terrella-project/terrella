@@ -1,5 +1,10 @@
 # `stack/`
 
+> **The live stack is [`quadlet/`](quadlet/)** — rootless podman quadlets on Fedora
+> (M0, ADR-0002). The docker-compose project below is the **legacy WSL-era reference**;
+> it remains the golden-file *source* for M1's renderer tests and is deleted only after
+> `terrella apply` reproduces it (#81). No new features land here.
+
 All Terrella runtime services in a single docker-compose project running on the Earth-AI WSL distro. The compose project keeps its legacy name (`name: earth-ai`) because that name prefixes the live data volumes — see the note in [docker-compose.yml](docker-compose.yml).
 
 | Service | Port | Purpose |
@@ -20,7 +25,7 @@ Config files mounted into containers live under [`observability/`](observability
 ## Quick start
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/mkzsystems/terrella-project/terrella/stack
 ./scripts/generate-env.sh        # first time only — writes .env with random secrets
 # Edit .env: fill in ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, GITHUB_PAT
 # Optional later: set LITELLM_EXPORTER_API_KEY to a read-only LiteLLM virtual key for /models route-count metrics

@@ -1,0 +1,5 @@
+# Prometheus TSDB volume. Started fresh at the Fedora migration (decision D6:
+# durable history lives in Postgres; the WSL TSDB tarball is kept as insurance).
+
+[Volume]
+VolumeName=terrella-prometheus
