@@ -4,8 +4,65 @@ Hand-written podman Quadlet units for the terrella stack on Fedora (M0, epic #3;
 ADR-0002/ADR-0008). These files are the **golden reference** the M1 renderer must reproduce
 byte-equivalently (#18) — treat every line as a rendering decision.
 
-The units land with #7. This README currently records the networking pattern from the #6
-spike, which every unit depends on.
+## Architecture
+
+Everything runs **rootless under the login user** (decision D1; per-service rootful from
+`/etc/containers/systemd/` is the ADR-0002 escape hatch, unused). `loginctl enable-linger`
+makes the stack start at boot and survive logout.
+
+| Unit | Image (pinned — D5) | Published (loopback only) | Target |
+|---|---|---|---|
+| `terrella-postgres` | `postgres:16.14` | `127.0.0.1:5433→5432` | terrella |
+| `terrella-litellm` | `litellm:v1.83.14-stable` | `127.0.0.1:4000` | terrella-inference |
+| `terrella-openwebui` | `open-webui:v0.10.2` | `127.0.0.1:8080` | terrella-inference |
+| `terrella-grafana` | `grafana:13.1.0` | `127.0.0.1:3000` | terrella |
+| `terrella-prometheus` | `prometheus:v3.13.0` | `127.0.0.1:9090` | terrella |
+| `terrella-litellm-exporter` | `python:3.12.13-slim` | `127.0.0.1:11436` | terrella |
+| `terrella-ollama-exporter` | `python:3.12.13-slim` | `127.0.0.1:11435` | terrella |
+| `terrella-github-mcp` | `github-mcp-server:v1.5.0` | `127.0.0.1:8765` | terrella |
+| `ollama.service` (host binary, user unit — #12) | — | `0.0.0.0:11434` (firewalled, #10) | terrella-inference |
+
+Targets: `terrella.target` (whole stack, `WantedBy=default.target`) wants
+`terrella-inference.target` (the VRAM holders). Every member sets `PartOf=` so stops
+cascade. **Gaming toggle:** `systemctl --user stop terrella-inference.target` frees the GPU
+while observability keeps running; stopping `terrella.target` takes everything down.
+
+Readiness: `terrella-postgres` carries the only hard health gate (`HealthCmd=pg_isready` +
+`Notify=healthy`), replacing compose's `service_healthy`; consumers use plain
+`Requires=`/`After=`.
+
+### Rendered artifacts and secrets (`install.sh`)
+
+`install.sh` performs, by hand, exactly what the M1 renderer will do (ADR-0006):
+
+- **Rendered configs → `~/.config/terrella/`**: the LiteLLM `config.yaml` comes from the
+  legacy tree with one transform (`127.0.0.1:11434` → `host.containers.internal:11434`);
+  `prometheus.yml` and Grafana's `datasources.yml` are quadlet-specific copies under
+  `config/` (container-DNS targets); Grafana dashboards and the exporter `.py` files copy
+  unchanged. Units reference `%h/.config/terrella/...`, never the repo checkout.
+- **Secrets**: `stack/.env` splits into per-service `~/.config/terrella/env.d/*.env`
+  (mode 600) consumed via `EnvironmentFile=` — no container sees another service's keys.
+  Podman secrets + sops-age arrive at M2 (#27).
+- **Units**: per-file symlinks into `~/.config/containers/systemd/` (quadlets) and
+  `~/.config/systemd/user/` (targets), then `daemon-reload`.
+- **Images**: pre-pulled at install; **no `AutoUpdate=`** — updating means editing the
+  pinned tag, re-running `install.sh`, and restarting the unit (golden files stay
+  reproducible).
+
+### Update workflow
+
+```bash
+# edit the Image= pin in the unit (or any config under config/), then
+stack/quadlet/install.sh
+systemctl --user daemon-reload
+systemctl --user restart terrella-<service>.service
+```
+
+## Golden-fixture status
+
+These hand-written files are the reference output for the M1 renderer's golden tests
+(#18): `terrella apply` must reproduce them byte-equivalently from `terrella.yaml` before
+the legacy `stack/` and `provision/` trees are deleted (#81).
 
 ## Networking pattern (spike #6 — measured on earth, 2026-07-09)
 

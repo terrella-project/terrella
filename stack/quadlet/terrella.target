@@ -1,0 +1,13 @@
+# terrella — root target for the whole stack. `systemctl --user stop
+# terrella.target` stops everything (observability included); the GPU-freeing
+# gaming toggle is the narrower terrella-inference.target. Starts at boot via
+# linger (WantedBy=default.target).
+#
+# Installed to ~/.config/systemd/user/ by install.sh.
+
+[Unit]
+Description=Terrella AI stack
+Wants=terrella-inference.target
+
+[Install]
+WantedBy=default.target
