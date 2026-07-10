@@ -1,0 +1,11 @@
+# terrella — named bridge network for the stack (ADR-0002).
+# aardvark-dns gives every container a DNS name equal to its ContainerName;
+# inter-service traffic uses those names only (see README: pasta does not
+# hairpin host-published loopback ports back into containers).
+
+[Network]
+NetworkName=terrella
+Driver=bridge
+
+[Install]
+WantedBy=terrella.target

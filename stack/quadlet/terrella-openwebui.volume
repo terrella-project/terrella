@@ -1,0 +1,5 @@
+# Open WebUI data volume (uploads, vector_db; chats live in Postgres — #8).
+# Successor of the WSL-era earth-ai_open-webui volume (ADR-0008 data migration).
+
+[Volume]
+VolumeName=terrella-openwebui
