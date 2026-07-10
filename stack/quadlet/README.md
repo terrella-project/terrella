@@ -64,6 +64,9 @@ These hand-written files are the reference output for the M1 renderer's golden t
 (#18): `terrella apply` must reproduce them byte-equivalently from `terrella.yaml` before
 the legacy `stack/` and `provision/` trees are deleted (#81).
 
+The units land with #7. This README currently records the networking pattern from the #6
+spike, which every unit depends on.
+
 ## Networking pattern (spike #6 — measured on earth, 2026-07-09)
 
 Environment: podman 5.8.3, netavark backend, pasta 0^20260611 (rootless), SELinux enforcing,
