@@ -11,6 +11,12 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **First persisted benchmark baseline** (#13): full local-model suite run on the
+  migrated Fedora stack and recorded to `benchmark_results` (the table never existed on
+  WSL — runs were silently unpersisted without psycopg2). Headlines: qwen2.5-coder:14b
+  ≈ 98 t/s, the q2_K 32b variant ≈ 66 t/s inside 16 GB, full 32b confirms VRAM overflow
+  (8 t/s). benchmarking.md gains the baseline table, Fedora prerequisites, and a note on
+  the deepseek-r1 thinking-token measurement artifact (deferred to #29).
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).
