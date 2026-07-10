@@ -26,6 +26,13 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Fedora provisioning bootstrap** (`provision/fedora/bootstrap.sh` + runbook
+  `docs/runbooks/fedora-provisioning.md`): idempotent detect→apply→verify for the quadlet
+  stack's host prerequisites — NVIDIA open kernel modules (Blackwell), Secure Boot/MOK
+  detection, nvidia-container-toolkit + CDI spec with regeneration on driver updates
+  (toolkit refresh units or the `terrella-cdi-regen.service` fallback), podman, user
+  lingering, Tailscale, and day-1 rootless-GPU/SELinux acceptance tests. Doubles as the
+  behavioral spec for M1's fedora/dnf adapter (#4).
 - **firewalld zone script** (`provision/fedora/firewall.sh`, #10): creates the
   `terrella-lan` zone — Fedora Workstation's service set **without** its default
   `1025-65535/tcp+udp` open range (which would expose host ollama to the LAN) — binds the
