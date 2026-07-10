@@ -11,6 +11,12 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **M0 data rescue runbook** (`docs/runbooks/fedora-migration.md`): offline extraction of
+  the WSL-era stack data (secrets, Postgres dumps, volume tarballs, ollama models) from the
+  old Windows install's mounted `ext4.vhdx` — no Windows boot required. Records the verified
+  backups, baseline row counts, and two findings: Open WebUI's live store is the dedicated
+  `openwebui` Postgres DB (resolves #8's investigation), and no WSL `benchmark_results`
+  baseline ever existed (#13 will baseline against restored spend-log history) (#5).
 - **Apache-2.0 LICENSE** and community health files: `CONTRIBUTING.md`, `SECURITY.md`
   (private vulnerability reporting), `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1),
   `.github/CODEOWNERS` (#53; ADR-0009).
