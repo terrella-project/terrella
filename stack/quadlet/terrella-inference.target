@@ -1,0 +1,13 @@
+# terrella — inference sub-target: the VRAM holders (host ollama user unit,
+# LiteLLM, Open WebUI). `systemctl --user stop terrella-inference.target` is the
+# gaming toggle — frees the GPU while observability keeps running — replacing
+# the WSL-era `wsl --shutdown` (#11, ADR-0002).
+#
+# Installed to ~/.config/systemd/user/ by install.sh.
+
+[Unit]
+Description=Terrella inference services (GPU / VRAM holders)
+PartOf=terrella.target
+
+[Install]
+WantedBy=terrella.target

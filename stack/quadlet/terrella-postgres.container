@@ -1,0 +1,24 @@
+# terrella — Postgres: LiteLLM spend ledger + Open WebUI chats (dbs: litellm, openwebui).
+
+[Unit]
+Description=Terrella Postgres
+PartOf=terrella.target
+
+[Container]
+ContainerName=terrella-postgres
+Image=docker.io/library/postgres:16.14
+Network=terrella.network
+Volume=terrella-postgres.volume:/var/lib/postgresql/data
+PublishPort=127.0.0.1:5433:5432
+EnvironmentFile=%h/.config/terrella/env.d/postgres.env
+HealthCmd=pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+HealthInterval=5s
+HealthTimeout=5s
+HealthRetries=10
+Notify=healthy
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella.target

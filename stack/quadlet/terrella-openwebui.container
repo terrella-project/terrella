@@ -1,0 +1,26 @@
+# terrella — Open WebUI: human-facing chat UI. Chats/settings/users live in the
+# dedicated 'openwebui' Postgres DB (#8); the volume holds uploads + vector_db.
+
+[Unit]
+Description=Terrella Open WebUI
+Requires=terrella-postgres.service
+After=terrella-postgres.service terrella-litellm.service terrella-github-mcp.service ollama.service
+Wants=terrella-litellm.service terrella-github-mcp.service
+PartOf=terrella-inference.target
+
+[Container]
+ContainerName=terrella-openwebui
+Image=ghcr.io/open-webui/open-webui:v0.10.2
+Network=terrella.network
+Volume=terrella-openwebui.volume:/app/backend/data
+PublishPort=127.0.0.1:8080:8080
+# TOOL_SERVER_CONNECTIONS lives in openwebui.env: github-mcp ≥ v1.0 requires
+# per-request bearer auth (the PAT), so the JSON is a secret now.
+EnvironmentFile=%h/.config/terrella/env.d/openwebui.env
+Environment=OLLAMA_BASE_URL=http://host.containers.internal:11434
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=terrella-inference.target
