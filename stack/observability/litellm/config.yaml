@@ -11,20 +11,12 @@ litellm_settings:
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   database_url: os.environ/DATABASE_URL
-  # Health probes hit ollama and providers periodically.
-  background_health_checks: True
-  health_check_interval: 300
-
-# Prevent health checks to avoid charges for paid models.
-# Set the health check interval to an extremely high value (e.g., 999999999 seconds is over 31 years)
-# This effectively disables health checks as they will almost never run.
-completion_model_health_check_interval: 999999999
-
-# It's also good practice to make the other related parameters lenient if the checks somehow *do* run,
-# but the interval is the key to disabling them.
-completion_model_health_check_timeout: 60
-completion_model_health_check_max_fails: 1000
-completion_model_health_check_fail_streak: 1000
+  # OFF: background health checks send a real, billable completion request to
+  # every model in model_list each interval (~60 paid calls per cycle).
+  # Liveness monitoring uses /health/liveness (litellm_exporter.py), which makes
+  # no model calls. Avoid GET /health as well — with background checks off it
+  # live-probes every model on demand.
+  background_health_checks: False
 
 teams:
 

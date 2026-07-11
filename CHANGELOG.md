@@ -11,6 +11,14 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Fixed
 
+- **LiteLLM: billable background health checks disabled** (#95) —
+  `background_health_checks: True` sent a real completion request to every
+  `model_list` entry (~60 paid models) every 300 s and on every startup,
+  ~15,000 paid API calls over 30 h; the `completion_model_health_check_*` keys
+  from an earlier fix attempt are not real LiteLLM settings and did nothing.
+  Liveness monitoring stays on the free `/health/liveness` endpoint
+  (`litellm_exporter.py`); `GET /health` is also off-limits — with background
+  checks off it live-probes every model on demand.
 - **`firewall.sh`: reload before activating the new zone** — `--new-zone` only writes
   permanent config, so binding the interface and `--set-default-zone` failed with
   `INVALID_ZONE: terrella-lan` on first run (#10 follow-up).
