@@ -35,6 +35,9 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Fixed
 
+- **Dependabot PRs no longer fail the changelog check** — `.github/dependabot.yml`
+  now applies the `no-changelog` label to its PRs (dependency bumps are chores with no
+  user-facing change), so they stop tripping the enforced-CHANGELOG gate.
 - **LiteLLM: billable background health checks disabled** (#95) —
   `background_health_checks: True` sent a real completion request to every
   `model_list` entry (~60 paid models) every 300 s and on every startup,
