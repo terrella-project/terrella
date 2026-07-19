@@ -62,7 +62,7 @@ The [`project-sync`](../../.github/workflows/project-sync.yml) workflow runs on 
 issue types and org Projects cannot be written by the default `GITHUB_TOKEN`.
 
 1. Create a PAT with `repo`, `project`, and org read (`admin:org`) scopes — or reuse the
-   org's existing `PROJECT_ADMIN_TOKEN` used by astrocyte.
+   org's existing `PROJECT_ADMIN_TOKEN`.
 2. Add it as the repo secret **`PROJECT_ADMIN_TOKEN`**
    (`gh secret set PROJECT_ADMIN_TOKEN -R terrella-project/terrella`).
 3. Trigger a run: `gh workflow run project-sync.yml` (or push a spec change).
@@ -90,6 +90,6 @@ The API cannot create or configure views. Create these three:
 | **Board** | Board | Columns by `Status` (`Todo / In Progress / Done`) | Day-to-day kanban |
 | **Open Items** | Table | Filter `is:issue -status:Done` | Triage and bulk editing |
 
-Tip (from astrocyte): to browse by subsystem, add a table view **sliced by Labels** — an
+Tip: to browse by subsystem, add a table view **sliced by Labels** — an
 issue can carry several `component:*` labels, and the slice sidebar filters one at a time.
 After editing any view, use the view's ▾ menu → **Save changes**, or it reverts on reload.

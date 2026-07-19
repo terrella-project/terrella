@@ -20,8 +20,27 @@ Rule of thumb: **prefer local first when quality is good enough; reserve paid fo
 | **Long reasoning / "think then answer"** | Local first | `deepseek-r1:14b`; escalate to Claude Opus if it stalls | Try free first. |
 | **Embeddings for RAG / semantic search** | ollama | `nomic-embed-text` | Free, fast, never leaves machine. |
 | **Anything sensitive / secrets / private data** | ollama only | any local | Stays on earth, never leaves the network. |
-| **Off-network on jupiter or Mac mini** | Paid services direct | varies | If Tailscale isn't worth the hop, pay for it. |
+| **Off-network on jupiter or mercury** | Paid services direct | varies | If Tailscale isn't worth the hop, pay for it. |
 | **Off-network but want to use earth's models** | Tailscale → LiteLLM | any | Works the same as on earth, just slower. |
+
+## Model naming across nodes (gateway aliases)
+
+Adopted now so nothing has to be renamed when a second serving node (**neptune**) comes
+online — see [ADR-0010](../adr/ADR-0010-neptune-future-primary-node.md). Today every local
+model is served by earth, so the routed group and the pinned name resolve to the same
+backend; the convention just reserves the shape.
+
+- **`local/<model>`** — a routed model *group*. Clients and automation use this by default;
+  the gateway picks a backend (and, once neptune exists, prefers the always-on node and
+  fails over when earth is gaming). This is what the decision table's "local" rows map to.
+- **`earth/<model>`, `neptune/<model>`** — pinned single-node names, for benchmarking,
+  debugging, and "I specifically want that GPU."
+- **Cloud names** (`claude-*`, `gemini-*`, `gpt-*`) are unchanged.
+
+Failover is connection-error cooldown, **not** background health checks — background checks
+bill real completions ([#96](https://github.com/terrella-project/terrella/issues/96)).
+Liveness is surfaced instead by a non-billable `terrella_node_up{node}` probe in
+observability, so "earth is gaming" shows in Grafana without any spend.
 
 ## Escalation ladder (when the cheap thing isn't good enough)
 

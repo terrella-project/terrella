@@ -4,7 +4,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 
 ## GitHub Copilot (Team)
 
-- **Plan:** GitHub Copilot Business / Team (via my GitHub Team subscription)
+- **Plan:** GitHub Copilot Business / Team (via a GitHub Team subscription)
 - **Cost:** _TODO $/seat/month_
 - **Models:** Claude Sonnet, GPT-4.1/4o, Gemini 2.5 Pro, plus "Copilot" default
 - **Limits:** monthly chat / agent message quotas vary by model class; refer to GitHub's billing page
@@ -20,7 +20,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Limits:** session-based usage limits; see Anthropic console
 - **Billing portal:** https://claude.ai/settings/billing
 - **Per-request telemetry?** ❌ no — subscription, not metered API; enter monthly via `log-billing.sh`
-- **Where used:** Claude Code CLI on earth (Ubuntu-24.04 + Earth-AI), jupiter, Mac mini
+- **Where used:** Claude Code CLI on earth, jupiter, mercury
 
 ## Anthropic API (pay-as-you-go)
 
@@ -60,7 +60,7 @@ Rotate cadence: _TODO — quarterly?_
 After each billing cycle:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack/observability
+cd ~/src/terrella/stack/observability
 ./scripts/log-billing.sh
 # prompts: month (YYYY-MM), vendor, amount USD, notes
 ```

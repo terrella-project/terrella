@@ -19,7 +19,7 @@
 ## Basic usage
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 
 # Benchmark all local (ollama) chat models — the default
 python3 scripts/benchmark-models.py --key sk-<your-virtual-key>

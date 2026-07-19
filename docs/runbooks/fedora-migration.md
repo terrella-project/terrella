@@ -22,7 +22,7 @@ on the whole virtual disk — no partition table, so the mount device is `/dev/s
 ```bash
 sudo dnf install guestfs-tools   # guestmount / virt-filesystems (already present on earth)
 export LIBGUESTFS_BACKEND=direct # the libvirt backend cannot traverse the fuse NTFS mount
-VHDX="/run/media/john/Windows Disk/Users/John/AppData/Local/wsl/{7bf1aa41-…}/ext4.vhdx"
+VHDX="/run/media/<user>/Windows Disk/Users/<user>/AppData/Local/wsl/{7bf1aa41-…}/ext4.vhdx"
 virt-filesystems -a "$VHDX" --all --long          # expect: /dev/sda ext4
 mkdir -p ~/wsl-rescue-mnt
 guestmount --ro -a "$VHDX" -m /dev/sda ~/wsl-rescue-mnt
@@ -39,7 +39,7 @@ Into `~/wsl-backup/`. What lives where (WSL-era layout, per `stack/docker-compos
 
 | Data | Location inside the image |
 |---|---|
-| Secrets (`.env`) | `/home/john/src/jomkz/earth-ai/stack/.env` |
+| Secrets (`.env`) | `/home/<user>/src/earth-ai/stack/.env` |
 | Postgres data dir (bind mount) | `.../stack/data/postgres` |
 | Grafana data dir (bind mount) | `.../stack/data/grafana` |
 | Open WebUI volume | `/var/lib/docker/volumes/earth-ai_open-webui/_data` |
@@ -48,7 +48,7 @@ Into `~/wsl-backup/`. What lives where (WSL-era layout, per `stack/docker-compos
 | Image versions at cutover | `/var/lib/docker/containers/*/config.v2.json` |
 
 ```bash
-SRC=~/wsl-rescue-mnt/home/john/src/jomkz/earth-ai/stack
+SRC=~/wsl-rescue-mnt/home/<user>/src/earth-ai/stack
 install -m 600 "$SRC/.env" ~/wsl-backup/env.backup
 cp -a "$SRC/data/postgres" ~/wsl-backup/pgdata-copy
 tar cf ~/wsl-backup/grafana-data.tar    -C "$SRC/data/grafana" .

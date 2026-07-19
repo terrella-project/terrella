@@ -126,7 +126,7 @@ curl -s http://localhost:4000/v1/models \
 If your model isn't in the output, refresh the managed LiteLLM catalog and re-render:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/update-litellm-config.sh
 ./quadlet/install.sh
 systemctl --user restart terrella-litellm.service
@@ -135,7 +135,7 @@ systemctl --user restart terrella-litellm.service
 ## LiteLLM smoke test fails
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/smoke.sh
 ```
 

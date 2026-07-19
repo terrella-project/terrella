@@ -9,6 +9,30 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ## [Unreleased]
 
+### Added
+
+- **ADR-0010 — Neptune as the future primary node (deferred)** — records the intended
+  topology (neptune, 4× MI100, becomes the always-on inference heart; earth demotes to an
+  opportunistic fast/dev node), a scoped pre-M7 static-routing carve-out on ADR-0005, and
+  the gfx908 serving stance. No code; hardware is still in build.
+- **`docs/runbooks/neptune-provisioning.md`** (draft) — back-pocket bring-up checklist
+  (cooling/power/BIOS, Fedora+ROCm, ollama-first serving, network parity, benchmark baseline).
+- **Model-naming convention in `docs/reference/routing.md`** — `local/<model>` routed groups
+  vs pinned `earth/<model>` / `neptune/<model>`, adopted now so no rename is needed when a
+  second serving node comes online.
+- **`deploy/earth/machines.md`** gains **luna** (iPhone client) and a **Planned: neptune**
+  entry; Mac mini is named **mercury**.
+
+### Changed
+
+- **Public-readiness scrub of personal identifiers** (ahead of the M6 OSS launch): clone
+  paths genericized to `~/src/terrella`, literal usernames in the fedora-migration runbook
+  replaced with `<user>`, "John's …" prose reworded to "the reference/maintainer's …"
+  (deliberate license/package attribution kept), sibling-repo names/links and org-lineage
+  references removed from the PM docs and ADRs, and jupiter hardware fingerprints trimmed.
+- **`machines.md` Tailscale status reconciled** — earth's row now reflects the live
+  `tailscale serve` state (11434 / 4000 / 3000) instead of the stale "pending".
+
 ### Fixed
 
 - **LiteLLM: billable background health checks disabled** (#95) —
@@ -32,7 +56,7 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   the earth node name, Fedora install steps, and the LAN-posture section;
   machines.md/tools.md reflect Fedora 44 + quadlets (no WSL distros); setup guide and
   stack/provision READMEs marked with the Fedora-primary / legacy-WSL split; stale
-  `~/src/jomkz` paths updated in live docs (WSL-era setup pages keep theirs until #79).
+  clone paths updated in live docs (WSL-era setup pages keep theirs until #79).
 - **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
   (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
   observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
@@ -120,6 +144,6 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   to the new `deploy/earth/` overlay (start of the docs de-personalization split, #55).
 - Continue.dev sync script output renamed to `terrella-config.yaml`.
 - Added `docs/runbooks/rename-migration.md` (per-clone migration checklist).
-- Repository transferred from `jomkz/earth-ai` to `mkzsystems/earth-ai`.
+- Repository transferred to a dedicated org under its new name.
 - `README.md` / `AGENTS.md` updated for the project's new direction and earth's move to
   Fedora 44.
