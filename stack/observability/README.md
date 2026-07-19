@@ -22,7 +22,7 @@ Documentation:
 Quick start (assumes you've read the setup doc):
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/generate-env.sh        # first time only
 docker compose up -d
 ./scripts/init-billing-table.sh  # first time only

@@ -29,7 +29,7 @@ Open WebUI is the `open-webui` service in [`stack/docker-compose.yml`](../../sta
 Bring it up (this also starts the rest of the stack; that's fine at this stage):
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/terrella/stack
 docker compose up -d open-webui
 ```
 

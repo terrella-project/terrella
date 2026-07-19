@@ -19,7 +19,7 @@ the legal layer, and the PyPI stub published at the rename needs license metadat
 - **REUSE compliance now** (amends ADR-0007's M6 deferral): a whole-tree aggregate
   annotation in `REUSE.toml` + `LICENSES/Apache-2.0.txt`, enforced by `reuse lint` in CI.
   New files need no SPDX header unless they carry a different license.
-- **DCO stays deferred** (per ADR-0007 / viceroy precedent): sign-offs add contributor
+- **DCO stays deferred** (per ADR-0007): sign-offs add contributor
   friction with no benefit while there are no external contributors. Revisited when they
   appear — tracked in issue #58.
 - Supply-chain baseline set at the same time: GitHub Actions pinned to commit SHAs,

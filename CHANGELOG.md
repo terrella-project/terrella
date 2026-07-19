@@ -32,7 +32,7 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   the earth node name, Fedora install steps, and the LAN-posture section;
   machines.md/tools.md reflect Fedora 44 + quadlets (no WSL distros); setup guide and
   stack/provision READMEs marked with the Fedora-primary / legacy-WSL split; stale
-  `~/src/jomkz` paths updated in live docs (WSL-era setup pages keep theirs until #79).
+  clone paths updated in live docs (WSL-era setup pages keep theirs until #79).
 - **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
   (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
   observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
@@ -120,6 +120,6 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   to the new `deploy/earth/` overlay (start of the docs de-personalization split, #55).
 - Continue.dev sync script output renamed to `terrella-config.yaml`.
 - Added `docs/runbooks/rename-migration.md` (per-clone migration checklist).
-- Repository transferred from `jomkz/earth-ai` to `mkzsystems/earth-ai`.
+- Repository transferred to a dedicated org under its new name.
 - `README.md` / `AGENTS.md` updated for the project's new direction and earth's move to
   Fedora 44.

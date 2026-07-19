@@ -1,6 +1,6 @@
 # Runbook — migrating a clone after the terrella rename
 
-The repo moved from `mkzsystems/earth-ai` to `terrella-project/terrella`
+The repo moved to `terrella-project/terrella` under its new name
 ([ADR-0008](../adr/ADR-0008-project-name-terrella.md)). GitHub redirects the old URL, so
 stale clones keep working — but update each machine when convenient. Machines with clones:
 earth (both WSL distros and/or Fedora), jupiter, Mac mini.
@@ -10,7 +10,7 @@ earth (both WSL distros and/or Fedora), jupiter, Mac mini.
 1. **Point the remote at the new home** (works even if you skip the directory move):
 
    ```bash
-   cd ~/src/jomkz/earth-ai   # or wherever the clone lives
+   cd ~/src/earth-ai   # or wherever the clone lives
    git remote set-url origin git@github.com:terrella-project/terrella.git
    git fetch origin && git pull
    ```
@@ -27,15 +27,15 @@ earth (both WSL distros and/or Fedora), jupiter, Mac mini.
 3. **Move the directory** (optional but keeps docs accurate):
 
    ```bash
-   mv ~/src/jomkz/earth-ai ~/src/jomkz/terrella
+   mv ~/src/earth-ai ~/src/terrella
    ```
 
 4. **Claude Code memory gotcha:** project auto-memory is keyed by the directory path.
    After moving, copy the old memory over so it isn't orphaned:
 
    ```bash
-   cp -r ~/.claude/projects/-home-<user>-src-jomkz-earth-ai/memory \
-         ~/.claude/projects/-home-<user>-src-jomkz-terrella/
+   cp -r ~/.claude/projects/-home-<user>-src-earth-ai/memory \
+         ~/.claude/projects/-home-<user>-src-terrella/
    ```
 
    (Directory names are the absolute path with `/` → `-`; create the target if the new

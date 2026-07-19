@@ -3,8 +3,8 @@
 **terrella** is evolving from a personal AI-workstation blueprint (docs + scripts + compose)
 into an installable, open-source tool: a CLI (working name **`terrella`**) that provisions and
 manages a personal AI stack — local models, multi-provider gateway, cost ledger,
-observability, and agentic operations — on any Linux box, config-driven. John's workstation
-(**earth**, now Fedora 44) is the first deployment.
+observability, and agentic operations — on any Linux box, config-driven. The reference
+workstation (**earth**, now Fedora 44) is the first deployment.
 
 Work is tracked per [docs/project-management.md](docs/project-management.md): one GitHub
 **milestone per phase** below, one **Epic** issue per milestone decomposed into sub-issues,

@@ -12,7 +12,7 @@ To get all four spend lines (Copilot / Claude Code / Anthropic API / Gemini API)
 After each billing email arrives:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/log-billing.sh
 ```
 
@@ -34,7 +34,7 @@ It inserts one row into the `monthly_costs` table. Run it once per service per m
 Open a `psql` shell against the running Postgres container:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 docker compose exec postgres psql -U litellm
 ```
 

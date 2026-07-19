@@ -63,7 +63,7 @@ docker compose up -d litellm litellm-exporter
 Steps 01–05 must be complete. Run from the `stack/` directory:
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/terrella/stack
 
 # 1. First-time only: generate strong random secrets into .env
 ./scripts/generate-env.sh   # writes .env (gitignored, chmod 600)
@@ -131,7 +131,7 @@ Prometheus stores its TSDB in a named Docker volume (`prometheus-data`) rather t
 ## 6.6 Verify end-to-end
 
 ```bash
-cd ~/src/jomkz/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/smoke.sh
 ```
 

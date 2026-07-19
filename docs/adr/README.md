@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
 Dated, lightweight records of architectural decisions — the pre-1.0 alternative to a formal
-RFC process (mirrors the approach in the sibling astrocyte / viceroy / uio projects). A full
+RFC process (a proven approach carried over from earlier projects). A full
 RFC workflow (the `rfc` + `status:*` labels) is reserved for public contracts — chiefly the
 `terrella.yaml` schema — once they freeze after the OSS launch (M6).
 

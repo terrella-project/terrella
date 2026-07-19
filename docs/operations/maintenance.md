@@ -98,7 +98,7 @@ systemctl --user start terrella.target
 The set of models the provisioner pulls is in [`provision/models.list`](../../provision/models.list). To change the baseline:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 $EDITOR provision/models.list
 bash provision/sync-models.sh      # pulls anything new (idempotent)
 
@@ -124,7 +124,7 @@ To check whether anything in your LiteLLM config is stale or what new provider m
 To refresh the managed provider catalogs in-place, run:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/update-litellm-config.sh --dry-run   # preview
 ./scripts/update-litellm-config.sh             # write changes
 ./quadlet/install.sh                           # re-render ~/.config/terrella
@@ -140,7 +140,7 @@ That script updates the marked catalog blocks for Anthropic, Gemini, OpenAI, and
 ollama does **not** auto-update. Pull the latest version of every installed model with:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 ./stack/scripts/update-ollama-models.sh             # re-pulls all installed + adds anything in models.list
 ./stack/scripts/update-ollama-models.sh --installed-only   # skip models.list; only re-pull existing
 ```
@@ -155,7 +155,7 @@ Images are **pinned to exact version tags** in the quadlet units — no `:latest
 auto-update (the units are the M1 renderer's golden fixtures; updates are deliberate):
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 $EDITOR stack/quadlet/terrella-<service>.container    # bump the Image= tag
 stack/quadlet/install.sh                              # copies units, pulls the new image
 systemctl --user daemon-reload

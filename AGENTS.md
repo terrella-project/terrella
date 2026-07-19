@@ -13,7 +13,7 @@ This is a personal AI workstation repo evolving into an installable tool (`terre
 | `docs/setup/` | Numbered installation guide (01–07; WSL-era, migrating in M0) |
 | `docs/operations/` | Day-2 ops: cross-machine access, maintenance, billing, troubleshooting |
 | `docs/runbooks/` | Operator runbooks (GitHub project setup, rename migration, …) |
-| `deploy/earth/` | John's deployment overlay (machines, subscriptions, billing) — personal-deployment docs, not tool docs |
+| `deploy/earth/` | The reference deployment overlay (machines, subscriptions, billing) — deployment-specific docs, not tool docs |
 | `provision/` | `provision.sh` one-shot installer + `models.list` (legacy; absorbed by CLI in M1) |
 | `stack/` | docker-compose: all services — Open WebUI, LiteLLM, Postgres, Prometheus, Grafana (legacy; quadlets in M0) |
 | `stack/observability/` | config files for LiteLLM, Prometheus, and Grafana (mounted read-only) |
@@ -42,7 +42,7 @@ All of these retire with the M0 migration, deliberately.
 ## Doc conventions
 
 - Cross-link between docs files using relative paths (e.g. `[machines.md](machines.md)`).
-- **Placement rule:** generic tool documentation goes in `docs/`; anything specific to John's machines, subscriptions, or billing goes in `deploy/earth/`.
+- **Placement rule:** generic tool documentation goes in `docs/`; anything specific to the reference deployment's machines, subscriptions, or billing goes in `deploy/earth/`.
 - New files get REUSE/SPDX license metadata (covered repo-wide by `REUSE.toml`; add an SPDX header only if a file needs a different license than its directory default).
 - Prerequisites and version info live in the tables in `deploy/earth/machines.md` — update that table when software is installed or upgraded.
 - `_TODO_` is the placeholder for not-yet-gathered info in tables.
