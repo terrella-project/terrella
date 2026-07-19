@@ -11,6 +11,7 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **CI: `auto-close-epics` workflow** — backported from `mkzsystems/pm-framework`; closes a parent epic when its last sub-issue closes (predicate matches the Epic issue type or the `epic` label).
 - **ADR-0010 — Neptune as the future primary node (deferred)** — records the intended
   topology (neptune, 4× MI100, becomes the always-on inference heart; earth demotes to an
   opportunistic fast/dev node), a scoped pre-M7 static-routing carve-out on ADR-0005, and
