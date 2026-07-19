@@ -9,6 +9,30 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ## [Unreleased]
 
+### Added
+
+- **ADR-0010 — Neptune as the future primary node (deferred)** — records the intended
+  topology (neptune, 4× MI100, becomes the always-on inference heart; earth demotes to an
+  opportunistic fast/dev node), a scoped pre-M7 static-routing carve-out on ADR-0005, and
+  the gfx908 serving stance. No code; hardware is still in build.
+- **`docs/runbooks/neptune-provisioning.md`** (draft) — back-pocket bring-up checklist
+  (cooling/power/BIOS, Fedora+ROCm, ollama-first serving, network parity, benchmark baseline).
+- **Model-naming convention in `docs/reference/routing.md`** — `local/<model>` routed groups
+  vs pinned `earth/<model>` / `neptune/<model>`, adopted now so no rename is needed when a
+  second serving node comes online.
+- **`deploy/earth/machines.md`** gains **luna** (iPhone client) and a **Planned: neptune**
+  entry; Mac mini is named **mercury**.
+
+### Changed
+
+- **Public-readiness scrub of personal identifiers** (ahead of the M6 OSS launch): clone
+  paths genericized to `~/src/terrella`, literal usernames in the fedora-migration runbook
+  replaced with `<user>`, "John's …" prose reworded to "the reference/maintainer's …"
+  (deliberate license/package attribution kept), sibling-repo names/links and org-lineage
+  references removed from the PM docs and ADRs, and jupiter hardware fingerprints trimmed.
+- **`machines.md` Tailscale status reconciled** — earth's row now reflects the live
+  `tailscale serve` state (11434 / 4000 / 3000) instead of the stale "pending".
+
 ### Fixed
 
 - **LiteLLM: billable background health checks disabled** (#95) —

@@ -1,6 +1,8 @@
 # Machines
 
-Three development machines. earth is the primary; jupiter (laptop) and Mac mini are used away from the desk.
+The machines in the reference deployment. **earth** is the always-on primary; **jupiter**
+(laptop), **mercury** (Mac mini), and **luna** (iPhone) are thin clients used away from the
+desk. **neptune** (a dedicated AI rig) is in build — see [Planned: neptune](#planned-neptune).
 
 ## earth (primary workstation)
 
@@ -21,8 +23,7 @@ Three development machines. earth is the primary; jupiter (laptop) and Mac mini 
   `127.0.0.1` only; **ollama** runs on the host as a systemd user service
   (`0.0.0.0:11434`, firewalled from the LAN). `systemctl --user stop
   terrella-inference.target` is the gaming toggle. No WSL, no dev/services distro split —
-  the repo is cloned at `~/src/mkzsystems/terrella-project/terrella` and developed
-  in place.
+  the repo is cloned at `~/src/terrella` and developed in place.
 - **Role:** all heavy local model work runs here. Always-on. Other machines reach back to earth via Tailscale when away.
 - **Installed:** see [tools.md](../../docs/reference/tools.md).
 
@@ -38,15 +39,14 @@ Expected: list of models from [local-models.md](../../docs/reference/local-model
 
 ## jupiter (laptop)
 
-- **Host OS:** Windows 11 Pro (Build 26200, 24H2), installed 1/16/2025
+- **Host OS:** Windows 11 Pro (24H2)
 - **Hostname:** `jupiter`
-- **Hardware:** Lenovo ThinkBook 21MA0037US
-  - CPU: Intel Core Ultra 7 155U — 7 cores / 14 threads, ~1700 MHz base
-  - RAM: 32,233 MB (32 GB)
-  - GPU: Intel Graphics (integrated), 2 GB, driver 32.0.101.8332
-  - BIOS: LENOVO R2JET37W(1.14), 8/26/2024
-- **WSL distro:** single `Ubuntu-24.04` distro (Ubuntu 24.04.4 LTS, kernel 6.6.87.2-microsoft-standard-WSL2) — dev workspace only (no Earth-AI equivalent; no local AI services).
-- **Networking:** Wi-Fi (Intel Wi-Fi 6 AX201 160MHz); Tailscale installed on Windows host (Wintun tunnel, `169.254.83.107`).
+- **Hardware:** Lenovo ThinkBook (Intel Core Ultra 7 class)
+  - CPU: Intel Core Ultra 7 155U — 7 cores / 14 threads
+  - RAM: 32 GB
+  - GPU: Intel Graphics (integrated)
+- **WSL distro:** single `Ubuntu-24.04` distro (Ubuntu 24.04 LTS) — dev workspace only (no Earth-AI equivalent; no local AI services).
+- **Networking:** Wi-Fi; Tailscale installed on the Windows host (Wintun tunnel).
 - **Role:** mobile development; light editing, code review, docs, communication. Reaches earth's local models via Tailscale when needed.
 - **Local models:** none. Falls back to:
   1. Paid services (Copilot / Claude Code) directly, OR
@@ -55,17 +55,37 @@ Expected: list of models from [local-models.md](../../docs/reference/local-model
 - **Confirmed working (WSL):** gh (GitHub CLI) 2.45.0.
 - **Not yet installed (WSL):** Claude Code CLI, OpenCode.
 
-## Mac mini
+## mercury (Mac mini)
 
 - **OS:** macOS _TODO version_
+- **Hostname:** `mercury`
 - **Role:** secondary development; iOS development (needs Xcode).
 - **Local models:** could run small ones locally if needed (ollama on macOS supports Metal). For now: same fallback as jupiter.
+
+## luna (iPhone)
+
+- **Device:** iPhone 16 Pro Max
+- **Hostname:** `luna`
+- **Role:** mobile chat client. Reaches the stack over Tailscale — the Open WebUI PWA
+  (add-to-home-screen) for chat, using local models and the cost-ledgered gateway. No local
+  models.
+
+## Planned: neptune
+
+- **Status:** in build — not yet provisioned; no terrella code targets it yet (multi-node is
+  M7 by [ADR-0005](../../docs/adr/ADR-0005-multi-node-interfaces-no-a2a.md); the intended role
+  is recorded in [ADR-0010](../../docs/adr/ADR-0010-neptune-future-primary-node.md)).
+- **Intended hardware:** dedicated Linux AI rig, 4× AMD Instinct MI100 (32 GB HBM2 each =
+  128 GB total, gfx908 / CDNA 1, ROCm).
+- **Intended role:** the always-on inference heart — bulk local-model serving (large models
+  that do not fit earth's 16 GB), with earth kept as an opportunistic fast/dev node. Bring-up
+  checklist: [neptune-provisioning.md](../../docs/runbooks/neptune-provisioning.md).
 
 ---
 
 ## Cross-machine access
 
-When working from jupiter or Mac mini, two options:
+When working from jupiter, mercury, or luna, two options:
 
 ### Option 1 — paid services only (simplest)
 
@@ -73,12 +93,12 @@ GitHub Copilot, Claude Code, Anthropic API, Gemini API all work over the public 
 
 ### Option 2 — Tailscale back to earth
 
-Reuse the local models and the LiteLLM proxy on earth so spend on paid services doesn't increase just because I'm not at my desk.
+Reuse the local models and the LiteLLM proxy on earth so spend on paid services doesn't increase when working away from the desk.
 
 **One-time setup:**
 
 ```bash
-# On every machine (earth, jupiter, Mac mini)
+# On every machine (earth, jupiter, mercury)
 # https://tailscale.com/download
 tailscale up --ssh
 ```
@@ -92,7 +112,7 @@ tailscale serve --bg --tcp 4000  tcp://127.0.0.1:4000
 tailscale serve status
 ```
 
-**From jupiter / Mac mini** — point clients at earth's MagicDNS name:
+**From jupiter / mercury** — point clients at earth's MagicDNS name:
 
 ```bash
 # ollama
@@ -100,7 +120,7 @@ export OLLAMA_HOST=http://earth:11434
 
 # LiteLLM (use the same hostname as earth advertises on tailnet)
 export OPENAI_BASE_URL=http://earth:4000
-export OPENAI_API_KEY=<my-virtual-key-for-this-machine>
+export OPENAI_API_KEY=<virtual-key-for-this-machine>
 ```
 
 (The WSL-era node was `earth-ai`; it retires at #78. Check `tailscale status` for the
@@ -108,7 +128,7 @@ live name. On jupiter, add these to your WSL `~/.bashrc` so they persist across 
 
 ### Tailscale ACL note
 
-By default the tailnet is fully open between my own devices. No ACL changes are required for personal use. If a non-personal device is ever added, restrict tags so only my devices can hit ports 11434 / 4000.
+By default the tailnet is fully open between the deployment's own devices. No ACL changes are required for this single-owner setup. If a non-personal device is ever added, restrict tags so only trusted devices can hit ports 11434 / 4000.
 
 ---
 
@@ -142,7 +162,7 @@ printf "ollama: "; ollama --version 2>/dev/null || echo "not installed"
 printf "gh: "; gh --version 2>/dev/null | head -1 || echo "not installed"
 ```
 
-**macOS (Mac mini):**
+**macOS (mercury):**
 ```bash
 echo "=== Hardware ===" && system_profiler SPHardwareDataType SPSoftwareDataType
 echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>/dev/null || echo "not installed"
@@ -152,10 +172,10 @@ echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>
 
 ## Prerequisites status
 
-| Item | earth (Fedora 44) | jupiter | Mac mini |
+| Item | earth (Fedora 44) | jupiter | mercury |
 |---|---|---|---|
 | podman | ✅ 5.8.3 (rootless quadlets) | n/a (not needed) | _TODO_ |
-| Tailscale | ⏳ pending (#4 bootstrap apply) | ✅ | _TODO_ |
+| Tailscale | ✅ active (`serve`: 11434, 4000, 3000) | ✅ | _TODO_ |
 | ollama | ✅ 0.31.2 (user service, `~/.local`) | n/a (uses earth's) | n/a |
 | VS Code | ✅ | ✅ (Remote-WSL) | n/a |
 | Claude Code CLI | ✅ | ❌ not installed | _TODO_ |
