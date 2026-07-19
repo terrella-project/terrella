@@ -8,3 +8,6 @@ updates:
       interval: "weekly"
     labels:
       - "component:ci"
+      # Dependency bumps are chores with no user-facing change — exempt them
+      # from the enforced CHANGELOG entry (changelog-check.yml).
+      - "no-changelog"
