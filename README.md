@@ -46,7 +46,7 @@ The whole guide lives under `docs/` and is structured for someone building this 
 1. On Windows: install the NVIDIA driver, `wsl --install -d Ubuntu-24.04`, create `%UserProfile%\.wslconfig` (template in [docs/setup/01-windows-host.md](docs/setup/01-windows-host.md)), then `wsl --shutdown`.
 2. In WSL: clone this repo and run the provisioner:
    ```bash
-   cd ~/src/jomkz/terrella
+   cd ~/src/terrella
    bash provision/provision.sh
    ```
    Details: [docs/setup/README.md](docs/setup/README.md).

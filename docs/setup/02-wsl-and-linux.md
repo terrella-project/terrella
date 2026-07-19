@@ -69,20 +69,20 @@ You should see your RTX 5080 listed with the driver version. If `nvidia-smi` is 
 ## 2.4 Clone this repo
 
 ```bash
-mkdir -p ~/src/jomkz
-cd ~/src/jomkz
+mkdir -p ~/src
+cd ~/src
 git clone <your fork or origin url> terrella
 cd terrella
 ```
 
-> If you already have the repo, skip this step. The rest of the guide assumes the repo is at `~/src/jomkz/terrella`.
+> If you already have the repo, skip this step. The rest of the guide assumes the repo is at `~/src/terrella`.
 
 ## ✅ Verification
 
 ```bash
 ps -p 1 -o comm=          # → systemd
 nvidia-smi -L | head -1   # → "GPU 0: NVIDIA GeForce RTX 5080 ..."
-ls ~/src/jomkz/terrella   # → README.md, provision/, docs/, stack/, ...
+ls ~/src/terrella   # → README.md, provision/, docs/, stack/, ...
 ```
 
 All three good? → on to [ollama setup](03-ollama.md).

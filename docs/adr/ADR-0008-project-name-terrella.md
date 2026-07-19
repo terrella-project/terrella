@@ -22,8 +22,8 @@ CLI ships (M1) and the OSS launch (M6), the name was re-examined. Collision rese
   after a PC called earth. Collisions are negligible; **PyPI `terrella` is free** and no
   exact-name GitHub repo or software project exists.
 
-The bare `terrella` GitHub org name is taken by a user; the project also moves out of the
-shared `mkzsystems` org into a dedicated org, following the uio-project pattern.
+The bare `terrella` GitHub org name is taken by a user; the project moves into a dedicated
+org (`terrella-project`).
 
 ## Decision
 

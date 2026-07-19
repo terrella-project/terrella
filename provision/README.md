@@ -12,7 +12,7 @@ Machine provisioning and the model catalog.
 ## Provision the machine
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 bash provision/provision.sh
 ```
 
@@ -23,7 +23,7 @@ Re-running is safe — every step is idempotent (`apt install` is a no-op for al
 ## Pull / update models
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 bash provision/sync-models.sh
 ```
 

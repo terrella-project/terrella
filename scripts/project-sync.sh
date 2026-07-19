@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # project-sync.sh — reconcile GitHub PM objects from .github/project.yml.
-# Adapted from mkzsystems/astrocyte (same model; see docs/project-management.md).
+# See docs/project-management.md for the model.
 #
 # Reconciles (non-destructively):
 #   * repo labels        (create / update color+description / rename via `from`)

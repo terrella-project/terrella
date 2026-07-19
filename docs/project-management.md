@@ -1,13 +1,9 @@
 # Project management
 
 How work is planned, tracked, and prioritized in this repository. The model is
-**GitHub-native and declarative**, adapted from the framework the sibling projects evolved
-([fighters-legacy](https://github.com/fighters-legacy/fighters-legacy/blob/main/docs/project-management.md)
-→ [project-viceroy](https://github.com/mkzsystems/project-viceroy/blob/main/docs/project-management.md)
-→ [uio](https://github.com/uio-project/uio/blob/main/docs/project-management.md) /
-[astrocyte](https://github.com/mkzsystems/astrocyte/blob/main/docs/project-management.md)),
-with all of fighters-legacy's "Rev 2" lessons applied from day one. Adoption rationale and
-terrella-specific tailoring: [ADR-0007](adr/ADR-0007-github-native-pm-framework.md).
+**GitHub-native and declarative**, a proven framework refined across earlier projects with
+its accumulated lessons applied from day one. Adoption rationale and terrella-specific
+tailoring: [ADR-0007](adr/ADR-0007-github-native-pm-framework.md).
 
 The desired state lives in [`.github/project.yml`](../.github/project.yml) and is reconciled
 by [`scripts/project-sync.sh`](../scripts/project-sync.sh) — the same
@@ -121,7 +117,7 @@ When opening or grooming an issue, set all of:
 
 From M4 onward, timer-driven agents file issues and open PRs (bench regression reports,
 spend reports, catalog-watch PRs). They use a **dedicated least-privilege identity/token**,
-never the maintainer PAT — the permission matrix lands with the M4 epic (pattern borrowed
-from uio's `ai-governance` model). The `project-sync` CI workflow is the one exception that
+never the maintainer PAT — the permission matrix lands with the M4 epic. The `project-sync`
+CI workflow is the one exception that
 needs the maintainer-scoped `PROJECT_ADMIN_TOKEN` (org objects), and it is validate/create
 only — see the [runbook](runbooks/github-project-setup.md).
