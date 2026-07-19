@@ -194,7 +194,7 @@ models:
 **Sync the chat-tier list** from LiteLLM. The script lives in the terrella repo (clone it once on jupiter) and writes `./terrella-config.yaml` in your current directory by default:
 
 ```bash
-cd ~/src/jomkz/terrella
+cd ~/src/terrella
 LITELLM_KEY=sk-… ./stack/scripts/sync-continue-config.sh
 ```
 

@@ -22,7 +22,7 @@ Total disk: **≈ 44 GB** for this set. Files live in `~/.ollama/models` on Eart
 The list is an editable plain-text file — one model per line, `#` for comments:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 $EDITOR provision/models.list
 bash provision/provision.sh        # pulls anything new (idempotent)
 
@@ -105,7 +105,7 @@ for m in sorted(d['models'], key=lambda x: x['name']):
 To measure actual tok/s, TTFT, and VRAM footprint for the installed models, run the benchmark script:
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 python3 scripts/benchmark-models.py
 ```
 

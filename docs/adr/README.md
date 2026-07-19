@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
 Dated, lightweight records of architectural decisions — the pre-1.0 alternative to a formal
-RFC process (mirrors the approach in the sibling astrocyte / viceroy / uio projects). A full
+RFC process (a proven approach carried over from earlier projects). A full
 RFC workflow (the `rfc` + `status:*` labels) is reserved for public contracts — chiefly the
 `terrella.yaml` schema — once they freeze after the OSS launch (M6).
 
@@ -19,3 +19,4 @@ Statuses: `Accepted`, `Superseded by ADR-XXXX`, `Deprecated`.
 | [ADR-0007](ADR-0007-github-native-pm-framework.md) | Adopt the GitHub-native PM framework | Accepted |
 | [ADR-0008](ADR-0008-project-name-terrella.md) | Rename the project to terrella; move to the terrella-project org | Accepted |
 | [ADR-0009](ADR-0009-licensing-and-compliance.md) | Apache-2.0, REUSE compliance now, DCO deferred | Accepted |
+| [ADR-0010](ADR-0010-neptune-future-primary-node.md) | Neptune as the future primary node (deferred) | Proposed (deferred) |

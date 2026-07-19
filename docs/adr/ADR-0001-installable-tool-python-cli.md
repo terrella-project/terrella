@@ -14,7 +14,7 @@ real software home.
 
 terrella's end state is an **installable open-source tool/platform**: a CLI (working name
 `terrella`) that provisions and manages a personal AI stack on any Linux box, config-driven
-and machine-agnostic. John's setup becomes the first deployment, not the product.
+and machine-agnostic. The reference setup becomes the first deployment, not the product.
 
 The CLI is **Python 3.12+** — `typer` + `pydantic` + `jinja2`, distributed via
 `uv tool install terrella` (with a curl-able `install.sh` bootstrap):
@@ -38,4 +38,4 @@ infra tooling). Final call is an M6 decision.
 - The repo gains a Python package, CI, tests, and release engineering (M1+).
 - `stack/` and `provision/` become a transition-period reference (see
   [ROADMAP.md](../../ROADMAP.md) transition policy) and are eventually deleted.
-- Docs split over time into product docs vs. John's deployment (M6).
+- Docs split over time into product docs vs. the reference deployment (M6).

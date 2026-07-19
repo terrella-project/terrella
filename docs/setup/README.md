@@ -29,7 +29,7 @@ Steps 02–05 are automated by two scripts in [`provision/`](../../provision/). 
 
 ```bash
 # Inside the Earth-AI WSL terminal, after step 01 is done:
-cd ~/src/mkzsystems/terrella-project/terrella
+cd ~/src/terrella
 bash provision/provision.sh    # machine setup: apt, systemd, ollama, Docker, Aider
 bash provision/sync-models.sh  # pull the models listed in provision/models.list
 ```

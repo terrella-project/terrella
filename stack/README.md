@@ -25,7 +25,7 @@ Config files mounted into containers live under [`observability/`](observability
 ## Quick start
 
 ```bash
-cd ~/src/mkzsystems/terrella-project/terrella/stack
+cd ~/src/terrella/stack
 ./scripts/generate-env.sh        # first time only — writes .env with random secrets
 # Edit .env: fill in ANTHROPIC_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, GITHUB_PAT
 # Optional later: set LITELLM_EXPORTER_API_KEY to a read-only LiteLLM virtual key for /models route-count metrics
