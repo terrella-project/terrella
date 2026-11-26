@@ -11,6 +11,14 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Local agent lane** (#130) — the gateway serves `local/agent`, a local model that an agent
+  harness speaking the Anthropic Messages format can run its tool loop against. The entry
+  presents ollama's own `/v1/messages` endpoint to LiteLLM as an `anthropic` endpoint, so the
+  gateway adds keys, model lists and the ledger and translates nothing. New
+  `provision/agent-models.list` names each agent model with its context size, and
+  `provision/sync-models.sh` creates the `<model>-<N>k` variant from it (the same weights, no
+  second download): agent tools need 64k or more, and ollama's default on a card under 24 GiB is
+  4k. First model: `ornith-1.5:9b` at 64k.
 - **Gateway: Claude 5 models** (#128) — the Anthropic catalog in
   `stack/observability/litellm/config.yaml` is regenerated from the provider's model list:
   Fable 5 / 5.1 / 5.2, Opus 4.8 / 5 / 5.5, Sonnet 5 / 5.5 and Haiku 5.5 are added and the

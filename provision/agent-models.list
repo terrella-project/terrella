@@ -1,0 +1,16 @@
+# Models an agent harness runs against, each with the context window it needs.
+#
+# Format: <model> <context tokens>, one per line. Blank lines and anything after
+# a '#' are ignored.
+#
+# sync-models.sh pulls each model and creates "<model>-<N>k": the same weights
+# with num_ctx set, so no second download. An agent's tools need a context of
+# 64k or more, and ollama gives a model 4k by default on a card under 24 GiB.
+# The gateway's local/agent entry (stack/observability/litellm/config.yaml)
+# names one of these variants.
+#
+# Context takes GPU memory. On a 16 GB card, check with `ollama ps` that the
+# variant still loads wholly on the GPU: a model that spills onto the CPU
+# drops to a few tokens a second.
+
+ornith-1.5:9b   65536   # 6.6 GB download; 7.7 GB on the GPU at 64k (RTX 5080, 2026-11-26)
