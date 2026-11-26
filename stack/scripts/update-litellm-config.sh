@@ -61,6 +61,13 @@ if [[ ! -f "$CONFIG" ]]; then
 fi
 
 providers=(anthropic gemini openai ollama)
+
+# Claude models up to Opus 4.6 / Sonnet 4.6 still accept sampling parameters.
+# Every later one answers a request that sets temperature, top_p or top_k with
+# a 400, and drop_params does not cover that on LiteLLM 1.83, so each of those
+# entries drops them itself. A model missing from this list gets the drop: new
+# models reject the parameters, so that is the safe default.
+ANTHROPIC_SAMPLING_MODELS=" claude-haiku-4-5-20251001 claude-opus-4-5-20251101 claude-opus-4-6 claude-sonnet-4-5-20250929 claude-sonnet-4-6 "
 if [[ "$target" != "all" ]]; then
     providers=("$target")
 fi
@@ -70,7 +77,6 @@ print_model_block() {
     local models="$2"
 
     if [[ "$provider" == "anthropic" ]]; then
-        echo "  # Available raw model IDs (managed by update-litellm-config.sh)."
         echo "  # >>> anthropic catalog (managed by update-litellm-config.sh) >>>"
         while IFS= read -r model; do
             [[ -n "$model" ]] || continue
@@ -78,13 +84,15 @@ print_model_block() {
             printf '    litellm_params:\n'
             printf '      model: anthropic/%s\n' "$model"
             printf '      api_key: os.environ/ANTHROPIC_API_KEY\n'
+            if [[ "$ANTHROPIC_SAMPLING_MODELS" != *" $model "* ]]; then
+                printf '      additional_drop_params: ["temperature", "top_p", "top_k"]\n'
+            fi
         done <<< "$models"
         echo "  # <<< anthropic catalog <<<"
         return
     fi
 
     if [[ "$provider" == "gemini" ]]; then
-        echo "  # Available raw model IDs (managed by update-litellm-config.sh)."
         echo "  # >>> gemini catalog (managed by update-litellm-config.sh) >>>"
         while IFS= read -r model; do
             [[ -n "$model" ]] || continue
@@ -98,7 +106,6 @@ print_model_block() {
     fi
 
     if [[ "$provider" == "openai" ]]; then
-        echo "  # Stable core model IDs (managed by update-litellm-config.sh)."
         echo "  # >>> openai catalog (managed by update-litellm-config.sh) >>>"
         while IFS= read -r model; do
             [[ -n "$model" ]] || continue
@@ -111,7 +118,6 @@ print_model_block() {
         return
     fi
 
-    echo "  # Installed raw model IDs (managed by update-litellm-config.sh)."
     echo "  # >>> ollama catalog (managed by update-litellm-config.sh) >>>"
     while IFS= read -r model; do
         local model_name
@@ -180,6 +186,6 @@ if $DRY_RUN; then
     exit 0
 fi
 
-printf '%s' "$updated" > "$CONFIG"
+printf '%s\n' "$updated" > "$CONFIG"
 echo "Wrote $CONFIG"
 echo "Restart LiteLLM: docker compose restart litellm"
