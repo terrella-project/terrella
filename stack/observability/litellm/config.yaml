@@ -464,3 +464,18 @@ model_list:
       model: ollama/qwen2.5-coder:32b-instruct-q2_K
       api_base: http://127.0.0.1:11434
   # <<< ollama catalog <<<
+
+  # ── Local agent models: ollama's own Anthropic-format endpoint ──────────
+  # An agent harness such as the Claude Agent SDK speaks the Anthropic Messages
+  # format, tool calls included. ollama serves that format itself at
+  # /v1/messages, so these entries present ollama to LiteLLM as an "anthropic"
+  # endpoint: the gateway adds its keys, model lists and ledger, and translates
+  # nothing. (The ollama/ entries above are for OpenAI-format clients.)
+  # Each names a variant with a 64k context from provision/agent-models.list.
+  # local/agent is the name agents ask for; which model serves it can change
+  # here without touching them.
+  - model_name: local/agent
+    litellm_params:
+      model: anthropic/ornith-1.5:9b-64k
+      api_base: http://127.0.0.1:11434
+      api_key: ollama

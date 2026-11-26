@@ -36,6 +36,11 @@ backend; the convention just reserves the shape.
 - **`earth/<model>`, `neptune/<model>`** — pinned single-node names, for benchmarking,
   debugging, and "I specifically want that GPU."
 - **Cloud names** (`claude-*`, `gemini-*`, `gpt-*`) are unchanged.
+- **`local/agent`**: the local model an agent harness asks for. It is served through ollama's
+  own Anthropic-format endpoint with a 64k context, so a harness that speaks that format (the
+  Claude Agent SDK, for one) can run its tool loop against it. Which model serves it is one line
+  in the gateway config, so agents keep the name when the model changes. A gateway key whose
+  model list holds only this name cannot reach a paid model.
 
 Failover is connection-error cooldown, **not** background health checks — background checks
 bill real completions ([#96](https://github.com/terrella-project/terrella/issues/96)).

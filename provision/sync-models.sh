@@ -12,6 +12,10 @@ set -euo pipefail
 #   ./sync-models.sh
 #   MODELS_FILE=/path/to/other.list ./sync-models.sh
 #
+# It then reads agent-models.list (or $AGENT_MODELS_FILE): each line
+# names a model and a context size, and gets a "<model>-<N>k" variant
+# with that context, for agent harnesses (see that file).
+#
 # To add or remove models, edit models.list.
 # To remove an already-pulled model from Ollama, run:
 #   ollama rm <model-name>
@@ -19,6 +23,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODELS_FILE="${MODELS_FILE:-${SCRIPT_DIR}/models.list}"
+AGENT_MODELS_FILE="${AGENT_MODELS_FILE:-${SCRIPT_DIR}/agent-models.list}"
 
 if ! command -v ollama >/dev/null 2>&1; then
   echo "Error: ollama is not installed or not in PATH."
@@ -50,6 +55,30 @@ while IFS= read -r model; do
   pull_model "$model"
 done < <(sed -E 's/#.*$//; s/[[:space:]]+$//; /^[[:space:]]*$/d' "$MODELS_FILE" \
           | awk '{print $1}')
+
+# An agent variant is the same model with a larger context window. `ollama create`
+# reuses the weights already on disk, and re-creating an unchanged variant is a no-op.
+create_agent_variant() {
+  local model="$1" context="$2"
+  if ! [[ "$context" =~ ^[0-9]+$ ]] || (( context < 1024 )); then
+    echo "Error: ${AGENT_MODELS_FILE}: context for ${model} must be a number of tokens, not '${context}'." >&2
+    exit 1
+  fi
+  local variant="${model}-$(( context / 1024 ))k" modelfile
+  pull_model "$model"
+  modelfile="$(mktemp)"
+  printf 'FROM %s\nPARAMETER num_ctx %s\n' "$model" "$context" > "$modelfile"
+  echo "Creating agent variant: $variant (context $context)"
+  ollama create "$variant" -f "$modelfile"
+  rm -f "$modelfile"
+}
+
+if [[ -f "$AGENT_MODELS_FILE" ]]; then
+  while read -r model context _; do
+    [[ -z "$model" ]] && continue
+    create_agent_variant "$model" "${context:-}"
+  done < <(sed -E 's/#.*$//; s/[[:space:]]+$//; /^[[:space:]]*$/d' "$AGENT_MODELS_FILE")
+fi
 
 echo
 echo "============================================================"

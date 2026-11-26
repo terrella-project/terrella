@@ -8,6 +8,7 @@ Machine provisioning and the model catalog.
 | [`provision.sh`](provision.sh) | *Legacy WSL provisioner*: apt deps, systemd-in-WSL, ollama, Docker, Aider. Kept as the working reference until M1's provisioning framework absorbs it (ADR-0004). |
 | [`sync-models.sh`](sync-models.sh) | Reads [`models.list`](models.list) and pulls each model. Safe to re-run — `ollama pull` is a no-op for already-present models. |
 | [`models.list`](models.list) | The model catalog. One model per line; inline comments allowed. Edit this file to add or remove models. |
+| [`agent-models.list`](agent-models.list) | Models for agent harnesses, each with a context size. `sync-models.sh` creates a `<model>-<N>k` variant of each: the same weights with that context. |
 
 ## Provision the machine
 
