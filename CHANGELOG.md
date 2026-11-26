@@ -11,6 +11,10 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Gateway: Claude 5 models** (#128) — the Anthropic catalog in
+  `stack/observability/litellm/config.yaml` is regenerated from the provider's model list:
+  Fable 5 / 5.1 / 5.2, Opus 4.8 / 5 / 5.5, Sonnet 5 / 5.5 and Haiku 5.5 are added and the
+  retired Opus 4.1 is gone. New `claude-fable` alias for Fable 5.2.
 - **CI: `auto-close-epics` workflow** — backported from `mkzsystems/pm-framework`; closes a parent epic when its last sub-issue closes (predicate matches the Epic issue type or the `epic` label).
 - **ADR-0010 — Neptune as the future primary node (deferred)** — records the intended
   topology (neptune, 4× MI100, becomes the always-on inference heart; earth demotes to an
@@ -26,6 +30,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Changed
 
+- **Gateway: the Claude tier aliases follow the current models** (#128) — `claude-opus`,
+  `claude-sonnet` and `claude-haiku` now reach Opus 5.5, Sonnet 5.5 and Haiku 5.5, where
+  they reached Opus 4.7, Sonnet 4.6 and Haiku 4.5. A client that calls an alias gets the
+  newer model and its price. The `model_aliases` lines on those entries are removed: it is
+  not a LiteLLM setting, and the names it listed were never served.
 - **Public-readiness scrub of personal identifiers** (ahead of the M6 OSS launch): clone
   paths genericized to `~/src/terrella`, literal usernames in the fedora-migration runbook
   replaced with `<user>`, "John's …" prose reworded to "the reference/maintainer's …"
@@ -36,6 +45,16 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Fixed
 
+- **Gateway: sampling parameters no longer break calls to newer Claude models** (#128) —
+  every Claude model from Opus 4.7 on answers a request that sets `temperature`, `top_p` or
+  `top_k` with a 400, and `drop_params` does not cover that on LiteLLM 1.83.14. Those
+  entries now carry `additional_drop_params`, which `update-litellm-config.sh` writes for
+  the catalog. This covers the OpenAI-format routes; `/v1/messages` passes a request through
+  unchanged, so a client of that route still gets the provider's 400.
+- **`update-litellm-config.sh` leaves an up-to-date file unchanged** (#128) — each run added
+  one more comment line above the catalog marker and removed the file's final newline.
+- **Gateway: the `gpt` alias loads** (#128) — its `model` had no provider prefix
+  (`gpt-5-5`), so LiteLLM skipped the entry at every start with "LLM Provider NOT provided".
 - **Dependabot PRs no longer fail the changelog check** — `.github/dependabot.yml`
   now applies the `no-changelog` label to its PRs (dependency bumps are chores with no
   user-facing change), so they stop tripping the enforced-CHANGELOG gate.

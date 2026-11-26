@@ -29,23 +29,39 @@ fallbacks: []
 
 model_list:
   # ── Anthropic ────────────────────────────────────────────────────────────
-  # Manual Aliases: claude-sonnet → latest sonnet, claude-opus → latest opus
+  # Manual aliases follow the newest model of each tier:
+  #   claude-fable → Fable 5.2, claude-opus → Opus 5.5,
+  #   claude-sonnet → Sonnet 5.5, claude-haiku → Haiku 5.5
+  # These models answer a request that sets a sampling parameter with a 400,
+  # so each entry drops them (see update-litellm-config.sh).
   # Raw provider model IDs below are managed by update-litellm-config.sh.
-  - model_name: claude-sonnet
-    model_aliases: ["claude-sonnet-4-6"]
+  - model_name: claude-fable
     litellm_params:
-      model: anthropic/claude-sonnet-4-6
+      model: anthropic/claude-fable-5-2
       api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+
+  - model_name: claude-opus
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+
+  - model_name: claude-sonnet
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+
+  - model_name: claude-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
 
   - model_name: claude-sonnet-4-5
     litellm_params:
       model: anthropic/claude-sonnet-4-5-20250929
-      api_key: os.environ/ANTHROPIC_API_KEY
-
-  - model_name: claude-opus
-    model_aliases: ["claude-opus-4-7"]
-    litellm_params:
-      model: anthropic/claude-opus-4-7
       api_key: os.environ/ANTHROPIC_API_KEY
 
   - model_name: claude-opus-4-5
@@ -53,26 +69,31 @@ model_list:
       model: anthropic/claude-opus-4-5-20251101
       api_key: os.environ/ANTHROPIC_API_KEY
 
-  - model_name: claude-opus-4-6
-    litellm_params:
-      model: anthropic/claude-opus-4-6
-      api_key: os.environ/ANTHROPIC_API_KEY
-
-  - model_name: claude-haiku
-    model_aliases: ["claude-haiku-4-5"]
-    litellm_params:
-      model: anthropic/claude-haiku-4-5-20251001
-      api_key: os.environ/ANTHROPIC_API_KEY
- 
   # >>> anthropic catalog (managed by update-litellm-config.sh) >>>
+  - model_name: claude-fable-5
+    litellm_params:
+      model: anthropic/claude-fable-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-fable-5-1
+    litellm_params:
+      model: anthropic/claude-fable-5-1
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-fable-5-2
+    litellm_params:
+      model: anthropic/claude-fable-5-2
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
       model: anthropic/claude-haiku-4-5-20251001
       api_key: os.environ/ANTHROPIC_API_KEY
-  - model_name: claude-opus-4-1-20250805
+  - model_name: claude-haiku-5-5
     litellm_params:
-      model: anthropic/claude-opus-4-1-20250805
+      model: anthropic/claude-haiku-5-5
       api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
   - model_name: claude-opus-4-5-20251101
     litellm_params:
       model: anthropic/claude-opus-4-5-20251101
@@ -85,6 +106,22 @@ model_list:
     litellm_params:
       model: anthropic/claude-opus-4-7
       api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-opus-4-8
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-opus-5
+    litellm_params:
+      model: anthropic/claude-opus-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-opus-5-5
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
   - model_name: claude-sonnet-4-5-20250929
     litellm_params:
       model: anthropic/claude-sonnet-4-5-20250929
@@ -93,6 +130,16 @@ model_list:
     litellm_params:
       model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: claude-sonnet-5
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
+  - model_name: claude-sonnet-5-5
+    litellm_params:
+      model: anthropic/claude-sonnet-5-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+      additional_drop_params: ["temperature", "top_p", "top_k"]
   # <<< anthropic catalog <<<
 
   # ── Google Gemini ────────────────────────────────────────────────────────
@@ -234,7 +281,7 @@ model_list:
   # Stable raw model IDs below are managed by update-litellm-config.sh.
   - model_name: gpt
     litellm_params:
-      model: gpt-5-5
+      model: openai/gpt-5.5
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-mini
