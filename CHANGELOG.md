@@ -51,7 +51,22 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 - **`machines.md` Tailscale status reconciled** — earth's row now reflects the live
   `tailscale serve` state (11434 / 4000 / 3000) instead of the stale "pending".
 
+### Removed
+
+- **Thirteen old local models** (#29) — `provision/models.list` drops `qwen2.5-coder:32b`,
+  `qwen2.5-coder:32b-instruct-q2_K` and its whole general-purpose, coding and lightweight
+  sets (`llama3.1`, `llama3.2`, `mistral`, `mixtral`, `qwen2`, `qwen2.5`, `codellama`,
+  `deepseek-coder`, `phi3`, `gemma`, `tinyllama`): about 90 GB. The gateway no longer serves
+  `qwen2.5-coder-32b`, `qwen2.5-coder-32b-instruct` or their `ollama/` catalog names, and the
+  docs and the Continue example stop offering them. Nothing had called any of the thirteen
+  through the gateway since July 2026, and the full 32b does not fit a 16 GB card. `deepseek-r1:14b`, `gemma2:9b` and `qwen2.5-coder:1.5b` stay until the
+  general re-benchmark picks their replacements. Removing a line does not remove the model:
+  run `ollama rm` for each.
+
 ### Fixed
+
+- **`provision/agent-models.list` gives `ornith-1.5:9b`'s real GPU memory** (#29) — 8.5 GB
+  at 64k by `nvidia-smi`, where it gave ollama's 7.7 GB; `ollama ps` under-reports it.
 
 - **Gateway: sampling parameters no longer break calls to newer Claude models** (#128) —
   every Claude model from Opus 4.7 on answers a request that sets `temperature`, `top_p` or

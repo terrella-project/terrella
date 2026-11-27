@@ -64,10 +64,8 @@ qwen2.5-coder               ollama        312 ms    47.3 t/s   3124 ms   3890 ms
 deepseek                    ollama        289 ms    43.1 t/s   3401 ms   4102 ms    3250 ms   41.7 t/s   9.2 GB
 gemma2                      ollama        198 ms    61.2 t/s   2103 ms   2387 ms    2041 ms   58.9 t/s   5.7 GB
 qwen2.5-coder-15b           ollama         48 ms   142.8 t/s    312 ms    389 ms     298 ms  138.4 t/s   1.1 GB
-qwen2.5-coder-32b           ollama        891 ms    19.4 t/s  12043 ms  14201 ms       —          —     20.4 GB
-qwen2.5-coder-32b-instruct  ollama       1203 ms    12.7 t/s  16872 ms  18340 ms       —          —     12.9 GB
 
-Total samples: 54  (6 model(s) OK, 0 failed)
+Total samples: 36  (4 model(s) OK, 0 failed)
 ```
 
 ### Column reference
@@ -91,7 +89,7 @@ Total samples: 54  (6 model(s) OK, 0 failed)
 
 ```bash
 # Just the two models you're comparing
-python3 scripts/benchmark-models.py --models qwen2.5-coder,qwen2.5-coder-32b
+python3 scripts/benchmark-models.py --models qwen2.5-coder,gemma2
 
 # More iterations for a tighter estimate
 python3 scripts/benchmark-models.py --models deepseek --runs 10
@@ -152,6 +150,10 @@ known measurement artifact to fix with the M2 model refresh (#29), not an infra 
 Takeaways: the q2_K 32b variant earns its place (66 t/s inside 16 GB); the full 32b
 confirms its "overflows VRAM" warning; the 14b daily driver at ~98 t/s comfortably beats
 the WSL-era feel.
+
+Both 32b variants were removed in 2026-11 (#29). A coding evaluation later in July 2026
+found the q2_K variant buys little over the 14b for two to three times the wait, and nothing
+called either variant after it.
 
 ## Running on the same machine as Ollama
 

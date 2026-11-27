@@ -51,10 +51,9 @@ observability, so "earth is gaming" shows in Grafana without any spend.
 
 For coding:
 1. `qwen2.5-coder:14b` (local) →
-2. `qwen2.5-coder:32b` (local, slower) →
-3. Copilot (Claude Sonnet) →
-4. Claude Code (Opus) →
-5. Anthropic API (Opus) for one-off heavy lifting
+2. Copilot (Claude Sonnet) →
+3. Claude Code (Opus) →
+4. Anthropic API (Opus) for one-off heavy lifting
 
 For reasoning:
 1. `deepseek-r1:14b` (local) →

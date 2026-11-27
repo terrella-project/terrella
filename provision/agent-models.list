@@ -11,6 +11,8 @@
 #
 # Context takes GPU memory. On a 16 GB card, check with `ollama ps` that the
 # variant still loads wholly on the GPU: a model that spills onto the CPU
-# drops to a few tokens a second.
+# drops to a few tokens a second. Measure the memory itself as the rise in
+# `nvidia-smi`'s figure when the variant loads: `ollama ps` under-reports it,
+# for one model family by 6 GB.
 
-ornith-1.5:9b   65536   # 6.6 GB download; 7.7 GB on the GPU at 64k (RTX 5080, 2026-11-26)
+ornith-1.5:9b   65536   # 6.6 GB download; 8.5 GB on the GPU at 64k (RTX 5080, 2026-11-26)

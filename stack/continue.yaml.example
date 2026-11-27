@@ -210,18 +210,6 @@ models:
     <<: *defaults
     model: ollama/qwen2.5-coder-14b
     <<: *chat_roles
-  - name: ollama/qwen2.5-coder-32b
-    <<: *defaults
-    model: ollama/qwen2.5-coder-32b
-    <<: *chat_roles
-  - name: ollama/qwen2.5-coder-32b-instruct-q2_K
-    <<: *defaults
-    model: ollama/qwen2.5-coder-32b-instruct-q2_K
-    <<: *chat_roles
-  - name: ollama/qwen2.5-coder-32b-q2
-    <<: *defaults
-    model: ollama/qwen2.5-coder-32b-q2
-    <<: *chat_roles
   # ── Other ─────────────────────────────────────────────────────────────
   - name: o1
     <<: *defaults

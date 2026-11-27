@@ -419,16 +419,6 @@ model_list:
       model: ollama/qwen2.5-coder:1.5b
       api_base: http://127.0.0.1:11434
 
-  - model_name: qwen2.5-coder-32b
-    litellm_params:
-      model: ollama/qwen2.5-coder:32b
-      api_base: http://127.0.0.1:11434
-
-  - model_name: qwen2.5-coder-32b-instruct
-    litellm_params:
-      model: ollama/qwen2.5-coder:32b-instruct-q2_K
-      api_base: http://127.0.0.1:11434
-
   - model_name: nomic-embed
     litellm_params:
       model: ollama/nomic-embed-text:latest
@@ -454,14 +444,6 @@ model_list:
   - model_name: ollama/qwen2.5-coder-14b
     litellm_params:
       model: ollama/qwen2.5-coder:14b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/qwen2.5-coder-32b
-    litellm_params:
-      model: ollama/qwen2.5-coder:32b
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/qwen2.5-coder-32b-instruct-q2_K
-    litellm_params:
-      model: ollama/qwen2.5-coder:32b-instruct-q2_K
       api_base: http://127.0.0.1:11434
   # <<< ollama catalog <<<
 
