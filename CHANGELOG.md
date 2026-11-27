@@ -11,6 +11,14 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Gateway: a first route to neptune** (#99) — the gateway serves `neptune/llama3.2:3b`, a
+  pinned name answered by neptune's ollama over the tailnet. It is the static second backend
+  that ADR-0010 allows before the multi-node work of M7: one more entry in
+  `stack/observability/litellm/config.yaml` with its own `api_base`. neptune is up without its
+  GPUs, so this is one small model on the CPU that proves the path; no `local/` group points at
+  neptune yet. `deploy/earth/machines.md` describes the machine as it now stands, with its first
+  GPU baseline, and `docs/runbooks/neptune-provisioning.md` records what bring-up confirmed
+  and corrected.
 - **Grafana: the agents' credit pace** (#44) — two panels on the AI Stack Overview dashboard
   follow the `agents` team's budget cycle. One plots the team's spend this cycle against a
   straight line from nothing to its budget at the cycle's end. The other gives the spend, where

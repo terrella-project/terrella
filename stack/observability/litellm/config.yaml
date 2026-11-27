@@ -461,3 +461,15 @@ model_list:
       model: anthropic/ornith-1.5:9b-64k
       api_base: http://127.0.0.1:11434
       api_key: ollama
+
+  # ── neptune: the second serving node (ADR-0010, #99) ────────────────────
+  # A pinned name (docs/reference/routing.md): a request for neptune/<model>
+  # is served by neptune and by nothing else, so no failover is involved.
+  # neptune's ollama listens on the tailnet only, and the gateway reaches it
+  # by its tailnet name. Its GPUs are out until their airflow is built, so
+  # this is one small model on the CPU: it proves the route and is no use as
+  # a fallback. No local/ group points at neptune yet.
+  - model_name: neptune/llama3.2:3b
+    litellm_params:
+      model: ollama/llama3.2:3b
+      api_base: http://neptune:11434

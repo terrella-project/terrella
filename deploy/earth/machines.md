@@ -2,7 +2,8 @@
 
 The machines in the reference deployment. **earth** is the always-on primary; **jupiter**
 (laptop), **mercury** (Mac mini), and **luna** (iPhone) are thin clients used away from the
-desk. **neptune** (a dedicated AI rig) is in build — see [Planned: neptune](#planned-neptune).
+desk. **neptune** (a dedicated AI rig) is up without its GPUs and serves one small model — see
+[neptune](#neptune-second-serving-node).
 
 ## earth (primary workstation)
 
@@ -70,13 +71,36 @@ Expected: list of models from [local-models.md](../../docs/reference/local-model
   (add-to-home-screen) for chat, using local models and the cost-ledgered gateway. No local
   models.
 
-## Planned: neptune
+## neptune (second serving node)
 
-- **Status:** in build — not yet provisioned; no terrella code targets it yet (multi-node is
-  M7 by [ADR-0005](../../docs/adr/ADR-0005-multi-node-interfaces-no-a2a.md); the intended role
-  is recorded in [ADR-0010](../../docs/adr/ADR-0010-neptune-future-primary-node.md)).
-- **Intended hardware:** dedicated Linux AI rig, 4× AMD Instinct MI100 (32 GB HBM2 each =
-  128 GB total, gfx908 / CDNA 1, ROCm).
+- **Status:** up since 2026-11-27, **without its GPUs**. The four MI100s are passively cooled
+  server cards, and in an open tower case three of them reached 98–105 °C junction at idle
+  (2026-08-20). They stay out of the machine until ducted airflow is built, and until then
+  neptune serves on its CPU. Multi-node machinery is still M7 by
+  [ADR-0005](../../docs/adr/ADR-0005-multi-node-interfaces-no-a2a.md); what exists is the
+  static second backend that
+  [ADR-0010](../../docs/adr/ADR-0010-neptune-future-primary-node.md) allows before it.
+- **OS:** Fedora 44 Server.
+- **Hostname:** `neptune`
+- **Hardware:** ASRock X399 Professional Gaming
+  - CPU: AMD Ryzen Threadripper 2970WX — 24 cores / 48 threads
+  - RAM: 64 GB
+  - GPU, when installed: 4× AMD Instinct MI100 (32 GB HBM2 each = 128 GB total, gfx908 /
+    CDNA 1, ROCm)
+  - Storage: 2× 4 TB NVMe (the OS, and a volume for the models)
+  - Power supply: 1600 W, ATX 3.1
+- **Stack:** ollama 0.32.14 on the host as a system service, from the ROCm release tarballs
+  (their bundled ROCm userspace runs gfx908 on the in-tree `amdgpu` driver). The version is
+  pinned (ADR-0010) and the default context is set to 8192. It listens for the tailnet only.
+  A thermal watchdog stops ollama at 92 °C junction and powers the machine off at 100 °C. Its
+  provisioning is not in this repo yet.
+- **In the gateway:** one pinned name, `neptune/llama3.2:3b`: a 3B model on the CPU, about
+  12 tokens/s. It proves the route from the gateway on earth to a second node. No `local/`
+  group points at neptune yet.
+- **First GPU baseline (2026-08-19):** `llama3.3:70b` (q4) across two MI100s capped at 200 W
+  each, 8k context: 14.5 tokens/s decode and 683 tokens/s prompt processing, junction
+  temperatures 56–69 °C. Prompt processing is the number ADR-0010 asks for before neptune is
+  trusted with agent work.
 - **Intended role:** the always-on inference heart — bulk local-model serving (large models
   that do not fit earth's 16 GB), with earth kept as an opportunistic fast/dev node. Bring-up
   checklist: [neptune-provisioning.md](../../docs/runbooks/neptune-provisioning.md).
