@@ -62,8 +62,10 @@
 
 - firewalld `terrella-lan` zone (block the LAN default range that would expose
   `0.0.0.0:11434`); trust `tailscale0`.
-- `tailscale up --ssh`; `tailscale serve` for 11434 (ollama), 4000 (LiteLLM once it lives
-  here), and 443→8080 (Open WebUI PWA for luna).
+- `tailscale up --ssh`; `tailscale serve` for 4000 (LiteLLM once it lives here) and 443→8080
+  (Open WebUI PWA for luna). **Not** for 11434: ollama listens on `0.0.0.0` and `tailscale0` is
+  trusted, so the tailnet already reaches it, and a serve entry would take the port whenever
+  ollama restarts (#134).
 
 ## Register in the stack
 

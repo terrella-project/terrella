@@ -44,17 +44,23 @@ The first run prints a login URL. Open it in a browser and approve the device.
 
 ### Step 3 — on earth, expose ollama and LiteLLM to the tailnet
 
-Every stack port binds to `127.0.0.1` only (quadlet units); `tailscale serve` is the sole
-remote path:
+The containers' published ports bind to `127.0.0.1` only (quadlet units), so `tailscale serve`
+is their remote path:
 
 ```bash
-tailscale serve --bg --tcp 11434 tcp://127.0.0.1:11434   # ollama
 tailscale serve --bg --tcp 4000  tcp://127.0.0.1:4000    # LiteLLM
 tailscale serve --bg --tcp 3000  tcp://127.0.0.1:3000    # Grafana (optional)
 tailscale serve status
 ```
 
 > `tailscale serve` exposes the port **only** on the tailnet, not on the public internet. No firewall holes are opened.
+
+ollama is the exception. It listens on `0.0.0.0:11434`, because containers reach the host only
+on its LAN address (`host.containers.internal`), never on loopback. The LAN is closed by the
+`terrella-lan` firewalld zone, and `tailscale0` sits in the `trusted` zone, so the tailnet
+reaches ollama directly. **Do not add a `tailscale serve` entry for 11434.** Its listener
+cannot bind while ollama runs, but it takes the port the moment ollama stops, and then ollama
+cannot start again (#134).
 
 ### Step 4 — confirm hostnames
 
