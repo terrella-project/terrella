@@ -7,14 +7,17 @@
 # `ollama pull` is a no-op if the model is already present).
 # To remove a model: delete its line here AND run `ollama rm <model>` by
 # hand. provision.sh never removes anything.
-
-# Agent models, each with the context it runs at, are in agent-models.list.
 #
-# deepseek-r1:14b, gemma2:9b and qwen2.5-coder:1.5b stay until the general
-# re-benchmark (#29) picks the 2026 models that replace them.
+# Each model serves a gateway role (stack/observability/litellm/config.yaml,
+# local/<role>), chosen from measurements: docs/operations/model-refresh-2026-11.md.
+# Re-run stack/scripts/eval-local-models.py before replacing one, and
+# stack/scripts/update-litellm-config.sh ollama after editing this file.
+# Sizes are GPU memory on the RTX 5080 at the role's context (nvidia-smi rise).
+#
+# Agent models, each with the context it runs at, are in agent-models.list.
 
-nomic-embed-text                # 274 MB    embeddings (RAG / semantic search)
-qwen2.5-coder:1.5b              # 0.99 GB   tab-completion / inline FIM
-qwen2.5-coder:14b               # 8.99 GB   daily-driver coder (fits 16 GB VRAM)
-deepseek-r1:14b                 # 8.99 GB   reasoning / chain-of-thought
-gemma2:9b                       # 5.44 GB   generalist / summaries / log triage
+qwen2.5-coder:3b                # 2.3 GB    local/fim: tab completion (fill-in-the-middle)
+nemotron-3.5-bolt:e4b           # 8.1 GB    local/general and local/reason: summaries, log triage, think it through
+gemma4:12b                      # 9.5 GB    local/code: write and edit code (thinking off)
+embeddinggemma-2                # 1.9 GB    local/embed: embeddings for retrieval
+qwen2.5-coder:14b               # 11.7 GB   pinned by name: fighters-legacy's AI default

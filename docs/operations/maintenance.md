@@ -109,7 +109,12 @@ git add provision/models.list
 git commit -m "Models: add foo, drop bar"
 ```
 
-The provisioner never deletes — that's deliberate, so a typo or merge can't wipe gigabytes of weights. See [reference/local-models.md](../reference/local-models.md) for what each model is for and the heuristics for picking one.
+The provisioner never deletes — that's deliberate, so a typo or merge can't wipe gigabytes of weights.
+
+Each catalog model serves a gateway role (`local/<role>`). Replacing one also means measuring
+the candidate, changing the role's gateway entry and regenerating the `ollama/<model>` catalog
+block: the full recipe is in [reference/local-models.md](../reference/local-models.md#changing-a-model),
+along with what each role is for.
 
 To inspect what's currently installed:
 

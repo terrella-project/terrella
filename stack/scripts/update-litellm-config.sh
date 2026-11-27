@@ -12,6 +12,7 @@ cd "$(dirname "$0")/.."
 
 CONFIG="observability/litellm/config.yaml"
 HELPER="scripts/provider-models.py"
+MODELS_LIST="../provision/models.list"
 DRY_RUN=false
 target="all"
 
@@ -137,7 +138,13 @@ trap 'rm -rf "$tmpdir"' EXIT
 generated_any=false
 for provider in "${providers[@]}"; do
     echo "Fetching $provider models..." >&2
-    models="$("$HELPER" "$provider")"
+    if [[ "$provider" == "ollama" ]]; then
+        # The local catalog is the one the repo declares, not whatever this
+        # machine happens to have pulled (candidates, experiments).
+        models="$(sed -E 's/#.*$//; s/[[:space:]]+$//; /^[[:space:]]*$/d' "$MODELS_LIST" | awk '{print $1}' | sort -u)"
+    else
+        models="$("$HELPER" "$provider")"
+    fi
     print_model_block "$provider" "$models" > "$tmpdir/$provider.block"
     generated_any=true
 done
@@ -188,4 +195,4 @@ fi
 
 printf '%s\n' "$updated" > "$CONFIG"
 echo "Wrote $CONFIG"
-echo "Restart LiteLLM: docker compose restart litellm"
+echo "Restart LiteLLM: systemctl --user restart terrella-litellm"

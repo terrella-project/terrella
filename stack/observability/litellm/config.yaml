@@ -285,31 +285,26 @@ model_list:
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-mini
-    model_aliases: ["gpt-5-4-mini"]
     litellm_params:
       model: openai/gpt-5.4-mini
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-nano
-    model_aliases: ["gpt-5.4-nano"]
     litellm_params:
       model: openai/gpt-5.4-nano
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-4o
-    model_aliases: ["4o"]
     litellm_params:
       model: openai/gpt-4o
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-5-4
-    model_aliases: ["gpt54"]
     litellm_params:
       model: openai/gpt-5.4
       api_key: os.environ/OPENAI_API_KEY
 
   - model_name: gpt-5-5
-    model_aliases: ["gpt-5", "gpt55", "gpt5"]
     litellm_params:
       model: openai/gpt-5.5
       api_key: os.environ/OPENAI_API_KEY
@@ -393,57 +388,83 @@ model_list:
       api_key: os.environ/OPENAI_API_KEY
   # <<< openai catalog <<<
 
-  # ── Local: ollama on the host ───────────────────────────────────────────
-  # Manual Aliases: 
-  # Stable raw model IDs below are managed by update-litellm-config.sh.
-  - model_name: deepseek
-    model_aliases: ["deepseek-r1-14b", "deepseek-r1"]
+  # ── Local: ollama on the host, by role ──────────────────────────────────
+  # Clients ask for a role, never a model: which model serves each role is
+  # chosen from measurements (docs/operations/model-refresh-2026-11.md, made
+  # with stack/scripts/eval-local-models.py) and can change here without
+  # touching any client. Every model named here is in provision/models.list.
+  #
+  # ollama_chat/ talks to ollama's /api/chat; num_ctx is set because ollama
+  # gives a model 4k on a card under 24 GiB, too little for a long log.
+  - model_name: local/fim
+    # Tab completion. A FIM model fills the hole between a prefix and a
+    # suffix; no 2026 chat model in the ollama library accepts a suffix.
+    # The route is ollama's OpenAI-compatible /v1/completions, not ollama/:
+    # LiteLLM's ollama/ provider puts `suffix` inside `options`, where
+    # /api/generate ignores it, so the model never saw the code after the
+    # cursor. /v1/completions takes `suffix` as a field.
     litellm_params:
-      model: ollama/deepseek-r1:14b
+      model: text-completion-openai/qwen2.5-coder:3b
+      api_base: http://127.0.0.1:11434/v1
+      api_key: ollama
+
+  - model_name: local/general
+    # Summaries, log triage, drafting.
+    litellm_params:
+      model: ollama_chat/nemotron-3.5-bolt:e4b
       api_base: http://127.0.0.1:11434
-  
-  - model_name: gemma2
-    model_aliases: ["gemma2-9b"]
+      num_ctx: 16384
+
+  - model_name: local/reason
+    # "Think it through": problems with one right answer. The same model as
+    # local/general: it scored as well as the larger thinkers and ten times
+    # faster, and one model for both roles means fewer swaps on the card.
     litellm_params:
-      model: ollama/gemma2:9b
+      model: ollama_chat/nemotron-3.5-bolt:e4b
+      api_base: http://127.0.0.1:11434
+      num_ctx: 16384
+
+  - model_name: local/code
+    # Write and edit code. Thinking is off: with it on, gemma4 spent the whole
+    # budget thinking on most tasks; with it off it scored best of the models
+    # that fit the card. LiteLLM sends any reasoning_effort other than
+    # low/medium/high to ollama as think=false.
+    litellm_params:
+      model: ollama_chat/gemma4:12b
+      api_base: http://127.0.0.1:11434
+      num_ctx: 16384
+      reasoning_effort: none
+
+  - model_name: local/embed
+    # Embeddings for retrieval. Changing this model invalidates every index
+    # built with the old one: re-index after a change.
+    litellm_params:
+      model: ollama/embeddinggemma-2
       api_base: http://127.0.0.1:11434
 
-  - model_name: qwen2.5-coder
-    model_aliases: ["qwen2.5-coder-14b"]
-    litellm_params:
-      model: ollama/qwen2.5-coder:14b
-      api_base: http://127.0.0.1:11434
-
-  - model_name: qwen2.5-coder-15b
-    litellm_params:
-      model: ollama/qwen2.5-coder:1.5b
-      api_base: http://127.0.0.1:11434
-
-  - model_name: nomic-embed
-    litellm_params:
-      model: ollama/nomic-embed-text:latest
-      api_base: http://127.0.0.1:11434
-
+  # Every catalog model by its own name (ollama/<model> with ':' as '-'), for a
+  # client that must pin one, such as a tool whose results depend on it. The
+  # block is generated from provision/models.list.
   # >>> ollama catalog (managed by update-litellm-config.sh) >>>
-  - model_name: ollama/deepseek-r1:14b
+  - model_name: ollama/embeddinggemma-2
     litellm_params:
-      model: ollama/deepseek-r1:14b
+      model: ollama/embeddinggemma-2
       api_base: http://127.0.0.1:11434
-  - model_name: ollama/gemma2-9b
+  - model_name: ollama/gemma4-12b
     litellm_params:
-      model: ollama/gemma2:9b
+      model: ollama/gemma4:12b
       api_base: http://127.0.0.1:11434
-  - model_name: ollama/nomic-embed-text-latest
+  - model_name: ollama/nemotron-3.5-bolt-e4b
     litellm_params:
-      model: ollama/nomic-embed-text:latest
-      api_base: http://127.0.0.1:11434
-  - model_name: ollama/qwen2.5-coder-1.5b
-    litellm_params:
-      model: ollama/qwen2.5-coder:1.5b
+      model: ollama/nemotron-3.5-bolt:e4b
       api_base: http://127.0.0.1:11434
   - model_name: ollama/qwen2.5-coder-14b
     litellm_params:
       model: ollama/qwen2.5-coder:14b
+      api_base: http://127.0.0.1:11434
+  - model_name: ollama/qwen2.5-coder-3b
+    litellm_params:
+      model: ollama/qwen2.5-coder:3b
       api_base: http://127.0.0.1:11434
   # <<< ollama catalog <<<
 

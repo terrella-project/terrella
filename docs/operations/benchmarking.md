@@ -178,3 +178,87 @@ If either is missing the columns are simply omitted. Install psycopg2 once if yo
 ```bash
 pip install psycopg2-binary
 ```
+
+## Evaluating models per role
+
+The throughput benchmark says how fast a model is. [`stack/scripts/eval-local-models.py`](../../stack/scripts/eval-local-models.py)
+says how good a model is at the job a role gives it, and how fast it does that job. Use it
+before you point a gateway role at a different model. The results of the first full run, and
+the choices made from them, are in [model-refresh-2026-11.md](model-refresh-2026-11.md).
+
+| Role | Gateway name | What a model is graded on | Task set |
+|---|---|---|---|
+| `fim` | `local/fim` | filling a hole between a prefix and a suffix, as an editor's tab completion does | [`stack/eval/fim/`](../../stack/eval/fim/) |
+| `reason` | `local/reason` | problems with one checkable answer, given on a final `ANSWER:` line | [`stack/eval/reason/`](../../stack/eval/reason/) |
+| `general` | `local/general` | summaries and log triage: every required fact, nothing the input does not say | [`stack/eval/general/`](../../stack/eval/general/) |
+| `code` | `local/code` | writing a function that passes hidden tests | [`stack/eval/code/`](../../stack/eval/code/) |
+| `embed` | `local/embed` | retrieval over this repository's docs at a pinned commit: recall@1, recall@5, MRR | [`stack/eval/embed/`](../../stack/eval/embed/) |
+| `agent` | `local/agent` | a tool loop at 64k context through ollama's Anthropic-format endpoint | [`stack/eval/agent/`](../../stack/eval/agent/) |
+
+```bash
+cd ~/src/terrella
+
+# Check the answer keys against the graders first; it must print "selfcheck ok"
+python3 stack/scripts/eval-local-models.py selfcheck
+
+# One role, the default candidates (listed in the script), results to a JSON file
+python3 stack/scripts/eval-local-models.py reason --out reason.json
+
+# Chosen models only
+python3 stack/scripts/eval-local-models.py fim --models qwen2.5-coder:1.5b,qwen2.5-coder:3b
+
+# Every role in one go: hours, so keep the machine from sleeping
+systemd-inhibit --what=sleep:idle --why="model eval" \
+  python3 stack/scripts/eval-local-models.py all --out all.json
+
+# Print the tables again from saved results
+python3 stack/scripts/eval-local-models.py report --results reason.json fim.json
+```
+
+The script calls ollama's native API directly rather than the gateway: only the native API
+reports how many tokens a reply took and how long the model spent on them (`eval_count`,
+`eval_duration`), and whether the model is wholly on the GPU (`/api/ps`). It needs `podman`
+and a local Python image (`EVAL_SANDBOX_IMAGE`, default `python:3.12-slim-bookworm`). Code
+that a model writes runs only inside a throwaway container with no network, a read-only root,
+512 MB of memory and a 10-second limit, named `tml-eval-<pid>-<n>` so a stuck one can be
+removed by name.
+
+### What it guards against
+
+A number from this script is quotable only when its row has no flag. Each guard below exists
+because the failure it catches produced a believable but wrong number at least once:
+
+| Flag | Meaning |
+|---|---|
+| `SPILLED` | part of the model sits in system memory, so its speed is not the card's |
+| `SHARED-CARD` | another model was loaded beside it (every model is meant to run alone) |
+| `TRUNCATEDxN` | N replies hit the token limit before they finished |
+| `EMPTYxN` | N replies came back empty |
+| `INCOMPLETE` | fewer samples than tasks, or a request failed, or the machine slept mid-sample (wall clock against monotonic clock) |
+| `NOT-INSTALLED` / `NOT-LOADED` | the model is not on this machine, or never loaded |
+| `LOW-MEMORY` | the machine never had `--min-free-gb` of RAM free (default 12) in 30 minutes of waiting, so the model was not loaded: loading on a full machine once got ollama's runner killed mid-run |
+| `NONDETERMINISTICxN` | (fim) a repeat pass at temperature 0 changed the graded lines of N completions (ollama reuses its prompt cache on a repeat, which can shift the numbers slightly) |
+
+The exit status is 0 when the run is clean, 2 when a row carries a warning, and 1 when a row is
+incomplete. GPU memory is the rise in `nvidia-smi`'s figure when the model loads: `ollama ps`
+under-reports it, for one model family by 6 GB. Speed is ollama's own `eval_count` over
+`eval_duration`, never wall-clock time.
+
+### Reading the scores
+
+- **`general` scores are a screen, not a verdict.** A reply can carry every required fact and
+  still invent things the forbidden list does not foresee. Read every reply of the models you
+  are choosing between before you choose.
+- **`fim` counts two kinds of pass:** the completion matches the hole line for line (`line`), or
+  the program built from it passes the task's test. An editor shows the first lines of a
+  completion, so the completion is cut to as many lines as the hole had.
+- **A task set changes the results.** Each results file records the SHA-256 of every task set,
+  the harness, the ollama version and each model's digest. Compare runs only when those match.
+
+### Changing a task set
+
+`stack/eval/general/` and `stack/eval/agent/` are generated: edit their `make-tasks.py`, then
+rerun it. The other sets are plain JSONL. After any change, run `selfcheck`: it runs every
+answer key through the graders the models face and fails if a key does not pass, or if a test
+passes against an empty answer. The unit tests for the graders run with
+`uv run --no-project --with pytest pytest stack/scripts/tests`.

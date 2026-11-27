@@ -177,19 +177,23 @@ models:
   # >>> chat-tier models (managed by sync-continue-config.sh) >>>
   # <<< chat-tier models <<<
 
-  - name: qwen2.5-coder:1.5b (autocomplete)
+  - name: local/fim (autocomplete)
     <<: *defaults
-    model: ollama/qwen2.5-coder-1.5b
+    model: local/fim
     roles: [autocomplete]
     autocompleteOptions:
       debounceDelay: 250
       maxPromptTokens: 1024
 
-  - name: nomic-embed
+  - name: local/embed
     <<: *defaults
-    model: ollama/nomic-embed
+    model: local/embed
     roles: [embed]
 ```
+
+`local/fim` and `local/embed` are gateway roles: the gateway decides which model serves each
+(see [local models](../reference/local-models.md)), so this file never names a model. When the
+model behind `local/embed` changes, Continue rebuilds its codebase index.
 
 **Sync the chat-tier list** from LiteLLM. The script lives in the terrella repo (clone it once on jupiter) and writes `./terrella-config.yaml` in your current directory by default:
 

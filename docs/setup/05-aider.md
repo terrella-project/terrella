@@ -41,11 +41,24 @@ Aider will diff its proposed edit, ask you to confirm, and then commit on succes
 
 ## 5.4 Picking a model
 
+Through the gateway, ask for a role and let the gateway pick the model
+([local models](../reference/local-models.md)); calls then show up in Grafana:
+
+```bash
+export OPENAI_API_BASE=http://localhost:4000
+export OPENAI_API_KEY=sk-<your-virtual-key>
+aider --model openai/local/code
+```
+
 | Use case | `--model` flag |
 |---|---|
-| Daily flow on the 5080 | `ollama/qwen2.5-coder:14b` |
-| Chain-of-thought / "think it through" tasks | `ollama/deepseek-r1:14b` |
-| Final review with cloud quality | `claude-3-5-sonnet-latest` (via LiteLLM) |
+| Daily flow on the 5080 (gateway) | `openai/local/code` |
+| Chain-of-thought / "think it through" tasks (gateway) | `openai/local/reason` |
+| Straight at ollama, no gateway | `ollama/qwen2.5-coder:14b` |
+| Final review with cloud quality (gateway) | `openai/claude-sonnet` |
+
+The straight-to-ollama row names a model that does not think: `local/code`'s model
+(gemma4:12b) runs with thinking turned off by the gateway, which a direct call cannot do.
 
 Full table: → [reference/routing.md](../reference/routing.md).
 
