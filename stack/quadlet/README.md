@@ -20,7 +20,7 @@ makes the stack start at boot and survive logout.
 | `terrella-litellm-exporter` | `python:3.12.13-slim` | `127.0.0.1:11436` | terrella |
 | `terrella-ollama-exporter` | `python:3.12.13-slim` | `127.0.0.1:11435` | terrella |
 | `terrella-github-mcp` | `github-mcp-server:v1.5.0` | `127.0.0.1:8765` | terrella |
-| `ollama.service` (host binary, user unit — #12) | — | `0.0.0.0:11434` (firewalled, #10) | terrella-inference |
+| `ollama.service` (host binary, user unit — #12; memory ceiling 12G/16G, no swap — #138) | — | `0.0.0.0:11434` (firewalled, #10) | terrella-inference |
 
 Targets: `terrella.target` (whole stack, `WantedBy=default.target`) wants
 `terrella-inference.target` (the VRAM holders). Every member sets `PartOf=` so stops

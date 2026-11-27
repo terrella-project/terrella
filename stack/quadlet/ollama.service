@@ -21,6 +21,19 @@ ExecStart=%h/.local/bin/ollama serve
 Environment=OLLAMA_HOST=0.0.0.0
 Environment=OLLAMA_ORIGINS=*
 Restart=on-failure
+# Memory ceiling (#138). The cgroup is charged for the page cache of every
+# model file ollama reads, and nothing releases it until memory runs short:
+# on 2026-11-27 the unit reached 33 GB, the machine ran out, and the desktop
+# froze until the kernel killed ollama. With these limits ollama alone pays:
+#   MemoryHigh   reclaim ollama's own cache early (the catalog peaks ~10 GB);
+#   MemoryMax    hard stop: ollama is OOM-killed in its cgroup and restarted;
+#   MemorySwapMax=0  never push model buffers into zram (that is what froze it).
+# A model that needs more than this in host RAM is spilling off the GPU and is
+# too slow to use anyway. Sized for earth (62 GB, of which the HTG runner VMs
+# hold 25-30 GB); another machine needs its own numbers.
+MemoryHigh=12G
+MemoryMax=16G
+MemorySwapMax=0
 
 [Install]
 WantedBy=terrella-inference.target

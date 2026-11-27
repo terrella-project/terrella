@@ -45,6 +45,30 @@ Common causes:
   `stack/quadlet/README.md`). The unit must keep `OLLAMA_HOST=0.0.0.0`; the LAN side is
   firewalld's job.
 - **Stopped by the gaming toggle** — `systemctl --user start terrella-inference.target`.
+- **"address already in use" on every restart** — something else took `:11434` while ollama was
+  down. On earth that was a `tailscale serve` entry for 11434 (#134): remove it with
+  `tailscale serve --tcp=11434 off`, then
+  `systemctl --user reset-failed ollama && systemctl --user start ollama`.
+
+## A model fails to load, or ollama restarts mid-request
+
+ollama's unit has a memory ceiling (#138): `MemoryHigh=12G`, `MemoryMax=16G` and no swap. A load
+that needs more than that gets ollama killed inside its own cgroup, and systemd restarts it, so the
+desktop never freezes. The request that triggered it fails.
+
+```bash
+journalctl --user -u ollama --no-pager | grep -E 'oom-kill|OOM killer'   # was it the ceiling?
+systemctl --user show ollama -p MemoryPeak -p MemoryHigh -p MemoryMax      # how close it came
+ollama ps                                                                  # PROCESSOR: 100% GPU?
+```
+
+- **The model spills off the GPU.** `ollama ps` shows a CPU share, and the CPU part lives in host
+  RAM. Use a smaller model or a smaller context (`num_ctx`). A spilled model runs at a few tokens
+  a second, so it is not worth raising the ceiling for.
+- **The ceiling is too low for a model that does fit the GPU.** Raise both values in
+  `stack/quadlet/ollama.service`, copy the unit to `~/.config/systemd/user/`, then run
+  `systemctl --user daemon-reload && systemctl --user restart ollama`. Leave room for everything
+  else on the machine: on earth the HTG runner VMs hold 25–30 GB of its 62.
 
 ## Containers can't reach host ollama (`ollama/*` models time out)
 
