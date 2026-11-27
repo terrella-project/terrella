@@ -44,7 +44,6 @@ Aider will diff its proposed edit, ask you to confirm, and then commit on succes
 | Use case | `--model` flag |
 |---|---|
 | Daily flow on the 5080 | `ollama/qwen2.5-coder:14b` |
-| Hard refactor, willing to wait | `ollama/qwen2.5-coder:32b` |
 | Chain-of-thought / "think it through" tasks | `ollama/deepseek-r1:14b` |
 | Final review with cloud quality | `claude-3-5-sonnet-latest` (via LiteLLM) |
 

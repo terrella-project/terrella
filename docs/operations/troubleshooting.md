@@ -86,9 +86,10 @@ time ollama run qwen2.5-coder:14b "write a haiku about boats"
 
 You should see GPU fans spool and a response in 1–3 seconds. If it takes 30 seconds:
 
-1. **Model overflowed VRAM** — `qwen2.5-coder:32b` needs more than 16 GB and spills into
-   system RAM (`ollama ps` shows a CPU percentage). Switch to `qwen2.5-coder:14b` or the
-   `:32b-instruct-q2_K` variant.
+1. **Model overflowed VRAM** — a model that needs more than the card's 16 GB, with its
+   context, spills into system RAM (`ollama ps` shows a CPU percentage). `gpt-oss:20b` at a
+   64k context is one: 10% of it lands off the GPU. Switch to a smaller model such as
+   `qwen2.5-coder:14b`, or give the model a smaller context.
 2. **Driver problem after a kernel update** — akmods rebuilds the module at boot; check
    `modinfo -F version nvidia` and `journalctl -b -u akmods`. The loaded module must be
    the **open** flavor (`modinfo -F license nvidia` → `Dual MIT/GPL`) on Blackwell.

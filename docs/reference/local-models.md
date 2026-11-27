@@ -10,12 +10,16 @@ The authoritative list of models is [`provision/models.list`](../../provision/mo
 |---|---:|---|---|---|
 | `nomic-embed-text` | 0.27 GB | 137M | F16 | Embeddings (768-dim). RAG / semantic search over local files. Don't chat with this one. |
 | `qwen2.5-coder:1.5b` | 0.99 GB | 1.5B | Q4_K_M | Tab-completion / autocomplete sidecar. Fast on CPU. Pair with editor "fill-in-the-middle". |
-| `qwen2.5-coder:14b` | 8.99 GB | 14.8B | Q4_K_M | **Daily-driver coder.** Faster than 32b, still very capable. Default for code tasks via ollama. |
-| `qwen2.5-coder:32b` | 19.85 GB | 32.8B | Q4_K_M | **Top local coder.** Single-file refactors, code generation, code review where I want decent quality without paying the API. Slowest. |
+| `qwen2.5-coder:14b` | 8.99 GB | 14.8B | Q4_K_M | **Daily-driver coder.** Default for code tasks via ollama. |
 | `deepseek-r1:14b` | 8.99 GB | 14.8B | Q4_K_M | Reasoning — multi-step planning, chain-of-thought style problems. Use when the task is "think it through, then answer". |
 | `gemma2:9b` | 5.44 GB | 9.2B | Q4_0 | Generalist — summarization, drafting, log triage, non-code Q&A. |
 
-Total disk: **≈ 44 GB** for this set. Files live in `~/.ollama/models` on Earth-AI.
+Total disk: **≈ 25 GB** for this set. Files live in `~/.ollama/models` on Earth-AI.
+
+`deepseek-r1:14b`, `gemma2:9b` and `qwen2.5-coder:1.5b` stay until the general re-benchmark
+([#29](https://github.com/terrella-project/terrella/issues/29)) picks the 2026 models that
+replace them. The models an agent harness runs against, each at the context it needs, are in
+[`provision/agent-models.list`](../../provision/agent-models.list).
 
 ### Adding / removing a baseline model
 
@@ -35,18 +39,11 @@ git commit -m "Models: add foo, drop bar"
 
 The provisioner never deletes models — that's deliberate, so a typo or merge can't wipe gigabytes.
 
-## Other useful variants (not in the baseline)
-
-| Model | Size | Quant | Why you might add it |
-|---|---:|---|---|
-| `qwen2.5-coder:32b-instruct-q2_K` | 12.31 GB | Q2_K | Same as `:32b` with more aggressive quantization — fits in less VRAM, somewhat lower quality. Add if `:32b` is too slow. |
-
 ## When to pick which
 
 | Task | Pick |
 |---|---|
 | Generate / edit code, daily flow | `qwen2.5-coder:14b` |
-| Generate / edit code, want best quality and willing to wait | `qwen2.5-coder:32b` |
 | Inline tab-completion, low latency required | `qwen2.5-coder:1.5b` |
 | "Reason through this and explain" | `deepseek-r1:14b` |
 | Summarize logs / long output / non-code prose | `gemma2:9b` |
@@ -113,6 +110,4 @@ See [operations/benchmarking.md](../operations/benchmarking.md) for full usage, 
 
 ## Ideas / TODO
 
-- [ ] Try `qwen2.5-coder:32b-instruct-q4_K_M` (different quant) and compare with `qwen2.5-coder:32b` using the benchmark script.
 - [ ] Add a small reasoning model like `phi-4` for fast structured output.
-- [ ] Decide whether to keep both `32b` and `32b-instruct-q2_K` — run `benchmark-models.py --models qwen2.5-coder-32b,qwen2.5-coder-32b-instruct` and compare tok/s vs quality.
