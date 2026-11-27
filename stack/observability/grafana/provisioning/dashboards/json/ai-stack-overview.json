@@ -6,7 +6,7 @@
   "tags": ["ai", "spend"],
   "title": "AI Stack Overview",
   "uid": "ai-stack-overview",
-  "version": 2,
+  "version": 3,
   "time": {"from": "now-30d", "to": "now"},
   "panels": [
     {
@@ -224,6 +224,45 @@
           "format": "table",
           "rawQuery": true,
           "rawSql": "select month, vendor, amount_usd, notes, created_at from monthly_costs order by month desc, vendor;"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Agents' credit: spent against the straight line to the budget",
+      "id": 15,
+      "description": "The agents team's spend this budget cycle (from the gateway's ledger), against a straight line from nothing at the start of the cycle to the team's budget at its end. Both come from the team record: nothing here is hard-coded. The backlog of jomkz/agents spends toward the line in the cycle's last week.",
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 8, "w": 16, "x": 0, "y": 22},
+      "timeFrom": "now/M",
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "min": 0, "custom": {"lineWidth": 2, "fillOpacity": 0, "spanNulls": false}}, "overrides": [{"matcher": {"id": "byName", "options": "Straight line to the budget"}, "properties": [{"id": "custom.lineStyle", "value": {"fill": "dash", "dash": [10, 10]}}]}, {"matcher": {"id": "byName", "options": "Budget"}, "properties": [{"id": "custom.lineStyle", "value": {"fill": "dot", "dash": [2, 6]}}]}]},
+      "options": {"legend": {"displayMode": "list", "placement": "bottom"}, "tooltip": {"mode": "multi"}},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "with team as (\n  select team_id, spend, max_budget as budget, budget_reset_at as cycle_end,\n         budget_reset_at - case\n           when budget_duration ~ '^[0-9]+mo$' then make_interval(months => replace(budget_duration, 'mo', '')::int)\n           when budget_duration ~ '^[0-9]+w$' then make_interval(weeks => replace(budget_duration, 'w', '')::int)\n           when budget_duration ~ '^[0-9]+d$' then make_interval(days => replace(budget_duration, 'd', '')::int)\n           when budget_duration ~ '^[0-9]+h$' then make_interval(hours => replace(budget_duration, 'h', '')::int)\n         end as cycle_start\n  from \"LiteLLM_TeamTable\" where team_alias = 'agents'\n),\nhours as (select generate_series(t.cycle_start, t.cycle_end, interval '1 hour') as time, t.* from team t),\nspent as (\n  select date_trunc('hour', l.\"startTime\") as time, sum(l.spend) as usd\n  from \"LiteLLM_SpendLogs\" l join team t on l.team_id = t.team_id\n  where l.\"startTime\" >= t.cycle_start group by 1\n)\nselect h.time,\n       case when h.time <= now() then sum(coalesce(s.usd, 0)) over (order by h.time) end as \"Spent\",\n       h.budget * extract(epoch from h.time - h.cycle_start) / extract(epoch from h.cycle_end - h.cycle_start) as \"Straight line to the budget\",\n       h.budget as \"Budget\"\nfrom hours h left join spent s on s.time = h.time\norder by 1"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Agents' credit this cycle",
+      "id": 16,
+      "description": "The agents team's spend this cycle, where the straight line to the budget stands now, and the difference: behind the line is credit the backlog may still use before the cycle ends.",
+      "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 22},
+      "fieldConfig": {"defaults": {"unit": "currencyUSD", "decimals": 2}, "overrides": []},
+      "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "orientation": "horizontal", "textMode": "value_and_name", "colorMode": "none", "graphMode": "none"},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": "LiteLLM-Postgres"},
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "with team as (\n  select team_id, spend, max_budget as budget, budget_reset_at as cycle_end,\n         budget_reset_at - case\n           when budget_duration ~ '^[0-9]+mo$' then make_interval(months => replace(budget_duration, 'mo', '')::int)\n           when budget_duration ~ '^[0-9]+w$' then make_interval(weeks => replace(budget_duration, 'w', '')::int)\n           when budget_duration ~ '^[0-9]+d$' then make_interval(days => replace(budget_duration, 'd', '')::int)\n           when budget_duration ~ '^[0-9]+h$' then make_interval(hours => replace(budget_duration, 'h', '')::int)\n         end as cycle_start\n  from \"LiteLLM_TeamTable\" where team_alias = 'agents'\n),\npace as (\n  select spend, budget,\n         budget * least(greatest(extract(epoch from now() - cycle_start) / extract(epoch from cycle_end - cycle_start), 0), 1) as line\n  from team\n)\nselect spend as \"Spent this cycle\", line as \"The line now\", spend - line as \"Ahead (+) or behind (-) the line\", budget as \"Budget\"\nfrom pace"
         }
       ]
     }

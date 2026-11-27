@@ -6,7 +6,7 @@ All Terrella runtime services run as a single docker-compose project. This phase
 - A **single OpenAI-compatible endpoint** (LiteLLM) that fans out to Anthropic, Gemini, OpenAI, and ollama based on the model name in each request.
 - **Per-call cost logging** to Postgres.
 - **Prometheus** scraping a LiteLLM exporter and an Ollama host exporter for operational metrics.
-- A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all spend appears in one chart.
+- A **Grafana dashboard** ("AI Stack Overview") that combines per-call costs with a manually-entered table of monthly subscription costs (for Copilot, Claude Code) so all spend appears in one chart. Two of its panels follow the `agents` team's budget cycle: what the team has spent, against a straight line to its budget.
 
 This phase is **not** in `provision.sh` because it has secrets to wire up.
 
