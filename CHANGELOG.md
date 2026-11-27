@@ -11,6 +11,12 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Grafana: the agents' credit pace** (#44) — two panels on the AI Stack Overview dashboard
+  follow the `agents` team's budget cycle. One plots the team's spend this cycle against a
+  straight line from nothing to its budget at the cycle's end. The other gives the spend, where
+  the line stands now, and how far ahead of or behind it the team is. The cycle, the budget and
+  the spend come from the team record and the ledger, so a change of budget or cycle needs no
+  edit here. The weekly spend report that #44 asks for is a scheduled job of the agent runner.
 - **Local agent lane** (#130) — the gateway serves `local/agent`, a local model that an agent
   harness speaking the Anthropic Messages format can run its tool loop against. The entry
   presents ollama's own `/v1/messages` endpoint to LiteLLM as an `anthropic` endpoint, so the

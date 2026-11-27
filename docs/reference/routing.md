@@ -70,6 +70,7 @@ When I deliberately route a task through LiteLLM (instead of using Copilot/Claud
 
 - Use **Copilot / Claude Code** when in flow and don't care about per-task accounting — flat-rate captured monthly.
 - Route through **LiteLLM** when I want to know exactly what a workflow costs (e.g. measuring the cost of a nightly automation job).
+- **Unattended agents** run under their own gateway keys in the `agents` team. The team's budget follows the monthly API credit and resets with it. Two panels on the "AI Stack Overview" dashboard show the team's spend this cycle against a straight line to its budget, read from the team record and the ledger: one is the line over the cycle, the other gives the figures now. The runner, its schedules and its end-of-cycle backlog are outside this repository.
 
 ## What NOT to route through LiteLLM
 
