@@ -124,6 +124,8 @@ WSL-era `127.0.0.1:<published>` form. Every `localhost` in `prometheus.yml`, Gra
 - [x] `tailscale serve --bg --tcp 4000 tcp://127.0.0.1:4000` forwards through the
       pasta-published loopback port into the container — `earth:4000/health/liveness`,
       `earth:11434/api/version`, and `earth:3000/api/health` all answer over the tailnet.
+      (`earth:11434` is answered by ollama's own `0.0.0.0` listener through the trusted
+      `tailscale0` zone, not by serve; a serve entry for 11434 blocks ollama's restart, #134.)
 - [x] Container → `host.containers.internal:11434` still passes with the `terrella-lan`
       zone active (Fedora Workstation's `1025-65535` open range closed) — pasta traffic
       does not traverse the LAN zone. HTTP 200.

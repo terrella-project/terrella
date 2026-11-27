@@ -104,6 +104,14 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Fixed
 
+- **ollama can restart while Tailscale runs** (#134) — the docs told you to add a
+  `tailscale serve` entry for 11434. Its listener can never bind while ollama holds
+  `0.0.0.0:11434`, but it takes the port when ollama stops, so after the out-of-memory kill of
+  2026-11-27 every restart failed with "address already in use". ollama needs no serve entry:
+  `tailscale0` is in the `trusted` zone, so the tailnet reaches its own listener. The entry is
+  dropped from `docs/operations/cross-machine-access.md`, `deploy/earth/machines.md` and the
+  neptune runbook, and they say why. ollama keeps `0.0.0.0`, because containers reach the host
+  only on its LAN address.
 - **Tab completion through the gateway sees the code after the cursor** (#29) — LiteLLM's
   `ollama/` provider sends a completion's `suffix` inside `options`, where ollama's
   `/api/generate` ignores it, so every gateway FIM request was a plain continuation of the

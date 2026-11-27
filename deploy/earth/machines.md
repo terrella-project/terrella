@@ -127,14 +127,16 @@ Reuse the local models and the LiteLLM proxy on earth so spend on paid services 
 tailscale up --ssh
 ```
 
-**On earth** (so the tailnet sees ollama and LiteLLM — the only remote path; every stack
-port binds loopback):
+**On earth** (so the tailnet sees LiteLLM, whose published port binds loopback):
 
 ```bash
-tailscale serve --bg --tcp 11434 tcp://127.0.0.1:11434
 tailscale serve --bg --tcp 4000  tcp://127.0.0.1:4000
 tailscale serve status
 ```
+
+ollama needs no serve entry: it listens on `0.0.0.0:11434`, and `tailscale0` is in the
+`trusted` firewalld zone, so the tailnet reaches it directly. A serve entry for 11434 takes
+the port whenever ollama stops, and ollama then cannot start again (#134).
 
 **From jupiter / mercury** — point clients at earth's MagicDNS name:
 
@@ -199,7 +201,7 @@ echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>
 | Item | earth (Fedora 44) | jupiter | mercury |
 |---|---|---|---|
 | podman | ✅ 5.8.3 (rootless quadlets) | n/a (not needed) | _TODO_ |
-| Tailscale | ✅ active (`serve`: 11434, 4000, 3000) | ✅ | _TODO_ |
+| Tailscale | ✅ active (`serve`: 4000, 3000; ollama :11434 direct) | ✅ | _TODO_ |
 | ollama | ✅ 0.31.2 (user service, `~/.local`) | n/a (uses earth's) | n/a |
 | VS Code | ✅ | ✅ (Remote-WSL) | n/a |
 | Claude Code CLI | ✅ | ❌ not installed | _TODO_ |
