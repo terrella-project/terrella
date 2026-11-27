@@ -198,17 +198,41 @@ models:
     model: gpt-nano
     <<: *chat_roles
   # ── Local (ollama) ────────────────────────────────────────────────────
+  - name: local/agent
+    <<: *defaults
+    model: local/agent
+    <<: *chat_roles
+  - name: local/code
+    <<: *defaults
+    model: local/code
+    <<: *chat_roles
+  - name: local/general
+    <<: *defaults
+    model: local/general
+    <<: *chat_roles
+  - name: local/reason
+    <<: *defaults
+    model: local/reason
+    <<: *chat_roles
   - name: ollama/deepseek-r1-14b
     <<: *defaults
     model: ollama/deepseek-r1-14b
     <<: *chat_roles
-  - name: ollama/gemma2-9b
+  - name: ollama/gemma4-12b
     <<: *defaults
-    model: ollama/gemma2-9b
+    model: ollama/gemma4-12b
+    <<: *chat_roles
+  - name: ollama/nemotron-3.5-bolt-e4b
+    <<: *defaults
+    model: ollama/nemotron-3.5-bolt-e4b
     <<: *chat_roles
   - name: ollama/qwen2.5-coder-14b
     <<: *defaults
     model: ollama/qwen2.5-coder-14b
+    <<: *chat_roles
+  - name: ollama/qwen2.5-coder-3b
+    <<: *defaults
+    model: ollama/qwen2.5-coder-3b
     <<: *chat_roles
   # ── Other ─────────────────────────────────────────────────────────────
   - name: o1
@@ -233,15 +257,15 @@ models:
     <<: *chat_roles
 # <<< chat-tier models <<<
 
-  - name: qwen2.5-coder:1.5b (autocomplete)
+  - name: local/fim (autocomplete)
     <<: *defaults
-    model: ollama/qwen2.5-coder-1.5b
+    model: local/fim
     roles: [autocomplete]
     autocompleteOptions:
       debounceDelay: 250
       maxPromptTokens: 1024
 
-  - name: nomic-embed
+  - name: local/embed
     <<: *defaults
-    model: ollama/nomic-embed
+    model: local/embed
     roles: [embed]

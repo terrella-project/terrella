@@ -176,13 +176,16 @@ def parse_config_models(config_path: Path) -> list[tuple[str, str]]:
             continue
         seen_name.add(name)
         seen_underlying.add(underlying)
-        results.append((name, _infer_provider(underlying)))
+        # local/<role> entries are ollama however they reach it (ollama/,
+        # ollama_chat/, or anthropic/ against ollama's own /v1/messages).
+        provider = "ollama" if name.startswith("local/") else _infer_provider(underlying)
+        results.append((name, provider))
 
     return results
 
 
 def _infer_provider(underlying: str) -> str:
-    if underlying.startswith("ollama/"):
+    if underlying.startswith(("ollama/", "ollama_chat/")):
         return "ollama"
     if underlying.startswith("anthropic/") or re.match(r"claude-", underlying):
         return "anthropic"
@@ -199,12 +202,13 @@ def select_models(args: argparse.Namespace, config_models: list[tuple[str, str]]
         return [(m.strip(), config_map.get(m.strip(), "unknown")) for m in args.models.split(",")]
     if args.all:
         return config_models
-    # Default: local chat models only. Skip raw catalog entries (model_name contains '/')
-    # and embedding models (not compatible with /v1/chat/completions).
+    # Default: the local roles (local/<role>), not the raw catalog entries
+    # (ollama/<model>) that name the same models, and not embedding models
+    # (not compatible with /v1/chat/completions).
     return [
         (name, prov) for name, prov in config_models
         if prov == "ollama"
-        and "/" not in name
+        and name.startswith("local/")
         and not re.search(r"embed", name, re.IGNORECASE)
     ]
 

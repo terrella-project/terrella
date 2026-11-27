@@ -11,6 +11,16 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **Evaluate local models per role** (#29) — `stack/scripts/eval-local-models.py` grades ollama
+  models on the job each gateway role gives them, not only on speed: tab completion (fill a
+  hole between a prefix and a suffix), reasoning (one checkable answer), summaries and log
+  triage (required facts, no forbidden ones), coding (hidden tests in a sandbox container with
+  no network), retrieval over this repo's docs, and an agent's tool loop at 64k. The task sets
+  live in `stack/eval/`; `selfcheck` runs every answer key through the graders the models face.
+  The tool guards its own failure modes: a model that spills off the GPU, shares the card, is
+  cut off by the token limit, runs while the machine slept, or would load with too little free
+  RAM is flagged, and the exit status says so. Results of the first run and the choices made
+  from them: `docs/operations/model-refresh-2026-11.md`.
 - **Gateway: a first route to neptune** (#99) — the gateway serves `neptune/llama3.2:3b`, a
   pinned name answered by neptune's ollama over the tailnet. It is the static second backend
   that ADR-0010 allows before the multi-node work of M7: one more entry in
@@ -52,6 +62,15 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Changed
 
+- **Gateway: local models by role** (#29) — clients ask for `local/fim`, `local/general`,
+  `local/reason`, `local/code` or `local/embed` (beside `local/agent`), and the gateway decides
+  which model serves each: `qwen2.5-coder:3b`, `nemotron-3.5-bolt:e4b` for both summaries and reasoning, `gemma4:12b` with
+  thinking off, and `embeddinggemma-2`, each chosen from measurements. The Continue example and
+  `sync-continue-config.sh` use the role names, which also fixes the embed entry: it named
+  `ollama/nomic-embed`, which the gateway never served. `local/embed`'s new model means
+  Continue rebuilds its codebase index once. The `ollama/<model>` catalog block is now generated
+  from `provision/models.list` rather than from whatever the machine has pulled, and
+  `benchmark-models.py` benchmarks the `local/` roles by default.
 - **Gateway: the Claude tier aliases follow the current models** (#128) — `claude-opus`,
   `claude-sonnet` and `claude-haiku` now reach Opus 5.5, Sonnet 5.5 and Haiku 5.5, where
   they reached Opus 4.7, Sonnet 4.6 and Haiku 4.5. A client that calls an alias gets the
@@ -67,6 +86,12 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Removed
 
+- **The 2025 local models and their aliases** (#29) — `qwen2.5-coder:1.5b`, `gemma2:9b` and
+  `deepseek-r1:14b` leave `provision/models.list`, and the gateway no longer serves the `deepseek`,
+  `gemma2`, `qwen2.5-coder`, `qwen2.5-coder-15b` and `nomic-embed` aliases. Nothing had called
+  them through the gateway since July 2026. `qwen2.5-coder:14b` stays, pinned by name, because
+  fighters-legacy measured its AI features against it. The inert `model_aliases` lines left on
+  the OpenAI entries go too: the setting does nothing in LiteLLM.
 - **Thirteen old local models** (#29) — `provision/models.list` drops `qwen2.5-coder:32b`,
   `qwen2.5-coder:32b-instruct-q2_K` and its whole general-purpose, coding and lightweight
   sets (`llama3.1`, `llama3.2`, `mistral`, `mixtral`, `qwen2`, `qwen2.5`, `codellama`,
@@ -79,6 +104,11 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Fixed
 
+- **Tab completion through the gateway sees the code after the cursor** (#29) — LiteLLM's
+  `ollama/` provider sends a completion's `suffix` inside `options`, where ollama's
+  `/api/generate` ignores it, so every gateway FIM request was a plain continuation of the
+  prefix. `local/fim` now goes through ollama's OpenAI-compatible `/v1/completions`, which takes
+  `suffix` as a field (checked with a recording stand-in for ollama).
 - **`provision/agent-models.list` gives `ornith-1.5:9b`'s real GPU memory** (#29) — 8.5 GB
   at 64k by `nvidia-smi`, where it gave ollama's 7.7 GB; `ollama ps` under-reports it.
 

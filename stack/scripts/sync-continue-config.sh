@@ -83,12 +83,12 @@ begin, end, path = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(path) as f:
     data = json.load(f)
 
-# Filters: skip embeddings and the small autocomplete model.
+# Filters: skip embeddings and the tab-completion (FIM) model.
 def is_chat_tier(model_id: str) -> bool:
     lower = model_id.lower()
-    if "embed" in lower or "nomic" in lower:
+    if "embed" in lower:
         return False
-    if "1.5b" in lower:                  # autocomplete model
+    if lower == "local/fim":             # autocomplete model
         return False
     if "tts" in lower or "image" in lower or "robotics" in lower:
         return False
@@ -100,7 +100,7 @@ def group(model_id: str) -> str:
     if m.startswith("claude"):    return "Anthropic"
     if m.startswith("gemini"):    return "Gemini"
     if m.startswith("gpt"):       return "OpenAI"
-    if m.startswith("ollama/"):   return "Local (ollama)"
+    if m.startswith(("ollama/", "local/")): return "Local (ollama)"
     return "Other"
 
 models = sorted({m["id"] for m in data.get("data", []) if is_chat_tier(m["id"])})
@@ -149,17 +149,17 @@ chat_roles: &chat_roles
 models:
 ${generated}
 
-  - name: qwen2.5-coder:1.5b (autocomplete)
+  - name: local/fim (autocomplete)
     <<: *defaults
-    model: ollama/qwen2.5-coder-1.5b
+    model: local/fim
     roles: [autocomplete]
     autocompleteOptions:
       debounceDelay: 250
       maxPromptTokens: 1024
 
-  - name: nomic-embed
+  - name: local/embed
     <<: *defaults
-    model: ollama/nomic-embed
+    model: local/embed
     roles: [embed]
 EOF
 )

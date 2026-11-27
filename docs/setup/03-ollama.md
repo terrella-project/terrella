@@ -47,7 +47,7 @@ awk '!/^[[:space:]]*(#|$)/ {print $1}' provision/models.list \
   | xargs -n1 ollama pull
 ```
 
-The default set is roughly **57 GB** on disk — check space first (`df -h ~`). What each model is for, when to add or remove one, and how to update the list: → [reference/local-models.md](../reference/local-models.md).
+The default set is about **28 GB** on disk, **35 GB** with the agent model from `provision/agent-models.list` — check space first (`df -h ~`). What each model is for, when to add or remove one, and how to update the list: → [reference/local-models.md](../reference/local-models.md).
 
 ## 3.4 Verify ollama is healthy
 
