@@ -31,7 +31,7 @@ aider --model ollama/qwen2.5-coder:14b
 
 That puts you at the Aider prompt. Type a request like:
 
-```
+```text
 > add a unit test for parse_date()
 ```
 

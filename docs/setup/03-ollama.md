@@ -74,4 +74,4 @@ ollama run qwen2.5-coder:14b "say hi in one word"
 
 If you get a response back in a second or two with GPU activity in `nvidia-smi` (in another terminal), the inference path is working end-to-end. → on to [Open WebUI setup](04-open-webui.md).
 
-> Troubleshooting GPU not used / model loaded but slow → see [operations/troubleshooting.md](../operations/troubleshooting.md#gpu-not-utilized).
+> Troubleshooting GPU not used / model loaded but slow → see [operations/troubleshooting.md](../operations/troubleshooting.md#gpu-not-utilized-slow-generation-fans-quiet).

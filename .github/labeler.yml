@@ -107,3 +107,7 @@
           - ".github/workflows/**"
           - ".github/*.yml"
           - "scripts/project-sync.sh"
+          - "scripts/ci/**"
+          - ".markdownlint*.jsonc"
+          - ".github/.markdownlint.jsonc"
+          - "lychee.toml"

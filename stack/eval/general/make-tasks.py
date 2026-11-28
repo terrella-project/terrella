@@ -8,6 +8,7 @@ support. `reference` is a correct answer; selfcheck grades it.
 Run from the repo root:
     python3 stack/eval/general/make-tasks.py > stack/eval/general/tasks.jsonl
 """
+
 import json
 import subprocess
 
@@ -15,8 +16,16 @@ T = []
 
 
 def task(id, prompt, input, required, forbidden, reference):
-    T.append({"id": id, "prompt": prompt, "input": input.strip("\n") + "\n",
-              "required": required, "forbidden": forbidden, "reference": reference})
+    T.append(
+        {
+            "id": id,
+            "prompt": prompt,
+            "input": input.strip("\n") + "\n",
+            "required": required,
+            "forbidden": forbidden,
+            "reference": reference,
+        }
+    )
 
 
 task(
@@ -45,8 +54,7 @@ time=2026-11-20T14:11:30.214-06:00 level=INFO source=routes.go:1630 msg="request
         [r"(unload|evict|stop|free|keep_alive|one model at a time|smaller)"],
         [r"cancel", r"disconnect", r"time(d)?[ -]?out", r"\b499\b", r"60 ?s"],
     ],
-    [r"out of memory", r"\bOOM\b", r"driver (crash|bug|update)", r"reinstall",
-     r"(crash|crashed)"],
+    [r"out of memory", r"\bOOM\b", r"driver (crash|bug|update)", r"reinstall", r"(crash|crashed)"],
     "- gemma4:12b only fit partially: 27/49 layers on the GPU, the rest on the CPU.\n"
     "- qwen2.5-coder:14b was already loaded and held the VRAM.\n"
     "- The slow CPU-heavy model made the client disconnect after 60 s (context canceled, 499).\n"
@@ -78,12 +86,17 @@ INFO:     Uvicorn running on http://0.0.0.0:4000 (Press CTRL+C to quit)
         [r"gpt-5-5"],
         [r"provider", r"prefix"],
         [r"set_verbose", r"deprecat"],
-        [r"(database|db|postgres)[^\n]{0,160}(connected|retr|recover|succe|second attempt)",
-         r"(retr|recover)[^\n]{0,80}(database|db|postgres)"],
+        [
+            r"(database|db|postgres)[^\n]{0,160}(connected|retr|recover|succe|second attempt)",
+            r"(retr|recover)[^\n]{0,80}(database|db|postgres)",
+        ],
     ],
-    [r"gateway (is )?(down|not running|failed to start)", r"partial(ly)? (up|running|working)",
-     r"database (is )?(down|unavailable|unreachable)\b(?![^.\n]{0,40}(briefly|at first|first attempt))",
-     r"(anthropic|claude)[^.\n]{0,60}(fail|error|broken|down|refus)"],
+    [
+        r"gateway (is )?(down|not running|failed to start)",
+        r"partial(ly)? (up|running|working)",
+        r"database (is )?(down|unavailable|unreachable)\b(?![^.\n]{0,40}(briefly|at first|first attempt))",
+        r"(anthropic|claude)[^.\n]{0,60}(fail|error|broken|down|refus)",
+    ],
     "The gateway is up (Uvicorn running on port 4000, 84 deployments). Broken: the gpt-5-5 and "
     "gpt-5-5-mini deployments were not created because the model has no provider prefix. "
     "Noise: the repeated set_verbose deprecation warnings, and the database retry, which "
@@ -174,16 +187,21 @@ CONTAINER ID  IMAGE                                   COMMAND               CREA
         [r"open-?webui"],
         [r"unhealthy|health ?check"],
     ],
-    [r"(postgres|grafana|exporter)[^\n]{0,60}(unhealthy|exited|stopped|down|failing)",
-     r"litellm[^-\n][^\n]{0,60}(unhealthy|exited|stopped|down|failing)"],
+    [
+        r"(postgres|grafana|exporter)[^\n]{0,60}(unhealthy|exited|stopped|down|failing)",
+        r"litellm[^-\n][^\n]{0,60}(unhealthy|exited|stopped|down|failing)",
+    ],
     "- terrella-prometheus exited 3 hours ago with code 137 (killed by SIGKILL, often the "
     "OOM killer): restart it and check its memory limit.\n"
     "- terrella-openwebui is up but unhealthy: its health check is failing; check its logs.",
 )
 
-adr = subprocess.run(["git", "show",
-                      "e450b7a:docs/adr/ADR-0003-gateway-litellm-behind-driver-boundary.md"],
-                     capture_output=True, text=True, check=True).stdout
+adr = subprocess.run(
+    ["git", "show", "e450b7a:docs/adr/ADR-0003-gateway-litellm-behind-driver-boundary.md"],
+    capture_output=True,
+    text=True,
+    check=True,
+).stdout
 task(
     "adr-two-sentences",
     "Summarise this architecture decision in two sentences for someone new to the project.",
@@ -194,8 +212,11 @@ task(
         [r"boundary|driver|isolat|abstract|view"],
         [r"swap|replac|switch|migrat|alternative|spike"],
     ],
-    [r"tensorzero (was|is|has been) (chosen|adopted|selected)",
-     r"(replaced|replaces|replacing) litellm with", r"bifrost (was|is) (chosen|adopted)"],
+    [
+        r"tensorzero (was|is|has been) (chosen|adopted|selected)",
+        r"(replaced|replaces|replacing) litellm with",
+        r"bifrost (was|is) (chosen|adopted)",
+    ],
     "The project keeps LiteLLM as its gateway but isolates it behind a driver and SQL views, "
     "so nothing else reads LiteLLM's tables. That keeps a later swap cheap, and a time-boxed "
     "spike will weigh alternatives such as TensorZero.",
@@ -248,8 +269,12 @@ date,key,spend_usd
         [r"docs-drift"],
         [r"7\.85|nov(ember)? 19|2026-11-19|11-19|19th|spike|single day|one day"],
     ],
-    [r"\$?\s?14\.(7[0-8]|8\d)\b", r"\$?\s?15\.\d\d\b", r"repo-review (spent|was) the most",
-     r"repo-review[^.\n]{0,30}(highest|largest|biggest)"],
+    [
+        r"\$?\s?14\.(7[0-8]|8\d)\b",
+        r"\$?\s?15\.\d\d\b",
+        r"repo-review (spent|was) the most",
+        r"repo-review[^.\n]{0,30}(highest|largest|biggest)",
+    ],
     "The week's total was $14.79. docs-drift spent the most, $7.85, all of it in one run on "
     "2026-11-19. That single day is unusual; every other key stayed around a dollar a day or less.",
 )

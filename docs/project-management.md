@@ -102,8 +102,10 @@ When opening or grooming an issue, set all of:
    (enforced by `pr-title-lint`); the path labeler applies `component:*` automatically.
 4. **CHANGELOG** — add an entry under `[Unreleased]` in [CHANGELOG.md](../CHANGELOG.md)
    (enforced; apply the `no-changelog` label to exempt a chore/docs-only PR).
-5. **Merge** when CI is green. (Branch protection requiring green CI lands with the full M1
-   CI matrix.)
+5. **Merge** when CI is green: the `CI` workflow ([ci.yml](../.github/workflows/ci.yml): ruff,
+   pytest on Python 3.12–3.15, shellcheck, actionlint, markdownlint, links, gitleaks, quadlet
+   verify) reports one `ci` check that passes only when every job does; the `main` ruleset
+   requires it with `check` (changelog), `lint` (PR title) and `reuse`.
 
 ## Decision records vs. RFCs
 

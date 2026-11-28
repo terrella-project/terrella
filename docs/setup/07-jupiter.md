@@ -73,19 +73,24 @@ Tailscale needs to run on both the Windows host and inside WSL so that both laye
 
 **On Windows:**
 Download and install from <https://tailscale.com/download/windows>, then:
-```
+
+```text
 Start → Tailscale → Log in
 ```
+
 Approve the device in the browser.
 
 **Inside WSL (Ubuntu-24.04):**
+
 ```bash
 curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscale up --ssh
 ```
+
 A login URL will be printed — open it and approve.
 
 **Verify both are connected:**
+
 ```bash
 tailscale status
 # Should show earth-ai and this machine in the list
@@ -117,7 +122,7 @@ curl -s http://earth-ai:11434/api/tags | jq '.models[].name'
 curl -s http://earth-ai:4000/health/liveness
 ```
 
-Both should return without error. If they hang, check that earth's Tailscale node is online (`tailscale status`) and that earth-ai's Tailscale serve is configured (see [cross-machine-access.md](../operations/cross-machine-access.md#step-3)).
+Both should return without error. If they hang, check that earth's Tailscale node is online (`tailscale status`) and that earth-ai's Tailscale serve is configured (see [cross-machine-access.md](../operations/cross-machine-access.md#step-3--on-earth-expose-ollama-and-litellm-to-the-tailnet)).
 
 ## 7.6 Install VS Code + Remote WSL
 
@@ -152,6 +157,7 @@ OpenCode is configured via `opencode.json` in each workspace root. It can route 
 Install **Continue** from the VS Code marketplace, then configure it to use earth's LiteLLM as the model gateway.
 
 **Get a virtual API key** from earth's LiteLLM admin UI:
+
 - Open <http://earth:4000/ui> (sign in with `LITELLM_MASTER_KEY` from earth's `stack/.env`)
 - Virtual Keys → Create Key (name: `jupiter-continue`)
 - Copy the `sk-…` key

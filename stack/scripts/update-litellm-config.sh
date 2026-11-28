@@ -51,8 +51,8 @@ if [[ ! -f .env ]]; then
     exit 1
 fi
 
-# shellcheck disable=SC1091
 set -a
+# shellcheck source=/dev/null  # .env is generated per machine (generate-env.sh)
 source .env
 set +a
 

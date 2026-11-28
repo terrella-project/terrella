@@ -51,7 +51,7 @@ earth runs Fedora 44 with a single environment (the WSL dev/services split retir
 
 - Endpoint: `http://localhost:4000` on earth or `http://earth:4000` over Tailscale.
 - OpenAI-compatible — every tool that takes `OPENAI_BASE_URL` + `OPENAI_API_KEY` can be pointed at it.
-- Authoritative routing config source: [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml), rendered to `~/.config/terrella/litellm/config.yaml` by `stack/quadlet/install.sh`. Lists all backend models (anthropic/*, gemini/*, openai/*, ollama/*), per-key spend caps, model aliases.
+- Authoritative routing config source: [`../../stack/observability/litellm/config.yaml`](../../stack/observability/litellm/config.yaml), rendered to `~/.config/terrella/litellm/config.yaml` by `stack/quadlet/install.sh`. Lists all backend models (anthropic/_, gemini/_, openai/_, ollama/_), per-key spend caps, model aliases.
 - Use it when I want a request to **show up in Grafana**. Skip it when I'm using a tool that has its own UI/billing (Copilot, Claude Code).
 
 ## MCP servers

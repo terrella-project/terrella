@@ -10,7 +10,6 @@ import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-
 LITELLM_BASE_URL = os.environ.get("LITELLM_BASE_URL", "http://127.0.0.1:4000").rstrip("/")
 LITELLM_API_KEY = os.environ.get("LITELLM_EXPORTER_API_KEY", "").strip()
 LISTEN_HOST = os.environ.get("LITELLM_EXPORTER_HOST", "127.0.0.1")
@@ -48,7 +47,9 @@ def collect_metrics() -> str:
     except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, json.JSONDecodeError):
         lines.append(metric_line("litellm_up", 0))
         lines.append(metric_line("litellm_model_routes", 0))
-        lines.append(metric_line("litellm_health_scrape_duration_seconds", time.monotonic() - started))
+        lines.append(
+            metric_line("litellm_health_scrape_duration_seconds", time.monotonic() - started)
+        )
         return "\n".join(lines) + "\n"
 
     route_count = 0
@@ -71,7 +72,7 @@ def collect_metrics() -> str:
 
 
 class Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         if self.path == "/healthz":
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; charset=utf-8")

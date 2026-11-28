@@ -1,0 +1,11 @@
+// markdownlint rules for every Markdown file; .github/.markdownlint.jsonc
+// extends this. Which files are linted: .markdownlint-cli2.jsonc.
+{
+  "default": true,
+  // Prose is wrapped by hand or not at all; tables and URLs run long.
+  "MD013": false,
+  // Table pipes are not column-aligned; aligning them is churn on every edit.
+  "MD060": false,
+  // CHANGELOG repeats "Added"/"Changed" under every version.
+  "MD024": { "siblings_only": true }
+}

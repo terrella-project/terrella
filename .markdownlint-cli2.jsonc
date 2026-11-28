@@ -1,0 +1,6 @@
+// markdownlint-cli2, run by CI (.github/workflows/ci.yml, job `markdown`).
+// Locally: npx markdownlint-cli2. The rules are in .markdownlint.jsonc.
+{
+  "globs": ["**/*.md"],
+  "ignores": [".venv/**", "node_modules/**"]
+}

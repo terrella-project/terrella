@@ -10,8 +10,10 @@ if [[ ! -f .env ]]; then
     echo "ERROR: .env not found. Run scripts/generate-env.sh first." >&2
     exit 1
 fi
-# shellcheck disable=SC1091
-set -a; source .env; set +a
+set -a
+# shellcheck source=/dev/null  # .env is generated per machine (generate-env.sh)
+source .env
+set +a
 
 read -rp "Month (YYYY-MM): " month
 read -rp "Vendor (copilot|claude-code|anthropic|gemini|other): " vendor

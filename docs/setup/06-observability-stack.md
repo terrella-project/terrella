@@ -94,7 +94,7 @@ If you want the LiteLLM exporter to report `litellm_model_routes`, create a read
 
 ## 6.5 Files in `stack/`
 
-```
+```text
 stack/
 ├── docker-compose.yml                 # all services (open-webui + litellm + postgres + prometheus + grafana)
 ├── .env.example                       # template; copy to .env (or run generate-env.sh)

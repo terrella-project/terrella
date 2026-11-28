@@ -11,6 +11,22 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **CI matrix** (#23) — a new `CI` workflow runs on every PR and on `main`: ruff (lint and
+  format) over every Python file in the repo, pytest on Python 3.12, 3.13, 3.14 and 3.15 (the
+  CLI, `install.sh` and the eval tool's graders, which CI did not run before), shellcheck on
+  every shell script, actionlint on the workflows, markdownlint, a link check of the repo's
+  own links and `#anchors`, gitleaks over the whole history and the tree, and the quadlet
+  stack verified the way systemd loads it. A last `ci` job passes only when every one of
+  them does, so the `main` ruleset needs to require that one check. New
+  `scripts/ci/verify-quadlets.sh` converts the quadlets with podman's generator and runs
+  `systemd-analyze verify` in a Fedora 44 container; because `verify` exits 0 on an unknown
+  key, any output it prints fails the check, and `--self-test` proves it rejects bad units,
+  each for its own reason. A weekly `Links` workflow checks the external links, so a website
+  being down never fails a PR. Bringing the tree up to these checks fixed four links to
+  headings that do not exist, merged the duplicated `Added`/`Changed` sections in this file,
+  and cleaned up shellcheck, ruff and markdownlint findings across the legacy scripts and
+  docs (no change in behaviour; `zip()` calls in the benchmark and eval tools now fail
+  instead of quietly dropping rows when their inputs differ in length).
 - **The `terrella` CLI package** (#16) — the start of M1: `terrella/` is now a real package
   (typer + pydantic + jinja2) with a `terrella` command, which today answers `--version`
   (`-V`) and `--help`; `python -m terrella` runs the same thing. The version is written once,
@@ -73,116 +89,6 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   second serving node comes online.
 - **`deploy/earth/machines.md`** gains **luna** (iPhone client) and a **Planned: neptune**
   entry; Mac mini is named **mercury**.
-
-### Changed
-
-- **ollama has a memory ceiling** (#138) — `stack/quadlet/ollama.service` sets `MemoryHigh=12G`,
-  `MemoryMax=16G` and `MemorySwapMax=0`. The unit's cgroup is charged for the page cache of every
-  model file ollama reads, and on 2026-11-27 it reached 33 GB. earth ran out of memory, zram
-  filled, and the desktop froze until the kernel killed ollama. Now a load that needs more than
-  the ceiling gets ollama, and only ollama, killed and restarted. With the current catalog the
-  unit peaks near 10 GB. `docs/operations/troubleshooting.md` says how to tell the ceiling hit
-  and when to raise it.
-- **Gateway: local models by role** (#29) — clients ask for `local/fim`, `local/general`,
-  `local/reason`, `local/code` or `local/embed` (beside `local/agent`), and the gateway decides
-  which model serves each: `qwen2.5-coder:3b`, `nemotron-3.5-bolt:e4b` for both summaries and reasoning, `gemma4:12b` with
-  thinking off, and `embeddinggemma-2`, each chosen from measurements. The Continue example and
-  `sync-continue-config.sh` use the role names, which also fixes the embed entry: it named
-  `ollama/nomic-embed`, which the gateway never served. `local/embed`'s new model means
-  Continue rebuilds its codebase index once. The `ollama/<model>` catalog block is now generated
-  from `provision/models.list` rather than from whatever the machine has pulled, and
-  `benchmark-models.py` benchmarks the `local/` roles by default.
-- **Gateway: the Claude tier aliases follow the current models** (#128) — `claude-opus`,
-  `claude-sonnet` and `claude-haiku` now reach Opus 5.5, Sonnet 5.5 and Haiku 5.5, where
-  they reached Opus 4.7, Sonnet 4.6 and Haiku 4.5. A client that calls an alias gets the
-  newer model and its price. The `model_aliases` lines on those entries are removed: it is
-  not a LiteLLM setting, and the names it listed were never served.
-- **Public-readiness scrub of personal identifiers** (ahead of the M6 OSS launch): clone
-  paths genericized to `~/src/terrella`, literal usernames in the fedora-migration runbook
-  replaced with `<user>`, "John's …" prose reworded to "the reference/maintainer's …"
-  (deliberate license/package attribution kept), sibling-repo names/links and org-lineage
-  references removed from the PM docs and ADRs, and jupiter hardware fingerprints trimmed.
-- **`machines.md` Tailscale status reconciled** — earth's row now reflects the live
-  `tailscale serve` state (11434 / 4000 / 3000) instead of the stale "pending".
-
-### Removed
-
-- **The 2025 local models and their aliases** (#29) — `qwen2.5-coder:1.5b`, `gemma2:9b` and
-  `deepseek-r1:14b` leave `provision/models.list`, and the gateway no longer serves the `deepseek`,
-  `gemma2`, `qwen2.5-coder`, `qwen2.5-coder-15b` and `nomic-embed` aliases. Nothing had called
-  them through the gateway since July 2026. `qwen2.5-coder:14b` stays, pinned by name, because
-  fighters-legacy measured its AI features against it. The inert `model_aliases` lines left on
-  the OpenAI entries go too: the setting does nothing in LiteLLM.
-- **Thirteen old local models** (#29) — `provision/models.list` drops `qwen2.5-coder:32b`,
-  `qwen2.5-coder:32b-instruct-q2_K` and its whole general-purpose, coding and lightweight
-  sets (`llama3.1`, `llama3.2`, `mistral`, `mixtral`, `qwen2`, `qwen2.5`, `codellama`,
-  `deepseek-coder`, `phi3`, `gemma`, `tinyllama`): about 90 GB. The gateway no longer serves
-  `qwen2.5-coder-32b`, `qwen2.5-coder-32b-instruct` or their `ollama/` catalog names, and the
-  docs and the Continue example stop offering them. Nothing had called any of the thirteen
-  through the gateway since July 2026, and the full 32b does not fit a 16 GB card. `deepseek-r1:14b`, `gemma2:9b` and `qwen2.5-coder:1.5b` stay until the
-  general re-benchmark picks their replacements. Removing a line does not remove the model:
-  run `ollama rm` for each.
-
-### Fixed
-
-- **ollama can restart while Tailscale runs** (#134) — the docs told you to add a
-  `tailscale serve` entry for 11434. Its listener can never bind while ollama holds
-  `0.0.0.0:11434`, but it takes the port when ollama stops, so after the out-of-memory kill of
-  2026-11-27 every restart failed with "address already in use". ollama needs no serve entry:
-  `tailscale0` is in the `trusted` zone, so the tailnet reaches its own listener. The entry is
-  dropped from `docs/operations/cross-machine-access.md`, `deploy/earth/machines.md` and the
-  neptune runbook, and they say why. ollama keeps `0.0.0.0`, because containers reach the host
-  only on its LAN address.
-- **Tab completion through the gateway sees the code after the cursor** (#29) — LiteLLM's
-  `ollama/` provider sends a completion's `suffix` inside `options`, where ollama's
-  `/api/generate` ignores it, so every gateway FIM request was a plain continuation of the
-  prefix. `local/fim` now goes through ollama's OpenAI-compatible `/v1/completions`, which takes
-  `suffix` as a field (checked with a recording stand-in for ollama).
-- **`provision/agent-models.list` gives `ornith-1.5:9b`'s real GPU memory** (#29) — 8.5 GB
-  at 64k by `nvidia-smi`, where it gave ollama's 7.7 GB; `ollama ps` under-reports it.
-
-- **Gateway: sampling parameters no longer break calls to newer Claude models** (#128) —
-  every Claude model from Opus 4.7 on answers a request that sets `temperature`, `top_p` or
-  `top_k` with a 400, and `drop_params` does not cover that on LiteLLM 1.83.14. Those
-  entries now carry `additional_drop_params`, which `update-litellm-config.sh` writes for
-  the catalog. This covers the OpenAI-format routes; `/v1/messages` passes a request through
-  unchanged, so a client of that route still gets the provider's 400.
-- **`update-litellm-config.sh` leaves an up-to-date file unchanged** (#128) — each run added
-  one more comment line above the catalog marker and removed the file's final newline.
-- **Gateway: the `gpt` alias loads** (#128) — its `model` had no provider prefix
-  (`gpt-5-5`), so LiteLLM skipped the entry at every start with "LLM Provider NOT provided".
-- **Dependabot PRs no longer fail the changelog check** — `.github/dependabot.yml`
-  now applies the `no-changelog` label to its PRs (dependency bumps are chores with no
-  user-facing change), so they stop tripping the enforced-CHANGELOG gate.
-- **LiteLLM: billable background health checks disabled** (#95) —
-  `background_health_checks: True` sent a real completion request to every
-  `model_list` entry (~60 paid models) every 300 s and on every startup,
-  ~15,000 paid API calls over 30 h; the `completion_model_health_check_*` keys
-  from an earlier fix attempt are not real LiteLLM settings and did nothing.
-  Liveness monitoring stays on the free `/health/liveness` endpoint
-  (`litellm_exporter.py`); `GET /health` is also off-limits — with background
-  checks off it live-probes every model on demand.
-- **`firewall.sh`: reload before activating the new zone** — `--new-zone` only writes
-  permanent config, so binding the interface and `--set-default-zone` failed with
-  `INVALID_ZONE: terrella-lan` on first run (#10 follow-up).
-
-### Changed
-
-- **Docs updated for the Fedora + podman reality** (#14): maintenance.md backup/restore
-  is podman-native (`podman volume export/import`, `podman exec pg_dump`, pinned-tag
-  image updates); troubleshooting.md rewritten for rootless quadlets (systemctl --user,
-  SELinux `:Z`, host-gateway, restored-volume ownership); cross-machine-access.md gains
-  the earth node name, Fedora install steps, and the LAN-posture section;
-  machines.md/tools.md reflect Fedora 44 + quadlets (no WSL distros); setup guide and
-  stack/provision READMEs marked with the Fedora-primary / legacy-WSL split; stale
-  clone paths updated in live docs (WSL-era setup pages keep theirs until #79).
-- **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
-  (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
-  observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
-  `wsl --shutdown` / desktop-shortcut procedure; boot lands in AI Mode via lingering.
-
-### Added
-
 - **Fedora provisioning bootstrap** (`provision/fedora/bootstrap.sh` + runbook
   `docs/runbooks/fedora-provisioning.md`): idempotent detect→apply→verify for the quadlet
   stack's host prerequisites — NVIDIA open kernel modules (Blackwell), Secure Boot/MOK
@@ -254,6 +160,46 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Changed
 
+- **ollama has a memory ceiling** (#138) — `stack/quadlet/ollama.service` sets `MemoryHigh=12G`,
+  `MemoryMax=16G` and `MemorySwapMax=0`. The unit's cgroup is charged for the page cache of every
+  model file ollama reads, and on 2026-11-27 it reached 33 GB. earth ran out of memory, zram
+  filled, and the desktop froze until the kernel killed ollama. Now a load that needs more than
+  the ceiling gets ollama, and only ollama, killed and restarted. With the current catalog the
+  unit peaks near 10 GB. `docs/operations/troubleshooting.md` says how to tell the ceiling hit
+  and when to raise it.
+- **Gateway: local models by role** (#29) — clients ask for `local/fim`, `local/general`,
+  `local/reason`, `local/code` or `local/embed` (beside `local/agent`), and the gateway decides
+  which model serves each: `qwen2.5-coder:3b`, `nemotron-3.5-bolt:e4b` for both summaries and reasoning, `gemma4:12b` with
+  thinking off, and `embeddinggemma-2`, each chosen from measurements. The Continue example and
+  `sync-continue-config.sh` use the role names, which also fixes the embed entry: it named
+  `ollama/nomic-embed`, which the gateway never served. `local/embed`'s new model means
+  Continue rebuilds its codebase index once. The `ollama/<model>` catalog block is now generated
+  from `provision/models.list` rather than from whatever the machine has pulled, and
+  `benchmark-models.py` benchmarks the `local/` roles by default.
+- **Gateway: the Claude tier aliases follow the current models** (#128) — `claude-opus`,
+  `claude-sonnet` and `claude-haiku` now reach Opus 5.5, Sonnet 5.5 and Haiku 5.5, where
+  they reached Opus 4.7, Sonnet 4.6 and Haiku 4.5. A client that calls an alias gets the
+  newer model and its price. The `model_aliases` lines on those entries are removed: it is
+  not a LiteLLM setting, and the names it listed were never served.
+- **Public-readiness scrub of personal identifiers** (ahead of the M6 OSS launch): clone
+  paths genericized to `~/src/terrella`, literal usernames in the fedora-migration runbook
+  replaced with `<user>`, "John's …" prose reworded to "the reference/maintainer's …"
+  (deliberate license/package attribution kept), sibling-repo names/links and org-lineage
+  references removed from the PM docs and ADRs, and jupiter hardware fingerprints trimmed.
+- **`machines.md` Tailscale status reconciled** — earth's row now reflects the live
+  `tailscale serve` state (11434 / 4000 / 3000) instead of the stale "pending".
+- **Docs updated for the Fedora + podman reality** (#14): maintenance.md backup/restore
+  is podman-native (`podman volume export/import`, `podman exec pg_dump`, pinned-tag
+  image updates); troubleshooting.md rewritten for rootless quadlets (systemctl --user,
+  SELinux `:Z`, host-gateway, restored-volume ownership); cross-machine-access.md gains
+  the earth node name, Fedora install steps, and the LAN-posture section;
+  machines.md/tools.md reflect Fedora 44 + quadlets (no WSL distros); setup guide and
+  stack/provision READMEs marked with the Fedora-primary / legacy-WSL split; stale
+  clone paths updated in live docs (WSL-era setup pages keep theirs until #79).
+- **Gaming toggle is now `systemctl --user stop terrella-inference.target`**
+  (maintenance.md, #11): frees all model VRAM (measured 10.8 GB → 1.5 GB) while
+  observability keeps running; `terrella.target` stops everything. Replaces the WSL-era
+  `wsl --shutdown` / desktop-shortcut procedure; boot lands in AI Mode via lingering.
 - **Project renamed from earth-ai to terrella** after a naming-collision review
   (ADR-0008); repo moved to `terrella-project/terrella`. All brand, CLI, config, and
   path references updated. Live infrastructure names (`Earth-AI` WSL distro, `earth-ai`
@@ -266,3 +212,64 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 - Repository transferred to a dedicated org under its new name.
 - `README.md` / `AGENTS.md` updated for the project's new direction and earth's move to
   Fedora 44.
+
+### Removed
+
+- **The 2025 local models and their aliases** (#29) — `qwen2.5-coder:1.5b`, `gemma2:9b` and
+  `deepseek-r1:14b` leave `provision/models.list`, and the gateway no longer serves the `deepseek`,
+  `gemma2`, `qwen2.5-coder`, `qwen2.5-coder-15b` and `nomic-embed` aliases. Nothing had called
+  them through the gateway since July 2026. `qwen2.5-coder:14b` stays, pinned by name, because
+  fighters-legacy measured its AI features against it. The inert `model_aliases` lines left on
+  the OpenAI entries go too: the setting does nothing in LiteLLM.
+- **Thirteen old local models** (#29) — `provision/models.list` drops `qwen2.5-coder:32b`,
+  `qwen2.5-coder:32b-instruct-q2_K` and its whole general-purpose, coding and lightweight
+  sets (`llama3.1`, `llama3.2`, `mistral`, `mixtral`, `qwen2`, `qwen2.5`, `codellama`,
+  `deepseek-coder`, `phi3`, `gemma`, `tinyllama`): about 90 GB. The gateway no longer serves
+  `qwen2.5-coder-32b`, `qwen2.5-coder-32b-instruct` or their `ollama/` catalog names, and the
+  docs and the Continue example stop offering them. Nothing had called any of the thirteen
+  through the gateway since July 2026, and the full 32b does not fit a 16 GB card. `deepseek-r1:14b`, `gemma2:9b` and `qwen2.5-coder:1.5b` stay until the
+  general re-benchmark picks their replacements. Removing a line does not remove the model:
+  run `ollama rm` for each.
+
+### Fixed
+
+- **ollama can restart while Tailscale runs** (#134) — the docs told you to add a
+  `tailscale serve` entry for 11434. Its listener can never bind while ollama holds
+  `0.0.0.0:11434`, but it takes the port when ollama stops, so after the out-of-memory kill of
+  2026-11-27 every restart failed with "address already in use". ollama needs no serve entry:
+  `tailscale0` is in the `trusted` zone, so the tailnet reaches its own listener. The entry is
+  dropped from `docs/operations/cross-machine-access.md`, `deploy/earth/machines.md` and the
+  neptune runbook, and they say why. ollama keeps `0.0.0.0`, because containers reach the host
+  only on its LAN address.
+- **Tab completion through the gateway sees the code after the cursor** (#29) — LiteLLM's
+  `ollama/` provider sends a completion's `suffix` inside `options`, where ollama's
+  `/api/generate` ignores it, so every gateway FIM request was a plain continuation of the
+  prefix. `local/fim` now goes through ollama's OpenAI-compatible `/v1/completions`, which takes
+  `suffix` as a field (checked with a recording stand-in for ollama).
+- **`provision/agent-models.list` gives `ornith-1.5:9b`'s real GPU memory** (#29) — 8.5 GB
+  at 64k by `nvidia-smi`, where it gave ollama's 7.7 GB; `ollama ps` under-reports it.
+
+- **Gateway: sampling parameters no longer break calls to newer Claude models** (#128) —
+  every Claude model from Opus 4.7 on answers a request that sets `temperature`, `top_p` or
+  `top_k` with a 400, and `drop_params` does not cover that on LiteLLM 1.83.14. Those
+  entries now carry `additional_drop_params`, which `update-litellm-config.sh` writes for
+  the catalog. This covers the OpenAI-format routes; `/v1/messages` passes a request through
+  unchanged, so a client of that route still gets the provider's 400.
+- **`update-litellm-config.sh` leaves an up-to-date file unchanged** (#128) — each run added
+  one more comment line above the catalog marker and removed the file's final newline.
+- **Gateway: the `gpt` alias loads** (#128) — its `model` had no provider prefix
+  (`gpt-5-5`), so LiteLLM skipped the entry at every start with "LLM Provider NOT provided".
+- **Dependabot PRs no longer fail the changelog check** — `.github/dependabot.yml`
+  now applies the `no-changelog` label to its PRs (dependency bumps are chores with no
+  user-facing change), so they stop tripping the enforced-CHANGELOG gate.
+- **LiteLLM: billable background health checks disabled** (#95) —
+  `background_health_checks: True` sent a real completion request to every
+  `model_list` entry (~60 paid models) every 300 s and on every startup,
+  ~15,000 paid API calls over 30 h; the `completion_model_health_check_*` keys
+  from an earlier fix attempt are not real LiteLLM settings and did nothing.
+  Liveness monitoring stays on the free `/health/liveness` endpoint
+  (`litellm_exporter.py`); `GET /health` is also off-limits — with background
+  checks off it live-probes every model on demand.
+- **`firewall.sh`: reload before activating the new zone** — `--new-zone` only writes
+  permanent config, so binding the interface and `--set-default-zone` failed with
+  `INVALID_ZONE: terrella-lan` on first run (#10 follow-up).

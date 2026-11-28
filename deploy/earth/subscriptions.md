@@ -8,7 +8,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Cost:** _TODO $/seat/month_
 - **Models:** Claude Sonnet, GPT-4.1/4o, Gemini 2.5 Pro, plus "Copilot" default
 - **Limits:** monthly chat / agent message quotas vary by model class; refer to GitHub's billing page
-- **Billing portal:** https://github.com/settings/billing
+- **Billing portal:** <https://github.com/settings/billing>
 - **Per-request telemetry?** ❌ no — flat-rate, no per-call cost in the dashboard; enter monthly via `log-billing.sh`
 - **Where used:** VS Code (this workspace), browser (github.com chat)
 
@@ -18,7 +18,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Cost:** _TODO $/month_
 - **Models:** Claude Sonnet, Claude Opus
 - **Limits:** session-based usage limits; see Anthropic console
-- **Billing portal:** https://claude.ai/settings/billing
+- **Billing portal:** <https://claude.ai/settings/billing>
 - **Per-request telemetry?** ❌ no — subscription, not metered API; enter monthly via `log-billing.sh`
 - **Where used:** Claude Code CLI on earth, jupiter, mercury
 
@@ -28,7 +28,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Cost:** pay-per-token; varies by model
 - **Models:** Claude Opus, Sonnet, Haiku via API
 - **Limits:** tier-based RPM/TPM (auto-scales with spend)
-- **Billing portal:** https://console.anthropic.com/settings/billing
+- **Billing portal:** <https://console.anthropic.com/settings/billing>
 - **Per-request telemetry?** ✅ yes — every call through the LiteLLM proxy is logged with token counts and cost
 - **Where used:** scripts that hit Anthropic directly; LiteLLM proxy as a backend
 
@@ -38,7 +38,7 @@ Paid AI services. Update monthly costs and rate-limit numbers when they change. 
 - **Cost:** pay-per-token; cheap for the context window you get
 - **Models:** Gemini 2.5 Pro / Flash (and whatever's current)
 - **Limits:** tier-based RPM/TPM
-- **Billing portal:** https://aistudio.google.com/apikey  /  https://console.cloud.google.com/billing
+- **Billing portal:** <https://aistudio.google.com/apikey>  /  <https://console.cloud.google.com/billing>
 - **Per-request telemetry?** ✅ yes — same as above
 - **Where used:** CI workflows and ad-hoc scripts via LiteLLM proxy
 

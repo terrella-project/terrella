@@ -1,0 +1,6 @@
+// Templates under .github/ are fragments pasted into an issue or PR body,
+// which already has a title: they start at "##", not "#".
+{
+  "extends": "../.markdownlint.jsonc",
+  "MD041": false
+}

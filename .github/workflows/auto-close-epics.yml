@@ -37,6 +37,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          # shellcheck disable=SC2016  # $owner etc. are GraphQL variables
           parent=$(gh api graphql -f query='
             query($owner:String!, $repo:String!, $number:Int!) {
               repository(owner:$owner, name:$repo) {
