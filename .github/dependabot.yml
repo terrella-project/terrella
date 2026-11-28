@@ -1,5 +1,5 @@
-# Keep GitHub Actions pinned-SHA versions fresh.
-# The `pip` ecosystem is added when the real package lands (M1).
+# Keep GitHub Actions pinned-SHA versions and the CLI's Python dependencies
+# fresh.
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -11,3 +11,23 @@ updates:
       # Dependency bumps are chores with no user-facing change — exempt them
       # from the enforced CHANGELOG entry (changelog-check.yml).
       - "no-changelog"
+
+  # The terrella package (pyproject.toml + uv.lock). The `uv` ecosystem, not
+  # `pip`: it updates uv.lock together with pyproject.toml, which `pip` would
+  # leave behind.
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "component:cli"
+      - "no-changelog"
+    # Conventional titles for pr-title-lint: "chore(deps): bump ...".
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      # pytest + ruff move together in one PR a week; runtime dependencies
+      # (typer, pydantic, jinja2) each get their own PR.
+      dev:
+        dependency-type: "development"

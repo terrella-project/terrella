@@ -22,6 +22,9 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   root, and says how to put uv's tool dir on `PATH`. 29 tests cover the CLI and the script,
   the script against stand-ins for uv, curl and wget. The sdist now carries only the package,
   its tests and the licensing files. ROADMAP marks M0 done and M1 active.
+- **Dependabot: the CLI's Python dependencies** (#80) — a weekly `uv` update entry keeps
+  `pyproject.toml` and `uv.lock` current together (the `pip` ecosystem would leave the lock
+  behind). Each runtime dependency gets its own PR; pytest and ruff come grouped in one.
 - **Evaluate local models per role** (#29) — `stack/scripts/eval-local-models.py` grades ollama
   models on the job each gateway role gives them, not only on speed: tab completion (fill a
   hole between a prefix and a suffix), reasoning (one checkable answer), summaries and log
