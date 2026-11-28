@@ -1,8 +1,9 @@
 # Releases
 
-How Terrella ships to PyPI. Versioning follows [SemVer](https://semver.org/) once the CLI
-lands (M1); until then the only release is the `0.0.1` name-reservation stub
-([ADR-0008](../adr/ADR-0008-project-name-terrella.md)).
+How Terrella ships to PyPI. Versioning follows [SemVer](https://semver.org/) from the first CLI
+release (M1). The only release so far is the `0.0.1` name-reservation stub
+([ADR-0008](../adr/ADR-0008-project-name-terrella.md)); `main` carries a `.devN` version
+(`0.1.0.dev0`) until the next release is cut.
 
 ## Pipeline
 
@@ -17,7 +18,8 @@ lands (M1); until then the only release is the `0.0.1` name-reservation stub
 
 ## Cutting a release (from M1 on)
 
-1. Bump `version` in `pyproject.toml` and `terrella/__init__.py`; move the `[Unreleased]`
+1. Set `__version__` in `terrella/__init__.py` (the only place the version is written;
+   `pyproject.toml` reads it at build time); move the `[Unreleased]`
    CHANGELOG section under the new version heading.
 2. Merge via PR (title `chore(release): vX.Y.Z`).
 3. Create a GitHub Release with tag `vX.Y.Z` — publishing it triggers the pipeline.

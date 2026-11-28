@@ -28,12 +28,12 @@ and the org Project board **terrella 1.0**. Architectural decisions are recorded
 ## Phases
 
 Sizes are relative (S ≈ days, M ≈ weeks, L ≈ a month+ of part-time work).
-**Current status: M0 in progress.**
+**Current status: M1 in progress** (M0 closed 2026-07-10).
 
 | Phase | Goal | Size | Status |
 |---|---|---:|---|
-| **M0 — Fedora migration** | Full stack on Fedora 44 via hand-written quadlets; data restored from the WSL install; `terrella.target` replaces the `wsl --shutdown` gaming toggle | M | 🔄 active |
-| **M1 — terrella CLI MVP** | `terrella provision && terrella apply` reproduces M0 from `terrella.yaml`; golden-file tests against the M0 quadlets; full CI matrix | L | ⬜ |
+| **M0 — Fedora migration** | Full stack on Fedora 44 via hand-written quadlets; data restored from the WSL install; `terrella.target` replaces the `wsl --shutdown` gaming toggle | M | ✅ done |
+| **M1 — terrella CLI MVP** | `terrella provision && terrella apply` reproduces M0 from `terrella.yaml`; golden-file tests against the M0 quadlets; full CI matrix | L | 🔄 active |
 | **M2 — Config, secrets & 2026 models** | Gateway + serving fully config-rendered; podman secrets + sops-age; 2026 model refresh for 16 GB VRAM; DB migrations + `terrella_*` views | M | ⬜ |
 | **M3 — Observability v2** | OTel GenAI tracing; Langfuse-vs-Phoenix spike; gateway-alternatives spike (TensorZero as potential M5 substrate) → ADRs | M | ⬜ |
 | **M4 — Agentic ops v1** | `terrella mcp serve` stack-ops MCP server; systemd-timer agents (bench regression, spend report, catalog watcher) | L | ⬜ |

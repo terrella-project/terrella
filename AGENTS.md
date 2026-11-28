@@ -17,6 +17,10 @@ This is a personal AI workstation repo evolving into an installable tool (`terre
 | `provision/` | `provision.sh` one-shot installer + `models.list` (legacy; absorbed by CLI in M1) |
 | `stack/` | docker-compose: all services — Open WebUI, LiteLLM, Postgres, Prometheus, Grafana (legacy; quadlets in M0) |
 | `stack/observability/` | config files for LiteLLM, Prometheus, and Grafana (mounted read-only) |
+| `terrella/` | The `terrella` CLI package (typer + pydantic + jinja2); `terrella/cli/` holds the commands. The version is written only in `terrella/__init__.py` |
+| `tests/` | pytest suite for the package and `install.sh` (`uv run pytest`) |
+| `install.sh` | curl-able bootstrap: uv if missing, then `uv tool install terrella` (POSIX sh; not `stack/quadlet/install.sh`) |
+| `pyproject.toml`, `uv.lock` | Package metadata, dependencies, ruff + pytest config; the lock is committed and dependabot (`uv`) keeps it fresh |
 | `.github/project.yml` | Declarative PM spec (labels, milestones, board) — synced by `scripts/project-sync.sh` |
 
 ## Machines

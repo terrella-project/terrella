@@ -92,6 +92,7 @@ Use it when an **API client** (a script, a CI agent, an editor plugin like Conti
 | [`README.md`](../README.md) | Top-level summary and pointers into `docs/`. |
 | [`provision/`](../provision/) | One-shot installer (`provision.sh`) and the editable list of baseline ollama models (`models.list`). |
 | [`stack/`](../stack/) | docker-compose project: all runtime services — **Open WebUI + LiteLLM + Postgres + Prometheus + Grafana**. Config files mounted into containers live under [`stack/observability/`](../stack/observability/). |
+| [`terrella/`](../terrella/) | The `terrella` CLI package, built through M1 to replace `provision/` and `stack/` ([ROADMAP.md](../ROADMAP.md)). Tests in [`tests/`](../tests/); [`install.sh`](../install.sh) bootstraps it with uv. |
 | [`docs/`](.) | This documentation tree. |
 
 ## Where to go next
