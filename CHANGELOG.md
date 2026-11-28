@@ -26,7 +26,9 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
   headings that do not exist, merged the duplicated `Added`/`Changed` sections in this file,
   and cleaned up shellcheck, ruff and markdownlint findings across the legacy scripts and
   docs (no change in behaviour; `zip()` calls in the benchmark and eval tools now fail
-  instead of quietly dropping rows when their inputs differ in length).
+  instead of quietly dropping rows when their inputs differ in length). Its first run caught
+  the CLI help tests failing on GitHub's runners, where Rich colours the help; they now compare
+  the text without its styling, and a test runs them under `GITHUB_ACTIONS` to prove it.
 - **The `terrella` CLI package** (#16) — the start of M1: `terrella/` is now a real package
   (typer + pydantic + jinja2) with a `terrella` command, which today answers `--version`
   (`-V`) and `--help`; `python -m terrella` runs the same thing. The version is written once,

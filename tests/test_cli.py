@@ -1,5 +1,6 @@
 """The root ``terrella`` command: version, help, and how it is started."""
 
+import re
 import subprocess
 import sys
 from importlib.metadata import version
@@ -11,6 +12,15 @@ import terrella
 from terrella.cli import app
 
 runner = CliRunner()
+
+
+ANSI_SGR = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def plain(output: str) -> str:
+    # Rich styles the help when it thinks it is on a terminal or in CI
+    # (GITHUB_ACTIONS is enough); compare the text without the ANSI codes.
+    return ANSI_SGR.sub("", output)
 
 
 @pytest.mark.parametrize("flag", ["--version", "-V"])
@@ -33,25 +43,35 @@ def test_installed_metadata_matches_the_source_version() -> None:
     assert version("terrella") == terrella.__version__
 
 
+def test_help_is_checked_as_plain_text_even_when_styled(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The CI condition that first broke these tests: Rich colours the help
+    # under GITHUB_ACTIONS, putting codes between "Usage:" and "terrella".
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    result = runner.invoke(app, ["--help"])
+    assert result.exit_code == 0
+    assert ANSI_SGR.search(result.output), "the help was not styled; this test proves nothing"
+    assert "Usage: terrella" in plain(result.output)
+
+
 def test_no_arguments_shows_the_help() -> None:
     result = runner.invoke(app, [])
     # Click 8.2+ exits 2 when no_args_is_help prints the help.
     assert result.exit_code == 2
-    assert "Usage: terrella" in result.output
-    assert "--version" in result.output
+    assert "Usage: terrella" in plain(result.output)
+    assert "--version" in plain(result.output)
 
 
 def test_help_names_the_program_and_its_purpose() -> None:
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "Usage: terrella" in result.output
-    assert "terrella.yaml" in result.output
+    assert "Usage: terrella" in plain(result.output)
+    assert "terrella.yaml" in plain(result.output)
 
 
 def test_an_unknown_command_is_a_usage_error() -> None:
     result = runner.invoke(app, ["no-such-command"])
     assert result.exit_code == 2
-    assert "No such command" in result.output
+    assert "No such command" in plain(result.output)
 
 
 def test_python_dash_m_runs_the_same_cli() -> None:
