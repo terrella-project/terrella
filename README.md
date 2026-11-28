@@ -40,6 +40,29 @@ The whole guide lives under `docs/` and is structured for someone building this 
 | [`docs/`](docs/) | All documentation. |
 | [`provision/`](provision/) | Machine provisioner (`provision.sh`), model manager (`sync-models.sh`), and the model catalog (`models.list`). Run them independently. |
 | [`stack/`](stack/) | docker-compose project: all runtime services — **Open WebUI + LiteLLM + Postgres + Prometheus + Grafana**. Config files mounted into containers live under [`stack/observability/`](stack/observability/). |
+| [`terrella/`](terrella/) | The `terrella` CLI (Python: typer + pydantic + jinja2), growing through [M1](ROADMAP.md#phases). Tests in [`tests/`](tests/). |
+| [`install.sh`](install.sh) | Bootstrap for the CLI: installs [uv](https://docs.astral.sh/uv/) if it is missing, then `uv tool install terrella`. |
+
+## The `terrella` CLI (in development)
+
+The CLI that will replace `stack/` and `provision/` is being built in [M1](ROADMAP.md#phases);
+today it has only `terrella --version`. Install it per user (not as root):
+
+```bash
+curl -LsSf https://raw.githubusercontent.com/terrella-project/terrella/main/install.sh | sh
+```
+
+Until the first CLI release reaches PyPI, the `terrella` there is the `0.0.1` name-reservation
+stub with no command, so install from `main` instead:
+
+```bash
+curl -LsSf https://raw.githubusercontent.com/terrella-project/terrella/main/install.sh \
+  | TERRELLA_SPEC=git+https://github.com/terrella-project/terrella sh
+```
+
+Running the script again upgrades. `TERRELLA_SPEC` takes any uv requirement (a version such as
+`terrella==0.1.0`, a git URL, a local path). Working on the CLI itself: see
+[CONTRIBUTING.md](CONTRIBUTING.md#dev-setup).
 
 ## Quickstart for a fresh install
 

@@ -11,6 +11,20 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Added
 
+- **The `terrella` CLI package** (#16) — the start of M1: `terrella/` is now a real package
+  (typer + pydantic + jinja2) with a `terrella` command, which today answers `--version`
+  (`-V`) and `--help`; `python -m terrella` runs the same thing. The version is written once,
+  in `terrella/__init__.py`, and the build reads it; `main` is `0.1.0.dev0` until the first
+  CLI release. `uv.lock` is committed, with pytest and ruff as dev dependencies. New
+  `install.sh` at the repo root bootstraps a machine: it installs uv if it is missing, then
+  `uv tool install terrella` for the current user (`TERRELLA_SPEC` picks a version or a git
+  source). It is POSIX sh for `curl … | sh`, runs nothing if the download is cut off, refuses
+  root, and says how to put uv's tool dir on `PATH`. 29 tests cover the CLI and the script,
+  the script against stand-ins for uv, curl and wget. The sdist now carries only the package,
+  its tests and the licensing files. ROADMAP marks M0 done and M1 active.
+- **Dependabot: the CLI's Python dependencies** (#80) — a weekly `uv` update entry keeps
+  `pyproject.toml` and `uv.lock` current together (the `pip` ecosystem would leave the lock
+  behind). Each runtime dependency gets its own PR; pytest and ruff come grouped in one.
 - **Evaluate local models per role** (#29) — `stack/scripts/eval-local-models.py` grades ollama
   models on the job each gateway role gives them, not only on speed: tab completion (fill a
   hole between a prefix and a suffix), reasoning (one checkable answer), summaries and log

@@ -40,13 +40,21 @@ version:
 
 ## Dev setup
 
-The repo is currently documentation + bash + compose configs; there is no build. Useful
-checks before pushing:
+The `terrella` CLI is a Python package (3.12+) managed with [uv](https://docs.astral.sh/uv/);
+`uv.lock` is committed. Alongside it, the legacy `stack/` and `provision/` trees are bash and
+compose configs until the CLI replaces them (see the transition policy in
+[ROADMAP.md](ROADMAP.md)). Checks before pushing:
 
 ```bash
-bash -n stack/scripts/*.sh provision/*.sh scripts/*.sh   # shell syntax
+uv sync                                                  # .venv with the package + dev tools
+uv run terrella --version                                # the CLI from your checkout
+uv run pytest                                            # tests/ (CLI + install.sh)
+uv run ruff check && uv run ruff format --check          # lint + format
+shellcheck -s sh install.sh                              # the bootstrap is POSIX sh
+bash -n stack/scripts/*.sh provision/*.sh scripts/*.sh   # legacy shell syntax
 uvx reuse lint                                           # licensing metadata
 ```
 
-The Python package (`terrella/`) is a stub reserving the PyPI name until the M1 CLI
-scaffold; don't add code to it ahead of the roadmap.
+The version is written in one place, `terrella/__init__.py`; `pyproject.toml` reads it at
+build time. CI does not run the Python checks yet; the CI matrix lands with
+[#23](https://github.com/terrella-project/terrella/issues/23).

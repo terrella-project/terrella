@@ -2,14 +2,20 @@
 # Applies `component:*` labels automatically based on the files a PR touches.
 # Label names must match .github/project.yml. See docs/project-management.md.
 #
-# Paths reflect the current transition-period layout (stack/ + provision/);
-# package paths (terrella/**) are mapped ahead of the M1 scaffold and extend as
-# the package lands.
+# Paths reflect the transition-period layout (stack/ + provision/) next to
+# the terrella package; package subpackages (terrella/**) are mapped ahead of
+# the code and extend as the package grows.
 
 "component:cli":
   - changed-files:
       - any-glob-to-any-file:
           - "terrella/cli/**"
+          - "terrella/*.py"
+          - "tests/test_cli.py"
+          - "install.sh"
+          - "tests/test_install_sh.py"
+          - "pyproject.toml"
+          - "uv.lock"
 
 "component:provision":
   - changed-files:

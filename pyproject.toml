@@ -1,13 +1,14 @@
-# Stub package reserving the PyPI name; the M1 CLI scaffold grows from here
-# (ADR-0001, ADR-0008). Don't add code ahead of the roadmap.
+# The terrella CLI (ADR-0001): typer for the commands, pydantic for the
+# terrella.yaml schema (#17), jinja2 for the renderer (#18). Distributed with
+# `uv tool install terrella`; install.sh at the repo root bootstraps uv first.
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "terrella"
-version = "0.0.1"
-description = "A homelab-scale personal AI stack: local models, multi-provider gateway, cost ledger, observability. CLI lands at M1 — this release only reserves the name."
+dynamic = ["version"]
+description = "A homelab-scale personal AI stack: local models, multi-provider gateway, cost ledger, observability."
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache-2.0"
@@ -15,15 +16,69 @@ license-files = ["LICENSE"]
 authors = [{ name = "John McKenzie" }]
 keywords = ["ai", "homelab", "llm", "ollama", "litellm", "podman", "quadlets"]
 classifiers = [
-  "Development Status :: 1 - Planning",
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Console",
   "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
 ]
+dependencies = [
+  "jinja2>=3.1.6",
+  "pydantic>=2.14.4",
+  "typer>=0.29.3",
+]
+
+[project.scripts]
+terrella = "terrella.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/terrella-project/terrella"
 Roadmap = "https://github.com/terrella-project/terrella/blob/main/ROADMAP.md"
 Changelog = "https://github.com/terrella-project/terrella/blob/main/CHANGELOG.md"
 
+[dependency-groups]
+dev = [
+  "pytest>=9.2.0",
+  "ruff>=0.17.6",
+]
+
+# The version lives in one place, terrella/__init__.py; the build reads it.
+[tool.hatch.version]
+path = "terrella/__init__.py"
+
 [tool.hatch.build.targets.wheel]
 packages = ["terrella"]
+
+# The sdist carries the package, its tests and the licensing files, not the
+# whole repo (deploy/earth/ is one deployment's notes, not the tool).
+[tool.hatch.build.targets.sdist]
+include = [
+  "/terrella",
+  "/tests",
+  "/install.sh",
+  "/LICENSE",
+  "/LICENSES",
+  "/REUSE.toml",
+  "/README.md",
+  "/CHANGELOG.md",
+  "/uv.lock",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "--strict-config"]
+xfail_strict = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+# The legacy scripts under stack/ and provision/ retire with #81; the CI
+# matrix (#23) decides how they are linted until then.
+include = ["terrella/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
