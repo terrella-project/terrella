@@ -62,6 +62,13 @@ exempts chores — see [docs/project-management.md](docs/project-management.md))
 
 ### Changed
 
+- **ollama has a memory ceiling** (#138) — `stack/quadlet/ollama.service` sets `MemoryHigh=12G`,
+  `MemoryMax=16G` and `MemorySwapMax=0`. The unit's cgroup is charged for the page cache of every
+  model file ollama reads, and on 2026-11-27 it reached 33 GB. earth ran out of memory, zram
+  filled, and the desktop froze until the kernel killed ollama. Now a load that needs more than
+  the ceiling gets ollama, and only ollama, killed and restarted. With the current catalog the
+  unit peaks near 10 GB. `docs/operations/troubleshooting.md` says how to tell the ceiling hit
+  and when to raise it.
 - **Gateway: local models by role** (#29) — clients ask for `local/fim`, `local/general`,
   `local/reason`, `local/code` or `local/embed` (beside `local/agent`), and the gateway decides
   which model serves each: `qwen2.5-coder:3b`, `nemotron-3.5-bolt:e4b` for both summaries and reasoning, `gemma4:12b` with
