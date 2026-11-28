@@ -49,7 +49,7 @@ The script reads `observability/litellm/config.yaml` automatically, so it picks 
 
 ## Output
 
-```
+```text
 Benchmarking 6 model(s) [6 ollama]
   3 run(s) × 3 prompts = 9 samples per model
 
@@ -260,5 +260,6 @@ under-reports it, for one model family by 6 GB. Speed is ollama's own `eval_coun
 `stack/eval/general/` and `stack/eval/agent/` are generated: edit their `make-tasks.py`, then
 rerun it. The other sets are plain JSONL. After any change, run `selfcheck`: it runs every
 answer key through the graders the models face and fails if a key does not pass, or if a test
-passes against an empty answer. The unit tests for the graders run with
-`uv run --no-project --with pytest pytest stack/scripts/tests`.
+passes against an empty answer. The unit tests for the graders run
+with the package's own, `uv run pytest` (or `uv run pytest stack/scripts/tests` for these alone),
+and in CI on every PR.

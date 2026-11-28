@@ -16,11 +16,9 @@ from __future__ import annotations
 
 import json
 import os
-import time
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
 
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
 LISTEN_HOST = os.environ.get("OLLAMA_EXPORTER_HOST", "127.0.0.1")
@@ -71,7 +69,8 @@ def collect_metrics() -> str:
         "# TYPE ollama_model_installed_bytes gauge",
         "# HELP ollama_model_vram_bytes VRAM currently used by a loaded model in bytes.",
         "# TYPE ollama_model_vram_bytes gauge",
-        "# HELP ollama_model_expires_unixtime When the loaded model is scheduled to expire from memory.",
+        "# HELP ollama_model_expires_unixtime"
+        " When the loaded model is scheduled to expire from memory.",
         "# TYPE ollama_model_expires_unixtime gauge",
     ]
 
@@ -124,9 +123,12 @@ def collect_metrics() -> str:
         current.update(
             {
                 "family": current.get("family") or details.get("family", ""),
-                "quantization": current.get("quantization") or details.get("quantization_level", ""),
-                "parameter_size": current.get("parameter_size") or details.get("parameter_size", ""),
-                "context_length": current.get("context_length") or str(model.get("context_length") or ""),
+                "quantization": current.get("quantization")
+                or details.get("quantization_level", ""),
+                "parameter_size": current.get("parameter_size")
+                or details.get("parameter_size", ""),
+                "context_length": current.get("context_length")
+                or str(model.get("context_length") or ""),
                 "size": int(current.get("size") or model.get("size") or 0),
                 "size_vram": int(model.get("size_vram") or 0),
                 "expires_at": model.get("expires_at") or "",
@@ -151,13 +153,15 @@ def collect_metrics() -> str:
         lines.append(metric_line("ollama_model_size_bytes", model["size"], labels))
         lines.append(metric_line("ollama_model_installed_bytes", model["size"], labels))
         lines.append(metric_line("ollama_model_vram_bytes", model["size_vram"], labels))
-        lines.append(metric_line("ollama_model_expires_unixtime", iso_to_unix(model["expires_at"]), labels))
+        lines.append(
+            metric_line("ollama_model_expires_unixtime", iso_to_unix(model["expires_at"]), labels)
+        )
 
     return "\n".join(lines) + "\n"
 
 
 class Handler(BaseHTTPRequestHandler):
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         if self.path == "/healthz":
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; charset=utf-8")

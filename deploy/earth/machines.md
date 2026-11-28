@@ -163,6 +163,7 @@ By default the tailnet is fully open between the deployment's own devices. No AC
 Run these on each machine to get accurate version strings for the prerequisites table below.
 
 **Windows (PowerShell) — jupiter host:**
+
 ```powershell
 # Full hardware summary
 systeminfo
@@ -172,6 +173,7 @@ Get-ComputerInfo | Select-Object CsName, CsProcessors, CsNumberOfLogicalProcesso
 ```
 
 **Linux — earth (Fedora) or jupiter WSL:**
+
 ```bash
 echo "=== OS ===" && cat /etc/os-release | head -2
 echo "=== Kernel ===" && uname -r
@@ -181,6 +183,7 @@ echo "=== GPU ===" && nvidia-smi --query-gpu=name,memory.total,driver_version --
 ```
 
 **Prerequisites table one-liner (Linux):**
+
 ```bash
 printf "podman: "; podman --version 2>/dev/null || echo "not installed"
 printf "Tailscale: "; tailscale version 2>/dev/null | head -1 || echo "not installed"
@@ -189,6 +192,7 @@ printf "gh: "; gh --version 2>/dev/null | head -1 || echo "not installed"
 ```
 
 **macOS (mercury):**
+
 ```bash
 echo "=== Hardware ===" && system_profiler SPHardwareDataType SPSoftwareDataType
 echo "=== Tailscale ===" && tailscale version 2>/dev/null && tailscale status 2>/dev/null || echo "not installed"

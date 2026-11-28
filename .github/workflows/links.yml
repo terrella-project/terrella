@@ -1,0 +1,32 @@
+name: Links
+
+# The external links in the docs, weekly and on demand. ci.yml checks only
+# the repo's own links on every PR (--offline), so that a website being down
+# never blocks a merge; this run is where a dead external link shows up.
+# Settings: lychee.toml.
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: --no-progress .
+          fail: true
+          failIfEmpty: true
+          jobSummary: true
+          # GitHub links are the most numerous; the token avoids its
+          # anonymous rate limit.
+          token: ${{ secrets.GITHUB_TOKEN }}

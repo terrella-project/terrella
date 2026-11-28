@@ -131,8 +131,11 @@ fi
 step "tailscale"
 if command -v tailscale &>/dev/null; then
     pass "installed ($(tailscale version 2>/dev/null | head -1))"
-    tailscale status &>/dev/null && pass "logged in" \
-        || todo "not logged in — run: sudo tailscale up --ssh (node name: earth)"
+    if tailscale status &>/dev/null; then
+        pass "logged in"
+    else
+        todo "not logged in — run: sudo tailscale up --ssh (node name: earth)"
+    fi
 else
     todo "adding tailscale repo + installing"
     if [[ $CHECK_ONLY != --check ]]; then

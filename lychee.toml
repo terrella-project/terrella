@@ -1,0 +1,24 @@
+# lychee link checker. CI runs it two ways (.github/workflows/):
+#   ci.yml     on every PR, --offline: repo-relative links and #fragments only,
+#              so a PR never fails because some website is down.
+#   links.yml  weekly and on demand: external links too.
+# Locally: lychee --offline .   (or without --offline for the external pass)
+
+include_fragments = "anchor-only"
+exclude_all_private = true
+
+# Only the Markdown docs; the rest of the tree is code and config.
+extensions = ["md"]
+exclude_path = [".venv", "node_modules"]
+
+exclude = [
+  # Pages that need a login answer 404 to an anonymous request.
+  '^https://github\.com/settings/',
+  # Hosts on the reference deployment's tailnet or LAN, not on the internet.
+  '^https?://(earth|earth-ai|jupiter|mercury|neptune|luna)([.:/]|$)',
+]
+
+max_concurrency = 8
+timeout = 20
+max_retries = 2
+accept = ["200..=299", 429]

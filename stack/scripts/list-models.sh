@@ -19,14 +19,22 @@ if [[ ! -f .env ]]; then
     exit 1
 fi
 
-# shellcheck disable=SC1091
 set -a
+# shellcheck source=/dev/null  # .env is generated per machine (generate-env.sh)
 source .env
 set +a
 
 target="${1:-all}"
 
 # Extract raw model IDs from litellm_params in config.yaml for a given provider prefix.
+# indent PREFIX TEXT: print each line of TEXT with PREFIX in front.
+indent() {
+    local line
+    while IFS= read -r line; do
+        printf '%s%s\n' "$1" "$line"
+    done <<<"$2"
+}
+
 configured_ids() {
     local prefix="$1"
     grep -E "^[[:space:]]+model: ${prefix}/" "$CONFIG" \
@@ -45,11 +53,11 @@ diff_report() {
 
     if [[ -n "$new" ]]; then
         echo "  [NEW — not in config]:"
-        echo "$new" | sed 's/^/    + /'
+        indent "    + " "$new"
     fi
     if [[ -n "$stale" ]]; then
         echo "  [STALE — in config but no longer available]:"
-        echo "$stale" | sed 's/^/    - /'
+        indent "    - " "$stale"
     fi
     if [[ -z "$new" && -z "$stale" ]]; then
         echo "  config is up to date."
@@ -62,7 +70,7 @@ print_list() {
 
     echo "$heading"
     if [[ -n "$values" ]]; then
-        echo "$values" | sed 's/^/    /'
+        indent "    " "$values"
     else
         echo "    (none)"
     fi

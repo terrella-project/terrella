@@ -50,8 +50,10 @@ if [[ ! -f $ENV_SRC ]]; then
     exit 1
 fi
 if [[ $CHECK_ONLY != --check ]]; then
-    # shellcheck disable=SC1090
-    set -a; source "$ENV_SRC"; set +a
+    set -a
+    # shellcheck source=/dev/null  # stack/.env is generated per machine
+    source "$ENV_SRC"
+    set +a
     : "${OPENWEBUI_DB:=openwebui}"
     umask 177
     cat > "$CFG/env.d/postgres.env" <<EOF

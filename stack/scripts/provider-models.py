@@ -12,7 +12,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
-
+from typing import NoReturn
 
 OPENAI_CORE_MODELS = {
     "gpt-4.1",
@@ -37,7 +37,7 @@ OPENAI_CORE_MODELS = {
 }
 
 
-def fail(message: str, code: int = 1) -> "NoReturn":
+def fail(message: str, code: int = 1) -> NoReturn:
     print(f"ERROR: {message}", file=sys.stderr)
     raise SystemExit(code)
 
@@ -78,9 +78,7 @@ def anthropic_models() -> list[str]:
 
 def gemini_models() -> list[str]:
     api_key = require_env("GEMINI_API_KEY")
-    payload = fetch_json(
-        f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-    )
+    payload = fetch_json(f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}")
     model_ids = set()
     for item in payload.get("models", []):
         name = item.get("name", "").replace("models/", "")
@@ -105,9 +103,7 @@ def openai_models() -> list[str]:
 
 def ollama_models() -> list[str]:
     payload = fetch_json("http://localhost:11434/api/tags")
-    return sorted(
-        {item["name"] for item in payload.get("models", []) if item.get("name")}
-    )
+    return sorted({item["name"] for item in payload.get("models", []) if item.get("name")})
 
 
 def main() -> int:

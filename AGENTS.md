@@ -21,6 +21,8 @@ This is a personal AI workstation repo evolving into an installable tool (`terre
 | `tests/` | pytest suite for the package and `install.sh` (`uv run pytest`) |
 | `install.sh` | curl-able bootstrap: uv if missing, then `uv tool install terrella` (POSIX sh; not `stack/quadlet/install.sh`) |
 | `pyproject.toml`, `uv.lock` | Package metadata, dependencies, ruff + pytest config; the lock is committed and dependabot (`uv`) keeps it fresh |
+| `scripts/ci/` | CI helpers run by `.github/workflows/ci.yml` (`verify-quadlets.sh`: quadlet generator + `systemd-analyze verify`, with `--self-test`) |
+| `.markdownlint.jsonc`, `lychee.toml` | markdownlint rules and link-checker settings used by CI (see CONTRIBUTING.md § Dev setup) |
 | `.github/project.yml` | Declarative PM spec (labels, milestones, board) — synced by `scripts/project-sync.sh` |
 
 ## Machines

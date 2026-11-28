@@ -1,6 +1,6 @@
 # Routing — Manual Heuristics
 
-This is the **contract** for which tool to pick for which task. Manual today; automation tracked separately (see [Future automation](#future-automation)).
+This is the **contract** for which tool to pick for which task. Manual today; automation is roadmap phase M5, benchmark-informed routing (see [ROADMAP.md](../../ROADMAP.md#phases)).
 
 Rule of thumb: **prefer local first when quality is good enough; reserve paid for hard problems.**
 
@@ -57,17 +57,20 @@ observability, so "earth is gaming" shows in Grafana without any spend.
 ## Escalation ladder (when the cheap thing isn't good enough)
 
 For coding:
+
 1. `local/code` (local) →
 2. Copilot (Claude Sonnet) →
 3. Claude Code (Opus) →
 4. Anthropic API (Opus) for one-off heavy lifting
 
 For reasoning:
+
 1. `local/reason` (local) →
 2. Claude Sonnet (Copilot or Claude Code) →
 3. Claude Opus
 
 For "I just want a fast cheap answer":
+
 1. `local/general` (local) →
 2. Gemini Flash via API
 

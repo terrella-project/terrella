@@ -1,0 +1,184 @@
+name: CI
+
+# The repo's test and lint matrix (#23). Every job runs on every PR and on
+# main; the `ci` job at the end passes only when all of them pass, so a branch
+# ruleset needs to require that one check alone. The PM workflows (changelog,
+# PR title, labeler, REUSE) stay in their own files.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version: "3.12"
+          enable-cache: true
+      - name: ruff check
+        run: uv run --locked ruff check --output-format=github
+      - name: ruff format --check
+        run: uv run --locked ruff format --check
+
+  pytest:
+    name: pytest (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every version pyproject.toml's classifiers name: requires-python is
+        # >=3.12, the newest is what Fedora ships.
+        python: ["3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          python-version: ${{ matrix.python }}
+          enable-cache: true
+      # tests/ (the CLI and install.sh) and stack/scripts/tests (the eval
+      # tool); pyproject.toml's testpaths name both.
+      - name: pytest
+        run: uv run --locked pytest -ra
+      - name: build sdist + wheel
+        run: uv build
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      # A pinned shellcheck (the runner image's is older and drifts); the
+      # shellcheck-py wheel carries the upstream binary.
+      - name: install shellcheck 0.11.0
+        run: uv tool install shellcheck-py==0.11.0.1
+      - name: shellcheck every tracked shell script
+        run: |
+          sc="$(uv tool dir --bin)/shellcheck"
+          mapfile -t scripts < <(git ls-files '*.sh')
+          echo "checking ${#scripts[@]} scripts with $("$sc" --version | sed -n 2p)"
+          "$sc" --format=gcc "${scripts[@]}"
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      - name: install actionlint 1.7.12 + shellcheck 0.11.0
+        run: uv tool install shellcheck-py==0.11.0.1 && uv tool install actionlint-py==1.7.12.25
+      # The workflows themselves: expressions, action inputs, and every run:
+      # script, through the pinned shellcheck named here.
+      - name: actionlint
+        run: |
+          bin="$(uv tool dir --bin)"
+          "$bin/actionlint" -color -shellcheck "$bin/shellcheck"
+
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Rules: .markdownlint.jsonc; files: the globs in .markdownlint-cli2.jsonc
+      # (added to the action's own root-only default; the log says how many).
+      - uses: DavidAnson/markdownlint-cli2-action@3ce8f712b5d8f31acd8e201be6d97e3d2bb23eb7 # v25.1.0
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Offline: links between the repo's own files and their #anchors. The
+      # external links are checked weekly by links.yml, so a website that is
+      # down never fails a PR. Settings: lychee.toml.
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          lycheeVersion: v0.24.2
+          args: --offline --no-progress .
+          fail: true
+          failIfEmpty: true
+          jobSummary: true
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: "8.30.1"
+      # sha256 of gitleaks_8.30.1_linux_x64.tar.gz, from the release's
+      # checksums file. Bump both together.
+      GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # the history scan needs every commit
+      # The binary, not gitleaks-action: the action needs a paid licence key
+      # for an organisation's repos.
+      - name: install gitleaks
+        run: |
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl --proto '=https' --tlsv1.2 -fsSLo "$RUNNER_TEMP/$tarball" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$tarball" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$tarball" -C "$RUNNER_TEMP" gitleaks
+      - name: scan the history (every commit)
+        run: |
+          "$RUNNER_TEMP/gitleaks" git --no-banner --redact --verbose .
+      - name: scan the tree
+        run: |
+          "$RUNNER_TEMP/gitleaks" dir --no-banner --redact --verbose .
+
+  quadlet:
+    runs-on: ubuntu-latest
+    # Fedora is the platform the units run on (ADR-0002, ADR-0004); its
+    # podman generates them and its systemd verifies them.
+    container: registry.fedoraproject.org/fedora:44
+    steps:
+      - name: install podman + systemd
+        run: dnf -y -q install podman systemd git-core
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: versions
+        run: |
+          podman --version
+          systemd-analyze --version | head -1
+      # Proves the checker rejects bad units, each for its own reason, before
+      # its "OK" on the real ones is trusted.
+      - name: verifier self-test
+        run: scripts/ci/verify-quadlets.sh --self-test
+      - name: verify stack/quadlet
+        run: scripts/ci/verify-quadlets.sh stack/quadlet
+
+  ci:
+    # The one check a ruleset requires. `always()` so it reports a failure
+    # (not "skipped", which a ruleset counts as passing) when a job fails.
+    if: always()
+    needs: [ruff, pytest, shellcheck, actionlint, markdown, links, gitleaks, quadlet]
+    runs-on: ubuntu-latest
+    steps:
+      - name: every job passed
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "job results: $RESULTS"
+          echo "$RESULTS" | jq -e 'length > 0 and all(. == "success")' >/dev/null

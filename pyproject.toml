@@ -69,16 +69,25 @@ include = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# The package's tests and the eval tool's (stack/scripts/eval-local-models.py).
+testpaths = ["tests", "stack/scripts/tests"]
 addopts = ["--strict-markers", "--strict-config"]
 xfail_strict = true
 
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-# The legacy scripts under stack/ and provision/ retire with #81; the CI
-# matrix (#23) decides how they are linted until then.
-include = ["terrella/**/*.py", "tests/**/*.py"]
+# Every Python file in the repo, the legacy stack/ scripts included: they are
+# refactored into the package (ADR-0001), not rewritten, and CI lints them
+# until then (#23).
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+# Deliberate: × in benchmark output, and the minus sign U+2212 that the eval
+# graders must read as a minus.
+allowed-confusables = ["×", "−"]
+
+[tool.ruff.lint.per-file-ignores]
+# Eval task sets: each line is one task's prose, kept whole so it reads as the
+# model sees it.
+"stack/eval/**/make-tasks.py" = ["E501"]

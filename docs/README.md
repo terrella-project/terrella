@@ -31,5 +31,5 @@ If you're new, read it in this order:
 
 - **Terrella** is the project (formerly *earth-ai* — see [ADR-0008](adr/ADR-0008-project-name-terrella.md)). Plain **earth** is the workstation (Fedora 44 since the M0 migration). The legacy **Earth-AI** WSL distro and its `earth-ai` Tailscale hostname survive only on the old, unbooted Windows install and retire at [#78](https://github.com/terrella-project/terrella/issues/78).
 - Code blocks tagged `bash` run on earth's Fedora shell unless stated otherwise (WSL-era pages may still reference PowerShell on the Windows host).
-- A line starting with `# ` inside a code block is a comment, not a command.
+- A line starting with `#` and a space inside a code block is a comment, not a command.
 - Anything in `< angle brackets >` is a placeholder you replace before running.

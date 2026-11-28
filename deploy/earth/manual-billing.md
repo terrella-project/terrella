@@ -18,7 +18,7 @@ cd ~/src/terrella/stack
 
 The script prompts you:
 
-```
+```text
 Month (YYYY-MM): 2026-04
 Vendor (copilot|claude-code|anthropic|gemini|other): copilot
 Amount USD: 19.00

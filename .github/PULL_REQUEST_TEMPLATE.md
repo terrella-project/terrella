@@ -11,7 +11,7 @@ Brief description of the changes made in this PR.
 
 How the change was verified (commands run, smoke test, benchmark, screenshots).
 
-```
+```text
 Paste relevant output
 ```
 

@@ -20,7 +20,7 @@ The goals, in priority order:
 
 ## The software, at a glance
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Windows 11 host                          │
 │                                                                 │

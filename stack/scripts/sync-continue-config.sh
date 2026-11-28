@@ -52,6 +52,7 @@ if [[ -z "$KEY" && -f "$ENV_FILE" ]]; then
     # Use the read-only /models service key when available so the script can
     # run directly from stack/ without extra env setup.
     set -a
+    # shellcheck source=/dev/null  # stack/.env is generated per machine
     source "$ENV_FILE"
     set +a
     KEY="${LITELLM_EXPORTER_API_KEY:-${LITELLM_KEY:-}}"

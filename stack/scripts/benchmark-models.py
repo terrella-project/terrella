@@ -38,8 +38,8 @@ import sys
 import time
 import urllib.parse
 from dataclasses import dataclass, field
+from datetime import UTC
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Benchmark prompts
@@ -48,17 +48,32 @@ from pathlib import Path
 PROMPTS = [
     {
         "name": "short",
-        "messages": [{"role": "user", "content": "Reply with exactly three words: benchmark test successful."}],
+        "messages": [
+            {
+                "role": "user",
+                "content": "Reply with exactly three words: benchmark test successful.",
+            }
+        ],
         "max_tokens": 20,
     },
     {
         "name": "code",
-        "messages": [{"role": "user", "content": "Write a Python function to compute fibonacci(n) iteratively."}],
+        "messages": [
+            {
+                "role": "user",
+                "content": "Write a Python function to compute fibonacci(n) iteratively.",
+            }
+        ],
         "max_tokens": 150,
     },
     {
         "name": "explain",
-        "messages": [{"role": "user", "content": "In two sentences, explain the difference between TCP and UDP."}],
+        "messages": [
+            {
+                "role": "user",
+                "content": "In two sentences, explain the difference between TCP and UDP.",
+            }
+        ],
         "max_tokens": 100,
     },
 ]
@@ -67,6 +82,7 @@ PROMPTS = [
 # ---------------------------------------------------------------------------
 # Data structures
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class Sample:
@@ -113,6 +129,7 @@ class HistoricalData:
 # Environment
 # ---------------------------------------------------------------------------
 
+
 def load_env(env_path: Path) -> None:
     if not env_path.exists():
         return
@@ -131,6 +148,7 @@ def load_env(env_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Model discovery from config.yaml (no external deps)
 # ---------------------------------------------------------------------------
+
 
 def parse_config_models(config_path: Path) -> list[tuple[str, str]]:
     """
@@ -196,7 +214,9 @@ def _infer_provider(underlying: str) -> str:
     return "unknown"
 
 
-def select_models(args: argparse.Namespace, config_models: list[tuple[str, str]]) -> list[tuple[str, str]]:
+def select_models(
+    args: argparse.Namespace, config_models: list[tuple[str, str]]
+) -> list[tuple[str, str]]:
     if args.models:
         config_map = dict(config_models)
         return [(m.strip(), config_map.get(m.strip(), "unknown")) for m in args.models.split(",")]
@@ -206,7 +226,8 @@ def select_models(args: argparse.Namespace, config_models: list[tuple[str, str]]
     # (ollama/<model>) that name the same models, and not embedding models
     # (not compatible with /v1/chat/completions).
     return [
-        (name, prov) for name, prov in config_models
+        (name, prov)
+        for name, prov in config_models
         if prov == "ollama"
         and name.startswith("local/")
         and not re.search(r"embed", name, re.IGNORECASE)
@@ -217,11 +238,14 @@ def select_models(args: argparse.Namespace, config_models: list[tuple[str, str]]
 # VRAM via nvidia-smi
 # ---------------------------------------------------------------------------
 
+
 def read_vram_mb() -> int | None:
     try:
         result = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True,
+            text=True,
+            timeout=5,
         )
         if result.returncode == 0:
             return int(result.stdout.strip().split("\n")[0])
@@ -234,6 +258,7 @@ def read_vram_mb() -> int | None:
 # Streaming inference (stdlib only)
 # ---------------------------------------------------------------------------
 
+
 def stream_call(
     host: str,
     key: str,
@@ -245,13 +270,15 @@ def stream_call(
     parsed = urllib.parse.urlparse(host)
     port = parsed.port or (443 if parsed.scheme == "https" else 80)
 
-    body = json.dumps({
-        "model": model,
-        "messages": messages,
-        "max_tokens": max_tokens,
-        "stream": True,
-        "stream_options": {"include_usage": True},
-    }).encode()
+    body = json.dumps(
+        {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "stream": True,
+            "stream_options": {"include_usage": True},
+        }
+    ).encode()
 
     headers = {
         "Content-Type": "application/json",
@@ -261,8 +288,11 @@ def stream_call(
 
     if parsed.scheme == "https":
         import ssl
+
         conn: http.client.HTTPConnection = http.client.HTTPSConnection(
-            parsed.hostname, port, timeout=timeout,
+            parsed.hostname,
+            port,
+            timeout=timeout,
             context=ssl.create_default_context(),
         )
     else:
@@ -329,7 +359,9 @@ def stream_call(
     gen_secs = t_end - t_first_token
     tok_per_sec = output_tokens / gen_secs if gen_secs > 0.001 and output_tokens > 0 else 0.0
 
-    return Sample(ttft_ms=ttft_ms, total_ms=total_ms, output_tokens=output_tokens, tok_per_sec=tok_per_sec)
+    return Sample(
+        ttft_ms=ttft_ms, total_ms=total_ms, output_tokens=output_tokens, tok_per_sec=tok_per_sec
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -348,7 +380,8 @@ SELECT
     ) AS p95_ms,
     AVG(
         CASE WHEN "endTime" > "startTime" AND completion_tokens > 0
-             THEN completion_tokens::float / NULLIF(EXTRACT(EPOCH FROM ("endTime" - "startTime")), 0)
+             THEN completion_tokens::float
+                  / NULLIF(EXTRACT(EPOCH FROM ("endTime" - "startTime")), 0)
              ELSE NULL END
     ) AS avg_tok_per_sec
 FROM "LiteLLM_SpendLogs"
@@ -367,8 +400,9 @@ def write_results(db_url: str, results: list[ModelResult]) -> None:
         print("Note: psycopg2 not installed — skipping result persistence.", file=sys.stderr)
         return
 
-    from datetime import datetime, timezone
-    run_at = datetime.now(timezone.utc)
+    from datetime import datetime
+
+    run_at = datetime.now(UTC)
 
     try:
         conn = psycopg2.connect(db_url)
@@ -405,6 +439,7 @@ def write_results(db_url: str, results: list[ModelResult]) -> None:
 def query_history(db_url: str) -> dict[str, HistoricalData]:
     try:
         import psycopg2  # type: ignore[import]
+
         conn = psycopg2.connect(db_url)
         cur = conn.cursor()
         cur.execute(_HISTORY_SQL)
@@ -429,6 +464,7 @@ def query_history(db_url: str) -> dict[str, HistoricalData]:
 # Benchmark runner
 # ---------------------------------------------------------------------------
 
+
 def run_model(
     host: str,
     key: str,
@@ -446,7 +482,9 @@ def run_model(
     for prompt in PROMPTS:
         for _ in range(runs):
             try:
-                sample = stream_call(host, key, model, prompt["messages"], prompt["max_tokens"], timeout)
+                sample = stream_call(
+                    host, key, model, prompt["messages"], prompt["max_tokens"], timeout
+                )
                 result.samples.append(sample)
                 print(".", end="", flush=True)
             except Exception as exc:
@@ -467,6 +505,7 @@ def run_model(
 # ---------------------------------------------------------------------------
 # Output table
 # ---------------------------------------------------------------------------
+
 
 def _fmt(val: float | None, decimals: int = 1, unit: str = "") -> str:
     if val is None:
@@ -491,11 +530,11 @@ def print_results(
 
     cols = [
         (f"{'Model':<{col_m}}", col_m, "<"),
-        ("Provider",   10, "<"),
-        ("TTFT p50",   10, ">"),
-        ("Tok/s p50",  10, ">"),
-        ("Lat p50",     9, ">"),
-        ("Lat p95",     9, ">"),
+        ("Provider", 10, "<"),
+        ("TTFT p50", 10, ">"),
+        ("Tok/s p50", 10, ">"),
+        ("Lat p50", 9, ">"),
+        ("Lat p95", 9, ">"),
     ]
     if history:
         cols += [("Hist p50", 10, ">"), ("Hist t/s", 10, ">")]
@@ -503,9 +542,7 @@ def print_results(
         cols.append(("VRAM", 9, ">"))
 
     def row_str(cells: list[str]) -> str:
-        return "  ".join(
-            f"{c:{align}{w}}" for (_, w, align), c in zip(cols, cells)
-        )
+        return "  ".join(f"{c:{align}{w}}" for (_, w, align), c in zip(cols, cells, strict=True))
 
     header_cells = [label for label, _, _ in cols]
     header = row_str(header_cells)
@@ -546,6 +583,7 @@ def print_results(
 # Cloud confirmation
 # ---------------------------------------------------------------------------
 
+
 def confirm_cloud(models: list[tuple[str, str]], yes: bool) -> bool:
     """Warn and prompt if any selected models route to cloud APIs. Returns False to abort."""
     cloud = [(name, prov) for name, prov in models if prov != "ollama"]
@@ -576,6 +614,7 @@ def confirm_cloud(models: list[tuple[str, str]], yes: bool) -> bool:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
         description=__doc__,
@@ -605,7 +644,10 @@ def main() -> None:
     if not args.key:
         args.key = os.environ.get("LITELLM_KEY", "")
     if not args.key:
-        print("ERROR: --key or LITELLM_KEY required (create one at http://localhost:4000/ui)", file=sys.stderr)
+        print(
+            "ERROR: --key or LITELLM_KEY required (create one at http://localhost:4000/ui)",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     config_path = stack_dir / "observability" / "litellm" / "config.yaml"
@@ -632,7 +674,9 @@ def main() -> None:
     history: dict[str, HistoricalData] = {}
     if not args.no_history:
         if db_url:
-            print("Querying LiteLLM_SpendLogs for 30-day historical baseline...", end=" ", flush=True)
+            print(
+                "Querying LiteLLM_SpendLogs for 30-day historical baseline...", end=" ", flush=True
+            )
             history = query_history(db_url)
             if history:
                 print(f"{len(history)} model(s) with history.")
@@ -647,7 +691,10 @@ def main() -> None:
     prov_str = ", ".join(f"{n} {p}" for p, n in sorted(provider_summary.items()))
 
     print(f"\nBenchmarking {len(models)} model(s) [{prov_str}]")
-    print(f"  {args.runs} run(s) × {len(PROMPTS)} prompts = {args.runs * len(PROMPTS)} samples per model")
+    print(
+        f"  {args.runs} run(s) × {len(PROMPTS)} prompts"
+        f" = {args.runs * len(PROMPTS)} samples per model"
+    )
     print(f"  Host: {args.host}\n")
 
     results: list[ModelResult] = []

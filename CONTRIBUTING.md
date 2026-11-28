@@ -49,12 +49,20 @@ compose configs until the CLI replaces them (see the transition policy in
 uv sync                                                  # .venv with the package + dev tools
 uv run terrella --version                                # the CLI from your checkout
 uv run pytest                                            # tests/ (CLI + install.sh)
-uv run ruff check && uv run ruff format --check          # lint + format
-shellcheck -s sh install.sh                              # the bootstrap is POSIX sh
-bash -n stack/scripts/*.sh provision/*.sh scripts/*.sh   # legacy shell syntax
+uv run pytest                                            # + stack/scripts/tests (eval tool)
+uv run ruff check && uv run ruff format --check          # every Python file in the repo
+shellcheck $(git ls-files '*.sh')                        # every shell script
+npx markdownlint-cli2                                    # .markdownlint.jsonc rules
+lychee --offline .                                       # repo links + #anchors (lychee.toml)
+gitleaks git . && gitleaks dir .                         # secrets: history, then tree
+scripts/ci/verify-quadlets.sh                            # quadlets -> units -> systemd verify
 uvx reuse lint                                           # licensing metadata
 ```
 
+CI runs all of these on every PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)); the
+single `ci` check passes only when every job does. `verify-quadlets.sh` needs podman and
+systemd (CI uses a Fedora container); `--self-test` shows it rejects bad units. External links
+are checked weekly by [`links.yml`](.github/workflows/links.yml), not on PRs.
+
 The version is written in one place, `terrella/__init__.py`; `pyproject.toml` reads it at
-build time. CI does not run the Python checks yet; the CI matrix lands with
-[#23](https://github.com/terrella-project/terrella/issues/23).
+build time.

@@ -1,6 +1,6 @@
 """Tests for the graders and guards in stack/scripts/eval-local-models.py.
 
-Run: uv run --with pytest pytest stack/scripts/tests
+Run: uv run pytest stack/scripts/tests   (CI runs them with the rest: uv run pytest)
 The sandbox and ollama are faked; nothing here needs a GPU, podman or a model.
 """
 
@@ -27,11 +27,17 @@ def runner(ok):
     return run
 
 
-FIM = {"id": "t", "prefix": "def f(x):\n", "suffix": "\nprint(f(2))\n",
-       "expected": "    return x * 2\n", "test": "assert f(2) == 4"}
+FIM = {
+    "id": "t",
+    "prefix": "def f(x):\n",
+    "suffix": "\nprint(f(2))\n",
+    "expected": "    return x * 2\n",
+    "test": "assert f(2) == 4",
+}
 
 
 # -- FIM ---------------------------------------------------------------------
+
 
 class TestFim:
     def test_exact(self):
@@ -81,34 +87,41 @@ class TestFim:
 
 # -- reasoning ---------------------------------------------------------------
 
+
 class TestReason:
-    @pytest.mark.parametrize("content,want", [
-        ("ANSWER: 1\u202f234", "1234"),
-        ("so...\nANSWER: 42", "42"),
-        ("**ANSWER:** 1,234", "1,234"),
-        ("Answer = 7", "7"),
-        ("Final answer: 12", "12"),
-        ("**Final Answer:** Tuesday", "Tuesday"),
-        ("ANSWER: 3\nwait, no\nANSWER: 4", "4"),
-        ("the answer is 5", None),
-        ("", None),
-    ])
+    @pytest.mark.parametrize(
+        "content,want",
+        [
+            ("ANSWER: 1\u202f234", "1234"),
+            ("so...\nANSWER: 42", "42"),
+            ("**ANSWER:** 1,234", "1,234"),
+            ("Answer = 7", "7"),
+            ("Final answer: 12", "12"),
+            ("**Final Answer:** Tuesday", "Tuesday"),
+            ("ANSWER: 3\nwait, no\nANSWER: 4", "4"),
+            ("the answer is 5", None),
+            ("", None),
+        ],
+    )
     def test_parse_answer(self, content, want):
         assert ev.parse_answer(content) == want
 
-    @pytest.mark.parametrize("task,value,ok", [
-        ({"answer": "1234", "answer_type": "int"}, "1,234", True),
-        ({"answer": "1234", "answer_type": "int"}, "$1234", True),
-        ({"answer": "1234", "answer_type": "int"}, "1235", False),
-        ({"answer": "1234", "answer_type": "int"}, "about twelve hundred", False),
-        ({"answer": "3.1416", "answer_type": "decimal"}, "3.14159", True),
-        ({"answer": "3.1416", "answer_type": "decimal"}, "3.15", False),
-        ({"answer": "-12", "answer_type": "int"}, "−12", True),
-        ({"answer": "14:30", "answer_type": "text"}, "14:30.", True),
-        ({"answer": "Tuesday", "answer_type": "text"}, "tuesday", True),
-        ({"answer": "Tuesday", "answer_type": "text"}, "Thursday", False),
-        ({"answer": ["NYC", "New York"], "answer_type": "text"}, "new york", True),
-    ])
+    @pytest.mark.parametrize(
+        "task,value,ok",
+        [
+            ({"answer": "1234", "answer_type": "int"}, "1,234", True),
+            ({"answer": "1234", "answer_type": "int"}, "$1234", True),
+            ({"answer": "1234", "answer_type": "int"}, "1235", False),
+            ({"answer": "1234", "answer_type": "int"}, "about twelve hundred", False),
+            ({"answer": "3.1416", "answer_type": "decimal"}, "3.14159", True),
+            ({"answer": "3.1416", "answer_type": "decimal"}, "3.15", False),
+            ({"answer": "-12", "answer_type": "int"}, "−12", True),
+            ({"answer": "14:30", "answer_type": "text"}, "14:30.", True),
+            ({"answer": "Tuesday", "answer_type": "text"}, "tuesday", True),
+            ({"answer": "Tuesday", "answer_type": "text"}, "Thursday", False),
+            ({"answer": ["NYC", "New York"], "answer_type": "text"}, "new york", True),
+        ],
+    )
     def test_answer_correct(self, task, value, ok):
         assert ev.answer_correct(task, value) is ok
 
@@ -156,6 +169,7 @@ class TestGeneral:
 
 # -- code ----------------------------------------------------------------------
 
+
 class TestCode:
     def test_extract_longest_block(self):
         c = "```python\nx=1\n```\ntext\n```py\ndef f():\n    return 1\n```"
@@ -183,9 +197,13 @@ class TestCode:
 
 # -- embeddings ------------------------------------------------------------------
 
+
 class TestEmbed:
     def test_chunks_split_at_h1_h2_not_inside_fences(self):
-        md = "# Title\nintro\n\n## A\ntext a\n```\n## not a heading\n```\n### sub\nmore\n## `B` [x](y)\nb\n"
+        md = (
+            "# Title\nintro\n\n## A\ntext a\n```\n## not a heading\n```\n"
+            "### sub\nmore\n## `B` [x](y)\nb\n"
+        )
         ids = [c["id"] for c in ev.chunk_markdown("d.md", md)]
         assert ids == ["d.md#Title", "d.md#A", "d.md#B x"]
 
@@ -203,14 +221,14 @@ class TestEmbed:
         assert ev.rank_sections([1, 0], chunks, vecs) == ["a", "b"]
 
     def test_metrics(self):
-        m = ev.retrieval_metrics([["x", "y"], ["y", "x"], ["z"]],
-                                 [["x"], ["x"], ["x"]])
+        m = ev.retrieval_metrics([["x", "y"], ["y", "x"], ["z"]], [["x"], ["x"], ["x"]])
         assert m["recall@1"] == pytest.approx(1 / 3)
         assert m["recall@5"] == pytest.approx(2 / 3)
         assert m["mrr"] == pytest.approx((1 + 0.5) / 3)
 
 
 # -- guards ------------------------------------------------------------------------
+
 
 class FakeClient:
     def __init__(self, loaded):
@@ -222,8 +240,12 @@ class FakeClient:
 
 class TestGuards:
     def test_residency_spilled_and_shared(self):
-        c = FakeClient([{"name": "m:latest", "size": 10, "size_vram": 9},
-                        {"name": "other:1b", "size": 1, "size_vram": 1}])
+        c = FakeClient(
+            [
+                {"name": "m:latest", "size": 10, "size_vram": 9},
+                {"name": "other:1b", "size": 1, "size_vram": 1},
+            ]
+        )
         r = ev.residency(c, "m")
         assert r["spilled"] and r["others"] == ["other:1b"]
 
@@ -240,17 +262,20 @@ class TestGuards:
         assert ev.sample_record("t", ev.PASS, {}, {}, "out", slept=0.2)["status"] == ev.PASS
 
     def test_summarize_speed_comes_from_ollama_counters(self):
-        s = [{"status": ev.PASS, "eval_count": 100, "eval_ns": 1e9, "total_ns": 2e9,
-              "load_ns": 1e9},
-             {"status": ev.FAIL, "eval_count": 300, "eval_ns": 1e9, "total_ns": 3e9}]
+        s = [
+            {"status": ev.PASS, "eval_count": 100, "eval_ns": 1e9, "total_ns": 2e9, "load_ns": 1e9},
+            {"status": ev.FAIL, "eval_count": 300, "eval_ns": 1e9, "total_ns": 3e9},
+        ]
         out = ev.summarize(s, 3)
         assert out["tok_s_p50"] == 200 and out["tok_s_min"] == 100
         assert out["latency_ms_p50"] == 1000
         assert out["n_done"] == 2 and out["pass"] == 1
 
     def test_speed_ignores_replies_too_short_to_have_a_rate(self):
-        s = [{"status": ev.PASS, "eval_count": 1, "eval_ns": 1000},
-             {"status": ev.PASS, "eval_count": 50, "eval_ns": 5e8}]
+        s = [
+            {"status": ev.PASS, "eval_count": 1, "eval_ns": 1000},
+            {"status": ev.PASS, "eval_count": 50, "eval_ns": 5e8},
+        ]
         out = ev.summarize(s, 2)
         assert out["tok_s_p50"] == 100 and out["tok_s_max"] == 100 and out["tok_s_n"] == 1
 
@@ -258,14 +283,19 @@ class TestGuards:
         run = ev.Run.__new__(ev.Run)
         run.cells, run.meta, run.out = [], {}, tmp_path / "r.json"
         cell = {"role": "reason", "model": "m", "flags": []}
-        run.finish(cell, [{"task": "a", "status": ev.PASS},
-                          {"task": "b", "status": ev.TRUNCATED}], 3)
+        run.finish(
+            cell, [{"task": "a", "status": ev.PASS}, {"task": "b", "status": ev.TRUNCATED}], 3
+        )
         assert "INCOMPLETE" in cell["flags"] and "TRUNCATEDx1" in cell["flags"]
         assert json.loads(run.out.read_text())["cells"][0]["model"] == "m"
 
     def test_score_denominator_is_the_task_count(self, capsys):
-        cell = {"role": "code", "model": "m", "flags": ["TRUNCATEDx4"],
-                "summary": {"pass": 16, "graded": 16, "n_expected": 20}}
+        cell = {
+            "role": "code",
+            "model": "m",
+            "flags": ["TRUNCATEDx4"],
+            "summary": {"pass": 16, "graded": 16, "n_expected": 20},
+        }
         ev.print_report([cell])
         assert "16/20" in capsys.readouterr().out
 
@@ -286,14 +316,16 @@ class TestGuards:
     def test_wait_for_memory_waits_then_goes(self):
         readings = iter([4.0, 8.0, 20.0])
         slept = []
-        ok, free = ev.wait_for_memory(12, reader=lambda: next(readings), sleep=slept.append,
-                                      poll_s=30)
+        ok, free = ev.wait_for_memory(
+            12, reader=lambda: next(readings), sleep=slept.append, poll_s=30
+        )
         assert ok and free == 20.0 and slept == [30, 30]
 
     def test_wait_for_memory_gives_up(self):
         slept = []
-        ok, free = ev.wait_for_memory(12, max_wait_s=60, poll_s=30, reader=lambda: 3.0,
-                                      sleep=slept.append)
+        ok, free = ev.wait_for_memory(
+            12, max_wait_s=60, poll_s=30, reader=lambda: 3.0, sleep=slept.append
+        )
         assert not ok and free == 3.0 and slept == [30, 30]
 
     def test_wait_for_memory_without_meminfo_goes(self):
@@ -305,17 +337,30 @@ class TestGuards:
             run.think = mode
             assert run.think_param() == want
 
-    @pytest.mark.parametrize("flags,code", [([], 0), (["SPILLED"], 2), (["INCOMPLETE"], 1),
-                                            (["NOT-INSTALLED"], 1), (["LOW-MEMORY"], 1)])
+    @pytest.mark.parametrize(
+        "flags,code",
+        [
+            ([], 0),
+            (["SPILLED"], 2),
+            (["INCOMPLETE"], 1),
+            (["NOT-INSTALLED"], 1),
+            (["LOW-MEMORY"], 1),
+        ],
+    )
     def test_report_exit_code(self, flags, code, capsys):
-        cell = {"role": "reason", "model": "m", "flags": flags,
-                "summary": {"pass": 1, "graded": 1, "n_expected": 1}}
+        cell = {
+            "role": "reason",
+            "model": "m",
+            "flags": flags,
+            "summary": {"pass": 1, "graded": 1, "n_expected": 1},
+        }
         assert ev.print_report([cell]) == code
 
 
 def test_validate_tasks_catches_duplicates_and_missing_fields():
-    probs = ev.validate_tasks("code", [{"id": "a", "prompt": "", "entry": "f", "tests": "",
-                                        "reference": ""}, {"id": "a"}])
+    probs = ev.validate_tasks(
+        "code", [{"id": "a", "prompt": "", "entry": "f", "tests": "", "reference": ""}, {"id": "a"}]
+    )
     assert any("duplicate" in p for p in probs)
     assert any("missing" in p for p in probs)
     assert ev.validate_tasks("code", []) == ["code: no tasks"]
@@ -338,12 +383,14 @@ def calls(*blocks):
     return {"content": list(blocks), "stop_reason": "tool_use"}
 
 
-AGENT_T = {**AGENT, "tool_result": "a.container\nterrella-litellm.container",
-           "fallback": {"Read": "file text"}}
+AGENT_T = {
+    **AGENT,
+    "tool_result": "a.container\nterrella-litellm.container",
+    "fallback": {"Read": "file text"},
+}
 
 
 class TestAgent:
-
     def test_right_tool_then_answer(self):
         st = {}
         status, results = ev.agent_step(AGENT_T, calls(use("Glob", {"pattern": "*.container"})), st)

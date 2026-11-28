@@ -38,7 +38,7 @@ Re-running is safe — `ollama pull` is a no-op for models that are already up t
 
 The format is "first whitespace-separated field is the model name; everything after `#` is a comment":
 
-```
+```text
 qwen2.5-coder:14b   # 8.99 GB   daily-driver coder
 ```
 

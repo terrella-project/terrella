@@ -50,31 +50,56 @@ ROLES = ("fim", "reason", "general", "code", "embed", "agent")
 
 DEFAULT_MODELS = {
     "fim": [
-        "qwen2.5-coder:1.5b", "qwen2.5-coder:3b", "qwen2.5-coder:7b",
-        "starcoder2:3b", "codegemma:2b-code", "granite-code:3b",
+        "qwen2.5-coder:1.5b",
+        "qwen2.5-coder:3b",
+        "qwen2.5-coder:7b",
+        "starcoder2:3b",
+        "codegemma:2b-code",
+        "granite-code:3b",
     ],
     "reason": [
-        "deepseek-r1:14b", "gpt-oss:20b", "gemma4:12b", "ornith-1.5:9b",
-        "mimo-v2.6:9b", "nemotron-3.5-bolt:e4b", "bonsai-2:27b",
+        "deepseek-r1:14b",
+        "gpt-oss:20b",
+        "gemma4:12b",
+        "ornith-1.5:9b",
+        "mimo-v2.6:9b",
+        "nemotron-3.5-bolt:e4b",
+        "bonsai-2:27b",
     ],
     "general": [
-        "gemma2:9b", "lfm3:1.7b", "deepseek-r1:14b", "gpt-oss:20b",
-        "gemma4:12b", "ornith-1.5:9b", "mimo-v2.6:9b",
-        "nemotron-3.5-bolt:e4b", "bonsai-2:27b",
+        "gemma2:9b",
+        "lfm3:1.7b",
+        "deepseek-r1:14b",
+        "gpt-oss:20b",
+        "gemma4:12b",
+        "ornith-1.5:9b",
+        "mimo-v2.6:9b",
+        "nemotron-3.5-bolt:e4b",
+        "bonsai-2:27b",
     ],
     "code": [
-        "qwen2.5-coder:14b", "devstral:24b", "gpt-oss:20b", "mimo-v2.6:9b",
-        "ornith-1.5:9b", "gemma4:12b",
+        "qwen2.5-coder:14b",
+        "devstral:24b",
+        "gpt-oss:20b",
+        "mimo-v2.6:9b",
+        "ornith-1.5:9b",
+        "gemma4:12b",
     ],
     "embed": [
-        "nomic-embed-text", "nomic-embed-text-v2-moe", "embeddinggemma-2",
+        "nomic-embed-text",
+        "nomic-embed-text-v2-moe",
+        "embeddinggemma-2",
         "qwen3-embedding",
     ],
     # The <model>-64k variants provision/sync-models.sh makes from
     # provision/agent-models.list (or by hand for a candidate).
     "agent": [
-        "ornith-1.5:9b-64k", "mimo-v2.6:9b-64k", "ornith:9b-64k",
-        "nemotron-3.5-bolt:e4b-64k", "lfm3:1.7b-64k", "bonsai-2:27b-64k",
+        "ornith-1.5:9b-64k",
+        "mimo-v2.6:9b-64k",
+        "ornith:9b-64k",
+        "nemotron-3.5-bolt:e4b-64k",
+        "lfm3:1.7b-64k",
+        "bonsai-2:27b-64k",
         "gpt-oss:20b-64k",
     ],
 }
@@ -102,17 +127,20 @@ EMBED_VARIANTS = {
         ("prefixed", "task: search result | query: ", "title: none | text: "),
         ("plain", "", ""),
     ],
-    "qwen3-embedding": [(
-        "instruct",
-        ("Instruct: Given a question about a self-hosted AI stack, retrieve the "
-         "documentation section that answers it\nQuery: "),
-        "",
-    )],
+    "qwen3-embedding": [
+        (
+            "instruct",
+            (
+                "Instruct: Given a question about a self-hosted AI stack, retrieve the "
+                "documentation section that answers it\nQuery: "
+            ),
+            "",
+        )
+    ],
 }
 CHUNK_CHARS = 1200  # stays under nomic-embed-text-v2-moe's 512-token input
 
-SANDBOX_IMAGE = os.environ.get(
-    "EVAL_SANDBOX_IMAGE", "docker.io/library/python:3.12-slim-bookworm")
+SANDBOX_IMAGE = os.environ.get("EVAL_SANDBOX_IMAGE", "docker.io/library/python:3.12-slim-bookworm")
 SANDBOX_TIMEOUT_S = 10
 
 # Statuses. PASS/FAIL are verdicts; the rest say why a sample has none.
@@ -125,6 +153,7 @@ WARN_STATUSES = {TRUNCATED, EMPTY}
 # ollama client
 # ---------------------------------------------------------------------------
 
+
 class OllamaError(RuntimeError):
     pass
 
@@ -134,13 +163,14 @@ class Ollama:
         self.host = host.rstrip("/")
         self.timeout = timeout
 
-    def _req(self, path: str, body: dict | None = None,
-             headers: dict | None = None) -> dict:
+    def _req(self, path: str, body: dict | None = None, headers: dict | None = None) -> dict:
         data = None if body is None else json.dumps(body).encode()
         req = urllib.request.Request(
-            self.host + path, data=data,
+            self.host + path,
+            data=data,
             headers={"Content-Type": "application/json", **(headers or {})},
-            method="GET" if body is None else "POST")
+            method="GET" if body is None else "POST",
+        )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as r:
                 return json.loads(r.read() or b"{}")
@@ -173,12 +203,12 @@ class Ollama:
 
     def messages(self, **body) -> dict:
         """ollama's Anthropic-format endpoint, the one an agent harness uses."""
-        return self._req("/v1/messages", body, {"x-api-key": "ollama",
-                                                "anthropic-version": "2023-06-01"})
+        return self._req(
+            "/v1/messages", body, {"x-api-key": "ollama", "anthropic-version": "2023-06-01"}
+        )
 
     def embed(self, model: str, inputs: list[str]) -> dict:
-        return self._req("/api/embed", {"model": model, "input": inputs,
-                                        "keep_alive": "10m"})
+        return self._req("/api/embed", {"model": model, "input": inputs, "keep_alive": "10m"})
 
 
 def canonical(name: str) -> str:
@@ -189,7 +219,11 @@ def nvidia_used_mib() -> int | None:
     try:
         out = subprocess.run(
             ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
-            capture_output=True, text=True, timeout=10, check=True).stdout
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=True,
+        ).stdout
         return int(out.split()[0])
     except (OSError, subprocess.SubprocessError, ValueError, IndexError):
         return None
@@ -199,7 +233,11 @@ def gpu_identity() -> str:
     try:
         return subprocess.run(
             ["nvidia-smi", "--query-gpu=name,driver_version", "--format=csv,noheader"],
-            capture_output=True, text=True, timeout=10, check=True).stdout.strip()
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=True,
+        ).stdout.strip()
     except (OSError, subprocess.SubprocessError):
         return "?"
 
@@ -215,8 +253,13 @@ def mem_available_gb() -> float | None:
     return None
 
 
-def wait_for_memory(min_gb: float, max_wait_s: float = 1800.0, poll_s: float = 30.0,
-                    reader=mem_available_gb, sleep=time.sleep) -> tuple[bool, float | None]:
+def wait_for_memory(
+    min_gb: float,
+    max_wait_s: float = 1800.0,
+    poll_s: float = 30.0,
+    reader=mem_available_gb,
+    sleep=time.sleep,
+) -> tuple[bool, float | None]:
     """Wait until at least min_gb of RAM is available, so loading a model does
     not push a busy machine into the OOM killer (it took ollama's runner once,
     mid-run). Returns (ok, last reading); ok is False after max_wait_s."""
@@ -253,14 +296,20 @@ def residency(client: Ollama, model: str) -> dict:
     if not me:
         return {"loaded": False, "others": others}
     size, vram = me[0].get("size", 0), me[0].get("size_vram", 0)
-    return {"loaded": True, "size": size, "size_vram": vram,
-            "spilled": vram < size, "context": me[0].get("context_length"),
-            "others": others}
+    return {
+        "loaded": True,
+        "size": size,
+        "size_vram": vram,
+        "spilled": vram < size,
+        "context": me[0].get("context_length"),
+        "others": others,
+    }
 
 
 # ---------------------------------------------------------------------------
 # Graders (pure functions: the unit tests and selfcheck exercise these)
 # ---------------------------------------------------------------------------
+
 
 def norm_digits(s: str) -> str:
     """Drop the thin and no-break spaces some models put between digit groups
@@ -299,8 +348,9 @@ def fim_line_match(task: dict, completion: str) -> bool:
     return got == want
 
 
-def grade_fim(task: dict, completion: str, done_reason: str | None,
-              run_code=None) -> tuple[str, dict]:
+def grade_fim(
+    task: dict, completion: str, done_reason: str | None, run_code=None
+) -> tuple[str, dict]:
     """PASS when the cut completion matches the hole line for line, or (for a
     task with a test) when the program built from it passes the test."""
     if not completion.strip():
@@ -322,8 +372,9 @@ def grade_fim(task: dict, completion: str, done_reason: str | None,
     return (PASS if line_ok else FAIL), detail
 
 
-ANSWER_RE = re.compile(r"^\W*(?:final\s+)?answer\W*\s*[:=]\s*(.+?)\s*$",
-                       re.IGNORECASE | re.MULTILINE)
+ANSWER_RE = re.compile(
+    r"^\W*(?:final\s+)?answer\W*\s*[:=]\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE
+)
 
 
 def parse_answer(content: str) -> str | None:
@@ -394,8 +445,7 @@ def grade_general(task: dict, content: str, done_reason: str | None) -> tuple[st
         if re.search(pat, content, re.IGNORECASE):
             invented.append(pat)
     total = len(task["required"])
-    detail = {"facts": f"{total - len(missing)}/{total}", "missing": missing,
-              "invented": invented}
+    detail = {"facts": f"{total - len(missing)}/{total}", "missing": missing, "invented": invented}
     return (PASS if not missing and not invented else FAIL), detail
 
 
@@ -411,8 +461,7 @@ def extract_code(content: str) -> str | None:
     return None
 
 
-def grade_code(task: dict, content: str, done_reason: str | None,
-               run_code) -> tuple[str, dict]:
+def grade_code(task: dict, content: str, done_reason: str | None, run_code) -> tuple[str, dict]:
     if not (content or "").strip():
         # A thinking model that spends the whole budget thinking leaves no
         # answer: that is the limit's doing, so say so.
@@ -421,8 +470,7 @@ def grade_code(task: dict, content: str, done_reason: str | None,
     if code is None:
         return (TRUNCATED if done_reason == "length" else UNPARSABLE), {}
     res = run_code(code + "\n\n" + task["tests"] + "\n")
-    return (PASS if res["ok"] else FAIL), {"exit": res["exit"],
-                                           "stderr": res["stderr"][-300:]}
+    return (PASS if res["ok"] else FAIL), {"exit": res["exit"], "stderr": res["stderr"][-300:]}
 
 
 def tool_uses(resp: dict) -> list[dict]:
@@ -430,8 +478,7 @@ def tool_uses(resp: dict) -> list[dict]:
 
 
 def reply_text(resp: dict) -> str:
-    return "".join(b.get("text", "") for b in resp.get("content", [])
-                   if b.get("type") == "text")
+    return "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
 
 
 AGENT_MAX_TURNS = 4
@@ -480,8 +527,7 @@ def agent_step(task: dict, resp: dict, state: dict) -> tuple[str | None, list | 
         else:
             state["step"], state["args"] = f"called {name}, which cannot help", args
             return FAIL, None
-        results.append({"type": "tool_result", "tool_use_id": c.get("id"),
-                        "content": content})
+        results.append({"type": "tool_result", "tool_use_id": c.get("id"), "content": content})
     return None, results
 
 
@@ -500,15 +546,48 @@ def run_in_sandbox(code: str, image: str = SANDBOX_IMAGE) -> dict:
     global _sandbox_n
     _sandbox_n += 1
     name = f"tml-eval-{os.getpid()}-{_sandbox_n}"
-    cmd = ["podman", "run", "--rm", "-i", "--name", name, "--network", "none",
-           "--memory", "512m", "--pids-limit", "64", "--read-only",
-           "--tmpfs", "/tmp", "--user", "65534:65534", "--workdir", "/tmp",
-           image, "timeout", str(SANDBOX_TIMEOUT_S), "python3", "-I", "-"]
+    cmd = [
+        "podman",
+        "run",
+        "--rm",
+        "-i",
+        "--name",
+        name,
+        "--network",
+        "none",
+        "--memory",
+        "512m",
+        "--pids-limit",
+        "64",
+        "--read-only",
+        "--tmpfs",
+        "/tmp",
+        "--user",
+        "65534:65534",
+        "--workdir",
+        "/tmp",
+        image,
+        "timeout",
+        str(SANDBOX_TIMEOUT_S),
+        "python3",
+        "-I",
+        "-",
+    ]
     try:
-        p = subprocess.run(cmd, input=code, capture_output=True, text=True, check=False,
-                           timeout=SANDBOX_TIMEOUT_S + 60)
-        return {"ok": p.returncode == 0, "exit": p.returncode,
-                "stdout": p.stdout, "stderr": p.stderr}
+        p = subprocess.run(
+            cmd,
+            input=code,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=SANDBOX_TIMEOUT_S + 60,
+        )
+        return {
+            "ok": p.returncode == 0,
+            "exit": p.returncode,
+            "stdout": p.stdout,
+            "stderr": p.stderr,
+        }
     except subprocess.TimeoutExpired:
         subprocess.run(["podman", "rm", "-f", name], capture_output=True, check=False)
         return {"ok": False, "exit": -1, "stdout": "", "stderr": "sandbox timeout"}
@@ -523,8 +602,7 @@ REQUIRED_FIELDS = {
     "reason": {"id", "category", "prompt", "answer", "answer_type", "solution"},
     "general": {"id", "prompt", "input", "required", "forbidden"},
     "code": {"id", "prompt", "entry", "tests", "reference"},
-    "agent": {"id", "tools", "prompt", "expect_tool", "expect_args", "tool_result",
-              "expect_final"},
+    "agent": {"id", "tools", "prompt", "expect_tool", "expect_args", "tool_result", "expect_final"},
 }
 
 
@@ -568,13 +646,15 @@ def validate_tasks(role: str, tasks: list[dict]) -> list[str]:
 # Embedding corpus: this repo's docs at a pinned commit
 # ---------------------------------------------------------------------------
 
+
 def corpus_ref() -> str:
     return (EVAL_DIR / "embed" / "corpus-ref").read_text().split()[0]
 
 
 def _git(*args: str) -> str:
-    return subprocess.run(["git", "-C", str(REPO), *args], capture_output=True,
-                          text=True, check=True).stdout
+    return subprocess.run(
+        ["git", "-C", str(REPO), *args], capture_output=True, text=True, check=True
+    ).stdout
 
 
 def _heading_text(line: str) -> str:
@@ -627,9 +707,11 @@ def chunk_markdown(path: str, text: str, limit: int = CHUNK_CHARS) -> list[dict]
 
 def load_corpus(ref: str | None = None) -> list[dict]:
     ref = ref or corpus_ref()
-    names = [n for n in _git("ls-tree", "-r", "--name-only", ref).splitlines()
-             if (n.startswith("docs/") and n.endswith(".md"))
-             or n in ("README.md", "ROADMAP.md")]
+    names = [
+        n
+        for n in _git("ls-tree", "-r", "--name-only", ref).splitlines()
+        if (n.startswith("docs/") and n.endswith(".md")) or n in ("README.md", "ROADMAP.md")
+    ]
     chunks = []
     for n in sorted(names):
         chunks.extend(chunk_markdown(n, _git("show", f"{ref}:{n}")))
@@ -637,16 +719,15 @@ def load_corpus(ref: str | None = None) -> list[dict]:
 
 
 def cosine(a: list[float], b: list[float]) -> float:
-    dot = sum(x * y for x, y in zip(a, b))
+    dot = sum(x * y for x, y in zip(a, b, strict=True))
     na = math.sqrt(sum(x * x for x in a))
     nb = math.sqrt(sum(y * y for y in b))
     return dot / (na * nb) if na and nb else 0.0
 
 
-def rank_sections(qvec: list[float], chunks: list[dict],
-                  dvecs: list[list[float]]) -> list[str]:
+def rank_sections(qvec: list[float], chunks: list[dict], dvecs: list[list[float]]) -> list[str]:
     best: dict[str, float] = {}
-    for c, v in zip(chunks, dvecs):
+    for c, v in zip(chunks, dvecs, strict=True):
         s = cosine(qvec, v)
         if s > best.get(c["section"], -2.0):
             best[c["section"]] = s
@@ -655,7 +736,7 @@ def rank_sections(qvec: list[float], chunks: list[dict],
 
 def retrieval_metrics(ranked: list[list[str]], expects: list[list[str]]) -> dict:
     r1 = r5 = rr = 0.0
-    for order, want in zip(ranked, expects):
+    for order, want in zip(ranked, expects, strict=True):
         pos = next((i for i, s in enumerate(order) if s in want), None)
         if pos is not None:
             r1 += pos == 0
@@ -668,6 +749,7 @@ def retrieval_metrics(ranked: list[list[str]], expects: list[list[str]]) -> dict
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
+
 
 def pct(values: list[float], q: float) -> float | None:
     if not values:
@@ -687,19 +769,31 @@ def timed(fn):
     return out, slept
 
 
-def sample_record(task_id: str, status: str, detail: dict, resp: dict | None,
-                  output: str, thinking: str = "", slept: float = 0.0) -> dict:
+def sample_record(
+    task_id: str,
+    status: str,
+    detail: dict,
+    resp: dict | None,
+    output: str,
+    thinking: str = "",
+    slept: float = 0.0,
+) -> dict:
     resp = resp or {}
-    rec = {"task": task_id, "status": status, **detail, "output": output,
-           "thinking_chars": len(thinking or ""),
-           # enough to see whether a model that ran out of budget was looping
-           "thinking_tail": (thinking or "")[-1500:],
-           "done_reason": resp.get("done_reason"),
-           "eval_count": resp.get("eval_count"),
-           "eval_ns": resp.get("eval_duration"),
-           "prompt_eval_ns": resp.get("prompt_eval_duration"),
-           "load_ns": resp.get("load_duration"),
-           "total_ns": resp.get("total_duration")}
+    rec = {
+        "task": task_id,
+        "status": status,
+        **detail,
+        "output": output,
+        "thinking_chars": len(thinking or ""),
+        # enough to see whether a model that ran out of budget was looping
+        "thinking_tail": (thinking or "")[-1500:],
+        "done_reason": resp.get("done_reason"),
+        "eval_count": resp.get("eval_count"),
+        "eval_ns": resp.get("eval_duration"),
+        "prompt_eval_ns": resp.get("prompt_eval_duration"),
+        "load_ns": resp.get("load_duration"),
+        "total_ns": resp.get("total_duration"),
+    }
     if slept > 5:
         rec["status"], rec["error"] = ERROR, f"machine slept {slept:.0f}s mid-sample"
     return rec
@@ -712,8 +806,11 @@ def speed_samples(samples: list[dict]) -> list[float]:
     """Tokens per second from ollama's own counters, for replies long enough
     to have a rate. A one-token reply takes a few microseconds of eval time
     and would read as a million tokens a second."""
-    return [s["eval_count"] / (s["eval_ns"] / 1e9) for s in samples
-            if (s.get("eval_count") or 0) >= MIN_SPEED_TOKENS and s.get("eval_ns")]
+    return [
+        s["eval_count"] / (s["eval_ns"] / 1e9)
+        for s in samples
+        if (s.get("eval_count") or 0) >= MIN_SPEED_TOKENS and s.get("eval_ns")
+    ]
 
 
 def summarize(samples: list[dict], n_expected: int) -> dict:
@@ -721,25 +818,34 @@ def summarize(samples: list[dict], n_expected: int) -> dict:
     for s in samples:
         statuses[s["status"]] = statuses.get(s["status"], 0) + 1
     tps = speed_samples(samples)
-    lat = [(s["total_ns"] - (s.get("load_ns") or 0)) / 1e6 for s in samples
-           if s.get("total_ns")]
+    lat = [(s["total_ns"] - (s.get("load_ns") or 0)) / 1e6 for s in samples if s.get("total_ns")]
     graded = [s for s in samples if s["status"] in (PASS, FAIL, UNPARSABLE)]
     return {
-        "n_expected": n_expected, "n_done": len(samples),
-        "pass": statuses.get(PASS, 0), "statuses": statuses,
+        "n_expected": n_expected,
+        "n_done": len(samples),
+        "pass": statuses.get(PASS, 0),
+        "statuses": statuses,
         "tok_s_p50": statistics.median(tps) if tps else None,
         "tok_s_min": min(tps) if tps else None,
         "tok_s_max": max(tps) if tps else None,
         "tok_s_n": len(tps),
-        "latency_ms_p50": pct(lat, 0.5), "latency_ms_p95": pct(lat, 0.95),
+        "latency_ms_p50": pct(lat, 0.5),
+        "latency_ms_p95": pct(lat, 0.95),
         "graded": len(graded),
     }
 
 
 class Run:
-    def __init__(self, client: Ollama, seed: int, runs: int, out: Path,
-                 think: str = "default", sampling: str = "greedy",
-                 min_free_gb: float = 0.0):
+    def __init__(
+        self,
+        client: Ollama,
+        seed: int,
+        runs: int,
+        out: Path,
+        think: str = "default",
+        sampling: str = "greedy",
+        min_free_gb: float = 0.0,
+    ):
         self.client, self.seed, self.runs, self.out = client, seed, runs, out
         # "default" leaves thinking to the model; "off" sends think=false;
         # "low"/"medium"/"high" set gpt-oss's effort (it cannot turn it off).
@@ -753,7 +859,9 @@ class Run:
         digests = client.digests()
         self.meta = {
             "started": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
-            "ollama": client.version(), "gpu": gpu_identity(), "seed": seed,
+            "ollama": client.version(),
+            "gpu": gpu_identity(),
+            "seed": seed,
             "harness_sha256": file_sha256(Path(__file__)),
             "git_head": _git("rev-parse", "--short", "HEAD").strip(),
             "git_dirty": bool(_git("status", "--porcelain").strip()),
@@ -761,17 +869,23 @@ class Run:
         self.digests = digests
 
     def save(self) -> None:
-        self.out.write_text(json.dumps({"meta": self.meta, "cells": self.cells},
-                                       indent=1))
+        self.out.write_text(json.dumps({"meta": self.meta, "cells": self.cells}, indent=1))
 
     def start_model(self, role: str, model: str) -> dict:
         variant = [f"think={self.think}"] if self.think != "default" else []
         variant += [f"sampling={self.sampling}"] if self.sampling != "greedy" else []
-        cell = {"role": role, "model": model, "flags": [],
-                **({"variant": " ".join(variant)} if variant
-                   and role in ("reason", "general", "code") else {}),
-                "digest": self.digests.get(canonical(model), "?"),
-                "options": ROLE_OPTIONS.get(role, {})}
+        cell = {
+            "role": role,
+            "model": model,
+            "flags": [],
+            **(
+                {"variant": " ".join(variant)}
+                if variant and role in ("reason", "general", "code")
+                else {}
+            ),
+            "digest": self.digests.get(canonical(model), "?"),
+            "options": ROLE_OPTIONS.get(role, {}),
+        }
         if canonical(model) not in self.digests:
             cell["flags"].append("NOT-INSTALLED")
             return cell
@@ -780,8 +894,9 @@ class Run:
             ok, free = wait_for_memory(self.min_free_gb)
             cell["mem_available_gb"] = None if free is None else round(free, 1)
             if not ok:
-                print(f"  skipped: {free:.1f} GB RAM available, needs {self.min_free_gb}",
-                      flush=True)
+                print(
+                    f"  skipped: {free:.1f} GB RAM available, needs {self.min_free_gb}", flush=True
+                )
                 cell["flags"].append("LOW-MEMORY")
                 return cell
         cell["gpu_baseline_mib"] = nvidia_used_mib()
@@ -831,34 +946,51 @@ class Run:
             for rep in range(self.runs):
                 for t in tasks:
                     try:
-                        resp, slept = timed(lambda t=t: self.client.generate(
-                            model=model, prompt=t["prefix"], suffix=t["suffix"],
-                            options=self.opts("fim"), keep_alive="10m"))
+                        resp, slept = timed(
+                            lambda t=t: self.client.generate(
+                                model=model,
+                                prompt=t["prefix"],
+                                suffix=t["suffix"],
+                                options=self.opts("fim"),
+                                keep_alive="10m",
+                            )
+                        )
                     except OllamaError as e:
-                        samples.append({"task": t["id"], "status": ERROR,
-                                        "error": str(e), "rep": rep})
+                        samples.append(
+                            {"task": t["id"], "status": ERROR, "error": str(e), "rep": rep}
+                        )
                         continue
                     text = resp.get("response", "")
                     # Quality is graded on the first pass; later passes are
                     # for speed, and say whether the replies stayed the same.
                     if rep == 0:
-                        status, detail = grade_fim(t, text, resp.get("done_reason"),
-                                                   run_in_sandbox)
+                        status, detail = grade_fim(t, text, resp.get("done_reason"), run_in_sandbox)
                     else:
-                        first = next((s for s in samples
-                                      if s["task"] == t["id"] and s.get("rep") == 0
-                                      and s["status"] != ERROR), None)
+                        first = next(
+                            (
+                                s
+                                for s in samples
+                                if s["task"] == t["id"]
+                                and s.get("rep") == 0
+                                and s["status"] != ERROR
+                            ),
+                            None,
+                        )
                         if first is None:
-                            status, detail = grade_fim(t, text, resp.get("done_reason"),
-                                                       run_in_sandbox)
+                            status, detail = grade_fim(
+                                t, text, resp.get("done_reason"), run_in_sandbox
+                            )
                         else:
                             # Only the graded lines count: text past the hole
                             # is never shown, and varies more.
-                            status, detail = first["status"], {
-                                "same_as_first": fim_cut(t, text)
-                                == fim_cut(t, first.get("output", ""))}
-                    rec = sample_record(t["id"], status, detail, resp, text,
-                                        slept=slept)
+                            status, detail = (
+                                first["status"],
+                                {
+                                    "same_as_first": fim_cut(t, text)
+                                    == fim_cut(t, first.get("output", ""))
+                                },
+                            )
+                    rec = sample_record(t["id"], status, detail, resp, text, slept=slept)
                     rec["rep"] = rep
                     samples.append(rec)
                     if rep == 0 and len(samples) == 1:
@@ -879,41 +1011,63 @@ class Run:
         if not cell["flags"]:
             for t in tasks:
                 try:
-                    resp, slept = timed(lambda t=t: self.client.chat(
-                        model=model, messages=build(t), options=self.opts(role),
-                        keep_alive="10m", **self.think_param()))
+                    resp, slept = timed(
+                        lambda t=t: self.client.chat(
+                            model=model,
+                            messages=build(t),
+                            options=self.opts(role),
+                            keep_alive="10m",
+                            **self.think_param(),
+                        )
+                    )
                 except OllamaError as e:
                     samples.append({"task": t["id"], "status": ERROR, "error": str(e)})
                     continue
                 msg = resp.get("message", {})
                 content, thinking = msg.get("content", ""), msg.get("thinking", "")
                 status, detail = grade(t, content, resp.get("done_reason"))
-                samples.append(sample_record(t["id"], status, detail, resp, content,
-                                             thinking, slept))
+                samples.append(
+                    sample_record(t["id"], status, detail, resp, content, thinking, slept)
+                )
                 if len(samples) == 1:
                     self.check_residency(cell, model)
         self.finish(cell, samples, len(tasks))
 
     def role_reason(self, model: str, tasks: list[dict]) -> None:
-        system = ("Solve the problem. Think as much as you need, then give the "
-                  "final answer on its own last line in exactly this form:\n"
-                  "ANSWER: <answer>\nGive only the value after ANSWER:, with no "
-                  "units unless the problem asks for them.")
-        self._chat_role("reason", model, tasks,
-                        lambda t: [{"role": "system", "content": system},
-                                   {"role": "user", "content": t["prompt"]}],
-                        grade_reason)
+        system = (
+            "Solve the problem. Think as much as you need, then give the "
+            "final answer on its own last line in exactly this form:\n"
+            "ANSWER: <answer>\nGive only the value after ANSWER:, with no "
+            "units unless the problem asks for them."
+        )
+        self._chat_role(
+            "reason",
+            model,
+            tasks,
+            lambda t: [
+                {"role": "system", "content": system},
+                {"role": "user", "content": t["prompt"]},
+            ],
+            grade_reason,
+        )
 
     def role_general(self, model: str, tasks: list[dict]) -> None:
-        self._chat_role("general", model, tasks,
-                        lambda t: [{"role": "user", "content":
-                                    t["prompt"] + "\n\n---\n" + t["input"]}],
-                        grade_general)
+        self._chat_role(
+            "general",
+            model,
+            tasks,
+            lambda t: [{"role": "user", "content": t["prompt"] + "\n\n---\n" + t["input"]}],
+            grade_general,
+        )
 
     def role_code(self, model: str, tasks: list[dict]) -> None:
-        self._chat_role("code", model, tasks,
-                        lambda t: [{"role": "user", "content": t["prompt"]}],
-                        lambda t, c, d: grade_code(t, c, d, run_in_sandbox))
+        self._chat_role(
+            "code",
+            model,
+            tasks,
+            lambda t: [{"role": "user", "content": t["prompt"]}],
+            lambda t, c, d: grade_code(t, c, d, run_in_sandbox),
+        )
 
     def role_agent(self, model: str, tasks: list[dict]) -> None:
         """Each task is a short tool loop in the Anthropic format (agent_step).
@@ -923,22 +1077,31 @@ class Run:
         cell = self.start_model("agent", model)
         samples: list[dict] = []
         if not cell["flags"]:
-            base = {"model": model, "temperature": 0,
-                    "max_tokens": ROLE_OPTIONS["agent"]["max_tokens"]}
+            base = {
+                "model": model,
+                "temperature": 0,
+                "max_tokens": ROLE_OPTIONS["agent"]["max_tokens"],
+            }
             for t in tasks:
                 msgs = [{"role": "user", "content": t["prompt"]}]
                 state: dict = {}
                 status, resp, slept = None, {}, 0.0
                 try:
                     for _ in range(AGENT_MAX_TURNS):
-                        resp, dt = timed(lambda m=msgs, t=t: self.client.messages(
-                            **base, tools=t["tools"], messages=m))
+                        resp, dt = timed(
+                            lambda m=msgs, t=t: self.client.messages(
+                                **base, tools=t["tools"], messages=m
+                            )
+                        )
                         slept += dt
                         status, results = agent_step(t, resp, state)
                         if status is not None:
                             break
-                        msgs = [*msgs, {"role": "assistant", "content": resp["content"]},
-                                {"role": "user", "content": results}]
+                        msgs = [
+                            *msgs,
+                            {"role": "assistant", "content": resp["content"]},
+                            {"role": "user", "content": results},
+                        ]
                     else:
                         status = FAIL
                         state["step"] = f"no answer within {AGENT_MAX_TURNS} turns"
@@ -946,20 +1109,26 @@ class Run:
                     samples.append({"task": t["id"], "status": ERROR, "error": str(e)})
                     continue
                 detail = state
-                rec = sample_record(t["id"], status, detail, None, reply_text(resp),
-                                    slept=slept)
+                rec = sample_record(t["id"], status, detail, None, reply_text(resp), slept=slept)
                 rec["stop_reason"] = resp.get("stop_reason")
                 samples.append(rec)
                 if len(samples) == 1:
                     self.check_residency(cell, model)
             try:
                 speed = self.client.chat(
-                    model=model, keep_alive="10m",
+                    model=model,
+                    keep_alive="10m",
                     options={"temperature": 0, "seed": self.seed, "num_predict": 400},
-                    messages=[{"role": "user", "content":
-                               "Explain in about 300 words how a reverse proxy works."}])
-                cell["speed_sample"] = {k: speed.get(k) for k in
-                                        ("eval_count", "eval_duration", "done_reason")}
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": "Explain in about 300 words how a reverse proxy works.",
+                        }
+                    ],
+                )
+                cell["speed_sample"] = {
+                    k: speed.get(k) for k in ("eval_count", "eval_duration", "done_reason")
+                }
                 if speed.get("eval_count") and speed.get("eval_duration"):
                     cell["tok_s"] = speed["eval_count"] / (speed["eval_duration"] / 1e9)
             except OllamaError as e:
@@ -974,32 +1143,38 @@ class Run:
         for variant, qp, dp in EMBED_VARIANTS.get(model, [("plain", "", "")]):
             cell = self.start_model("embed", model)
             cell["variant"] = variant
-            cell["corpus"] = {"ref": corpus_ref(), "chunks": len(chunks),
-                              "sections": len({c["section"] for c in chunks})}
+            cell["corpus"] = {
+                "ref": corpus_ref(),
+                "chunks": len(chunks),
+                "sections": len({c["section"] for c in chunks}),
+            }
             if cell["flags"]:
                 self.finish(cell, [], len(queries))
                 continue
             try:
                 dvecs, t0 = [], time.monotonic()
                 for i in range(0, len(chunks), 32):
-                    batch = [dp + c["text"] for c in chunks[i:i + 32]]
+                    batch = [dp + c["text"] for c in chunks[i : i + 32]]
                     dvecs.extend(self.client.embed(model, batch)["embeddings"])
                     if i == 0:
                         self.check_residency(cell, model)
                 cell["docs_per_s"] = len(chunks) / (time.monotonic() - t0)
-                qvecs = self.client.embed(model, [qp + q["query"] for q in queries])[
-                    "embeddings"]
+                qvecs = self.client.embed(model, [qp + q["query"] for q in queries])["embeddings"]
             except OllamaError as e:
-                self.finish(cell, [{"task": "*", "status": ERROR, "error": str(e)}],
-                            len(queries))
+                self.finish(cell, [{"task": "*", "status": ERROR, "error": str(e)}], len(queries))
                 continue
             ranked = [rank_sections(v, chunks, dvecs) for v in qvecs]
             samples = []
-            for q, order in zip(queries, ranked):
+            for q, order in zip(queries, ranked, strict=True):
                 pos = next((i for i, s in enumerate(order) if s in q["expect"]), None)
-                samples.append({"task": q["id"], "status": PASS if pos == 0 else FAIL,
-                                "rank": None if pos is None else pos + 1,
-                                "top3": order[:3]})
+                samples.append(
+                    {
+                        "task": q["id"],
+                        "status": PASS if pos == 0 else FAIL,
+                        "rank": None if pos is None else pos + 1,
+                        "top3": order[:3],
+                    }
+                )
             self.finish(cell, samples, len(queries))
             cell["summary"].update(retrieval_metrics(ranked, [q["expect"] for q in queries]))
             self.save()
@@ -1008,6 +1183,7 @@ class Run:
 # ---------------------------------------------------------------------------
 # Self-check: the answer keys must pass the graders the models face
 # ---------------------------------------------------------------------------
+
 
 def selfcheck(roles: list[str]) -> int:
     problems: list[str] = []
@@ -1018,8 +1194,9 @@ def selfcheck(roles: list[str]) -> int:
         for t in tasks:
             tid = f"{role}/{t.get('id')}"
             if role == "fim":
-                st, _ = grade_fim(t, t["expected"], "stop",
-                                  run_in_sandbox if t.get("test") else None)
+                st, _ = grade_fim(
+                    t, t["expected"], "stop", run_in_sandbox if t.get("test") else None
+                )
                 if st != PASS:
                     problems.append(f"{tid}: expected text does not pass ({st})")
                 if t.get("test"):
@@ -1031,14 +1208,12 @@ def selfcheck(roles: list[str]) -> int:
                     r = run_in_sandbox(t["solution"])
                     got = r["stdout"].strip().splitlines()[-1:] or [""]
                     if not r["ok"] or not answer_correct(t, got[0]):
-                        problems.append(f"{tid}: solution printed {got[0]!r}, key "
-                                        f"{t['answer']!r}")
+                        problems.append(f"{tid}: solution printed {got[0]!r}, key {t['answer']!r}")
                 st, _ = grade_reason(t, f"work...\nANSWER: {_first(t['answer'])}", "stop")
                 if st != PASS:
                     problems.append(f"{tid}: key does not grade as correct")
             elif role == "code":
-                st, d = grade_code(t, f"```python\n{t['reference']}\n```", "stop",
-                                   run_in_sandbox)
+                st, d = grade_code(t, f"```python\n{t['reference']}\n```", "stop", run_in_sandbox)
                 if st != PASS:
                     problems.append(f"{tid}: reference fails its tests: {d}")
                 stub = f"def {t['entry']}(*a, **k):\n    return None\n"
@@ -1046,7 +1221,7 @@ def selfcheck(roles: list[str]) -> int:
                     problems.append(f"{tid}: tests pass against a stub")
             elif role == "general":
                 for g in t["required"]:
-                    for a in (g if isinstance(g, list) else [g]):
+                    for a in g if isinstance(g, list) else [g]:
                         re.compile(a)
                 if t.get("reference"):
                     st, d = grade_general(t, t["reference"], "stop")
@@ -1063,7 +1238,8 @@ def selfcheck(roles: list[str]) -> int:
                     if t.get(key):
                         re.compile(t[key])
                 if t.get("reference_final") and not re.search(
-                        t["expect_final"], t["reference_final"], re.IGNORECASE):
+                    t["expect_final"], t["reference_final"], re.IGNORECASE
+                ):
                     problems.append(f"{tid}: reference_final does not match expect_final")
             elif role == "embed":
                 if sections is None:
@@ -1073,8 +1249,10 @@ def selfcheck(roles: list[str]) -> int:
                         problems.append(f"{tid}: no section {e!r} in the corpus")
     for p in problems:
         print("PROBLEM", p)
-    print(f"selfcheck {'FAILED' if problems else 'ok'}: {', '.join(roles)}"
-          f" ({len(problems)} problem(s))")
+    print(
+        f"selfcheck {'FAILED' if problems else 'ok'}: {', '.join(roles)}"
+        f" ({len(problems)} problem(s))"
+    )
     return 1 if problems else 0
 
 
@@ -1085,6 +1263,7 @@ def _first(answer):
 # ---------------------------------------------------------------------------
 # Report
 # ---------------------------------------------------------------------------
+
 
 def fmt(v, spec: str) -> str:
     return "-" if v is None else format(v, spec)
@@ -1101,27 +1280,29 @@ def print_report(cells: list[dict]) -> int:
             s = dict(c.get("summary", {}))
             tps = speed_samples(c.get("samples", []))
             if tps:
-                s.update(tok_s_p50=statistics.median(tps), tok_s_min=min(tps),
-                         tok_s_max=max(tps))
+                s.update(tok_s_p50=statistics.median(tps), tok_s_min=min(tps), tok_s_max=max(tps))
             name = c["model"] + (f" [{c['variant']}]" if c.get("variant") else "")
             if role == "embed":
-                score = (f"r@1 {fmt(s.get('recall@1'), '.2f')}  r@5 "
-                         f"{fmt(s.get('recall@5'), '.2f')}  mrr {fmt(s.get('mrr'), '.2f')}"
-                         f"  {fmt(c.get('docs_per_s'), '.0f')} docs/s")
+                score = (
+                    f"r@1 {fmt(s.get('recall@1'), '.2f')}  r@5 "
+                    f"{fmt(s.get('recall@5'), '.2f')}  mrr {fmt(s.get('mrr'), '.2f')}"
+                    f"  {fmt(c.get('docs_per_s'), '.0f')} docs/s"
+                )
             else:
                 n = s.get("graded", 0) if role == "fim" else s.get("n_expected", 0)
                 score = f"{s.get('pass', 0)}/{n}"
                 if role == "fim":
                     score += f" (line {s.get('line_match', 0)})"
-                score += (f"  {fmt(s.get('tok_s_p50'), '.0f')} t/s"
-                          f" [{fmt(s.get('tok_s_min'), '.0f')}-{fmt(s.get('tok_s_max'), '.0f')}]"
-                          f"  p50 {fmt(s.get('latency_ms_p50'), '.0f')} ms"
-                          f"  p95 {fmt(s.get('latency_ms_p95'), '.0f')} ms")
+                score += (
+                    f"  {fmt(s.get('tok_s_p50'), '.0f')} t/s"
+                    f" [{fmt(s.get('tok_s_min'), '.0f')}-{fmt(s.get('tok_s_max'), '.0f')}]"
+                    f"  p50 {fmt(s.get('latency_ms_p50'), '.0f')} ms"
+                    f"  p95 {fmt(s.get('latency_ms_p95'), '.0f')} ms"
+                )
             gpu = f"{c['gpu_mib']} MiB" if c.get("gpu_mib") is not None else "-"
             flags = " ".join(c.get("flags", []))
             print(f"  {name:<36} {score}  gpu {gpu}  {flags}")
-            if any(f.startswith(("INCOMPLETE", "NOT-", "LOW-MEMORY"))
-                   for f in c.get("flags", [])):
+            if any(f.startswith(("INCOMPLETE", "NOT-", "LOW-MEMORY")) for f in c.get("flags", [])):
                 worst = 1
             elif c.get("flags") and worst == 0:
                 worst = 2
@@ -1132,21 +1313,30 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("role", choices=[*ROLES, "all", "selfcheck", "chunks", "report"])
     ap.add_argument("--models", help="comma-separated; default: the role's candidates")
-    ap.add_argument("--host", default=os.environ.get("OLLAMA_HOST_URL",
-                                                     "http://127.0.0.1:11434"))
+    ap.add_argument("--host", default=os.environ.get("OLLAMA_HOST_URL", "http://127.0.0.1:11434"))
     ap.add_argument("--runs", type=int, default=3, help="fim passes (speed); default 3")
     ap.add_argument("--seed", type=int, default=29)
-    ap.add_argument("--think", default="default",
-                    choices=["default", "off", "low", "medium", "high"],
-                    help="reason/general/code: thinking mode (default: the model's own)")
-    ap.add_argument("--min-free-gb", type=float, default=12.0,
-                    help="wait (up to 30 min) for this much free RAM before loading "
-                         "each model, else skip it; 0 turns the check off")
-    ap.add_argument("--sampling", default="greedy", choices=["greedy", "model"],
-                    help="reason/general/code: greedy (temperature 0) or the model's own")
+    ap.add_argument(
+        "--think",
+        default="default",
+        choices=["default", "off", "low", "medium", "high"],
+        help="reason/general/code: thinking mode (default: the model's own)",
+    )
+    ap.add_argument(
+        "--min-free-gb",
+        type=float,
+        default=12.0,
+        help="wait (up to 30 min) for this much free RAM before loading "
+        "each model, else skip it; 0 turns the check off",
+    )
+    ap.add_argument(
+        "--sampling",
+        default="greedy",
+        choices=["greedy", "model"],
+        help="reason/general/code: greedy (temperature 0) or the model's own",
+    )
     ap.add_argument("--out", type=Path, help="results JSON (default: eval-<role>-<time>.json)")
-    ap.add_argument("--roles", default=",".join(ROLES),
-                    help="for selfcheck/all: which roles")
+    ap.add_argument("--roles", default=",".join(ROLES), help="for selfcheck/all: which roles")
     ap.add_argument("--results", type=Path, nargs="*", help="for report: result files")
     args = ap.parse_args()
 
@@ -1165,8 +1355,7 @@ def main() -> int:
     roles = args.roles.split(",") if args.role == "all" else [args.role]
     out = args.out or Path(f"eval-{args.role}-{time.strftime('%Y%m%dT%H%M%S')}.json")
     client = Ollama(args.host)
-    run = Run(client, args.seed, args.runs, out, args.think, args.sampling,
-              args.min_free_gb)
+    run = Run(client, args.seed, args.runs, out, args.think, args.sampling, args.min_free_gb)
     run.meta["think"], run.meta["sampling"] = args.think, args.sampling
     run.meta["task_sets"] = {r: file_sha256(task_path(r)) for r in roles}
     for role in roles:
